@@ -108,8 +108,13 @@ if ($uuid) {
 				/*
 				 * PRICE GENERATION
 				 */
-				$btc_amount = $blockonomics->getBitcoinAmount($fiat_amount, $currency);
-				$ca->assign('btc_amount', $btc_amount / 1.0e8);
+				if($currency == 'BTC'){
+					$btc_amount = $fiat_amount;
+					$ca->assign('btc_amount', $btc_amount);
+				}else{
+					$btc_amount = $blockonomics->getBitcoinAmount($fiat_amount, $currency);
+					$ca->assign('btc_amount', $btc_amount / 1.0e8);
+				}
 
 				/*
 				 * ADD ORDER TO DB
@@ -139,8 +144,13 @@ if ($uuid) {
 		if ($btc_address) {
 			$ca->assign('btc_address', $btc_address);
 		}
-		$btc_amount = $blockonomics->getBitcoinAmount($fiat_amount, $currency);
-		$ca->assign('btc_amount', $btc_amount / 1.0e8);
+		if($currency == 'BTC'){
+			$btc_amount = $fiat_amount;
+			$ca->assign('btc_amount', $btc_amount);
+		}else{
+			$btc_amount = $blockonomics->getBitcoinAmount($fiat_amount, $currency);
+			$ca->assign('btc_amount', $btc_amount / 1.0e8);
+		}
 		$blockonomics->updateOrderExpected($order_id, $btc_amount, $fiat_amount);
 	}
 
