@@ -133,28 +133,28 @@ if ($uuid) {
 		$confirmations = $blockonomics->getConfirmations();
 		if($existing_order['status'] == -1) {
 			$btc_address = $existing_order['address'];
-      if($currency == 'BTC'){
-        $btc_amount = $fiat_amount;
-        $ca->assign('btc_amount', $btc_amount);
-      }else{
-        $btc_amount = $blockonomics->getBitcoinAmount($fiat_amount, $currency);
-        $ca->assign('btc_amount', $btc_amount / 1.0e8);
-      }
-      $blockonomics->updateOrderExpected($order_id, $btc_amount, $fiat_amount);
+			if($currency == 'BTC'){
+				$btc_amount = $fiat_amount;
+				$ca->assign('btc_amount', $btc_amount);
+			}else{
+				$btc_amount = $fiat_amount;
+				$ca->assign('btc_amount', $btc_amount);
+			}
+			$blockonomics->updateOrderExpected($order_id, $btc_amount, $fiat_amount);
 		} elseif ($existing_order['status'] < $confirmations) {
 			$ca->assign('pending', true);
 			$ca->assign('txid', $existing_order['txid']);
 		} elseif ($existing_order['status'] >= $confirmations) {
 			$btc_address = generate_address($blockonomics, $ca);
 			$blockonomics->updateOrderAddress($order_id, $btc_address);
-      if($currency == 'BTC'){
-        $btc_amount = $fiat_amount;
-        $ca->assign('btc_amount', $btc_amount);
-      }else{
-        $btc_amount = $blockonomics->getBitcoinAmount($fiat_amount, $currency);
-        $ca->assign('btc_amount', $btc_amount / 1.0e8);
-      }
-      $blockonomics->updateOrderExpected($order_id, $btc_amount, $fiat_amount);
+			if($currency == 'BTC'){
+				$btc_amount = $fiat_amount;
+				$ca->assign('btc_amount', $btc_amount);
+			}else{
+				$btc_amount = $fiat_amount;
+				$ca->assign('btc_amount', $btc_amount);
+			}
+			$blockonomics->updateOrderExpected($order_id, $btc_amount, $fiat_amount);
 		}
 		
 		// Only set BTC address to template if it has been generated successfully
