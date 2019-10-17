@@ -95,13 +95,27 @@ class Blockonomics {
 	}
 
 	/*
-	 * Get user configured API key from database
+	 * Get user configured Time Period from database
 	 */
 	public function getTimePeriod() {
 		return Capsule::table('tblpaymentgateways')
 			->where('gateway', 'blockonomics')
 			->where('setting', 'TimePeriod')
 			->value('value');
+	}
+
+	/*
+	 * Get user configured Confirmations from database
+	 */
+	public function getConfirmations() {
+		$confirmations = Capsule::table('tblpaymentgateways')
+			->where('gateway', 'blockonomics')
+			->where('setting', 'Confirmations')
+			->value('value');
+		if(isset($confirmations)){
+			return $confirmations;
+		}
+		return 2;
 	}
 
 	/*
@@ -514,7 +528,7 @@ class Blockonomics {
 	}
 
 
-	public function testSetup()	{
+	public function testSetup($new_api)	{
 
 		$xpub_fetch_url = 'https://www.blockonomics.co/api/address?&no_balance=true&only_xpub=true&get_callback=true';
 		$set_callback_url = 'https://www.blockonomics.co/api/update_callback';
@@ -523,8 +537,11 @@ class Blockonomics {
 		$response = $this->doCurlCall($xpub_fetch_url);
 
 		$callback_url = $this->getCallbackUrl();
-
-		if (!isset($response->response_code)) {
+		$api_key = $this->getApiKey();
+		if ($api_key != $new_api) {
+			$error_str = 'New API Key: Save your changes and then click \'Test Setup\'';//API key changed
+		}
+		elseif (!isset($response->response_code)) {
 			$error_str = 'Your server is blocking outgoing HTTPS calls';
 		}
 		elseif ($response->response_code==401)
