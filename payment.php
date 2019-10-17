@@ -137,8 +137,8 @@ if ($uuid) {
 				$btc_amount = $fiat_amount;
 				$ca->assign('btc_amount', $btc_amount);
 			}else{
-				$btc_amount = $fiat_amount;
-				$ca->assign('btc_amount', $btc_amount);
+				$btc_amount = $blockonomics->getBitcoinAmount($fiat_amount, $currency);
+				$ca->assign('btc_amount', $btc_amount / 1.0e8);
 			}
 			$blockonomics->updateOrderExpected($order_id, $btc_amount, $fiat_amount);
 		} elseif ($existing_order['status'] < $confirmations) {
@@ -151,8 +151,8 @@ if ($uuid) {
 				$btc_amount = $fiat_amount;
 				$ca->assign('btc_amount', $btc_amount);
 			}else{
-				$btc_amount = $fiat_amount;
-				$ca->assign('btc_amount', $btc_amount);
+				$btc_amount = $blockonomics->getBitcoinAmount($fiat_amount, $currency);
+				$ca->assign('btc_amount', $btc_amount / 1.0e8);
 			}
 			$blockonomics->updateOrderExpected($order_id, $btc_amount, $fiat_amount);
 		}
