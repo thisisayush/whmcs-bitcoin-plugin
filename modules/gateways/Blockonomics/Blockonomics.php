@@ -193,13 +193,13 @@ class Blockonomics {
 	public function getNewBitcoinAddress($reset=false) {
 
 		$api_key = $this->getApiKey();
-		$callback_url = $this->getCallbackUrl();
+		$callback_secret = $this->getCallbackSecret();
 
 		if($reset) {
-				$get_params = "?match_callback=$callback_url&reset=1";
+				$get_params = "?match_callback=$callback_secret&reset=1";
 		} 
 		else {
-				$get_params = "?match_callback=$callback_url";
+				$get_params = "?match_callback=$callback_secret";
 		}
 
 		$ch = curl_init();
