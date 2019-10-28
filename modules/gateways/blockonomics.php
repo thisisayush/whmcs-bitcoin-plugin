@@ -8,7 +8,15 @@ function blockonomics_config() {
 
 	// When loading plugin setup page, run custom JS
 	add_hook('AdminAreaFooterOutput', 1, function($vars) {
-
+		try {
+		    // Detect module name from filename.
+			$gatewayModuleName = basename(__FILE__, '.php');
+			// Fetch gateway configuration parameters.
+			$gatewayParams = getGatewayVariables($gatewayModuleName);
+		}
+		catch (exception $e) {
+		    return;
+		}
 		$blockonomics = new Blockonomics();
 		$system_url = $blockonomics->getSystemUrl();
 		$callback_url = $blockonomics->getCallbackUrl();
