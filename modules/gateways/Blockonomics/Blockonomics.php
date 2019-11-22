@@ -241,6 +241,8 @@ class Blockonomics {
 		try {
 			if($currency == 'mBTC'){
 				$price = 1000;
+			}elseif($currency == 'BTC'){
+				$price = 1;
 			}else{
 				$ch = curl_init();
 
