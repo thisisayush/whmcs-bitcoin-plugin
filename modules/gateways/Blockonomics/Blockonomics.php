@@ -240,7 +240,7 @@ class Blockonomics {
 	public function getBitcoinAmount($fiat_amount, $currency) {
 		try {
 			if($currency == 'mBTC'){
-				$price = 0.001;
+				$price = 1000;
 			}else{
 				$ch = curl_init();
 
