@@ -123,13 +123,8 @@ if ($uuid) {
 				/*
 				 * PRICE GENERATION
 				 */
-				if($currency == 'BTC'){
-					$btc_amount = $fiat_amount;
-					$ca->assign('btc_amount', $btc_amount);
-				}else{
-					$btc_amount = $blockonomics->getBitcoinAmount($fiat_amount, $currency);
-					$ca->assign('btc_amount', $btc_amount / 1.0e8);
-				}
+				$btc_amount = $blockonomics->getBitcoinAmount($fiat_amount, $currency);
+				$ca->assign('btc_amount', $btc_amount / 1.0e8);
 
 				/*
 				 * ADD ORDER TO DB
