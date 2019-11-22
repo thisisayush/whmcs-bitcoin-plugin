@@ -193,13 +193,13 @@ class Blockonomics {
 	public function getNewBitcoinAddress($reset=false) {
 
 		$api_key = $this->getApiKey();
-		$callback_url = $this->getCallbackUrl();
+		$callback_secret = $this->getCallbackSecret();
 
 		if($reset) {
-				$get_params = "?match_callback=$callback_url&reset=1";
+				$get_params = "?match_callback=$callback_secret&reset=1";
 		} 
 		else {
-				$get_params = "?match_callback=$callback_url";
+				$get_params = "?match_callback=$callback_secret";
 		}
 
 		$ch = curl_init();
@@ -399,7 +399,8 @@ class Blockonomics {
 			"address"=> $existing_order->addr,
 			"bits" => $existing_order->bits,
 			"status" => $existing_order->status,
-			"txid" => $existing_order->txid
+			"txid" => $existing_order->txid,
+			"timestamp" => $existing_order->timestamp
 		);
 
 		return $row_in_array;
@@ -442,12 +443,13 @@ class Blockonomics {
 	/*
 	 * Update existing order's expected amount and FIAT amount. Use WHMCS invoice id as key
 	 */
-	public function updateOrderExpected($id_order, $expected, $fiat_amount) {
+	public function updateOrderExpected($id_order, $timestamp, $expected, $fiat_amount) {
 		try {
 			Capsule::table('blockonomics_bitcoin_orders')
 					->where('id_order', $id_order)
 					->update([
 						'bits' => $expected,
+						'timestamp' => $timestamp,
 						'value' => $fiat_amount
 					]
 				);
