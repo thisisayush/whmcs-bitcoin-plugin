@@ -24,13 +24,13 @@ $ca->initPage();
 /*
  * SET POST PARAMETERS TO VARIABLES AND CHECK IF THEY EXIST
  */
-$uuid = isset($_REQUEST['uuid']) ? $_REQUEST['uuid'] : "";
-$get_order = isset($_REQUEST['get_order']) ? $_REQUEST['get_order'] : "";
-$finish_order = isset($_REQUEST['finish_order']) ? $_REQUEST['finish_order'] : "";
+$uuid = htmlspecialchars(isset($_REQUEST['uuid']) ? $_REQUEST['uuid'] : "");
+$get_order = htmlspecialchars(isset($_REQUEST['get_order']) ? $_REQUEST['get_order'] : "");
+$finish_order = htmlspecialchars(isset($_REQUEST['finish_order']) ? $_REQUEST['finish_order'] : "");
 
-$fiat_amount = $_POST['price'];
-$currency = $_POST['currency'];
-$order_id = $_POST['order_id'];
+$fiat_amount = htmlspecialchars($_POST['price']);
+$currency = htmlspecialchars($_POST['currency']);
+$order_id = htmlspecialchars($_POST['order_id']);
 
 $system_url = $blockonomics->getSystemUrl();
 $ca->assign('system_url', $system_url);
