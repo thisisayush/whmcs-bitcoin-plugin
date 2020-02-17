@@ -85,13 +85,10 @@ class Blockonomics {
 	}
 
 	/*
-	 * Get user configured API key from database
+	 * Get list of crypto currencies supported by Blockonomics
 	 */
-	public function getAltcoins() {
-		return Capsule::table('tblpaymentgateways')
-			->where('gateway', 'blockonomics')
-			->where('setting', 'Altcoins')
-			->value('value');
+	public function getSupportedCurrencies() {
+		return array('btc' => 'Bitcoin', 'bch' => 'Bitcoin Cash');
 	}
 
 	/*

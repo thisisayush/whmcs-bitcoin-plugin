@@ -138,22 +138,39 @@ HTML;
 	$blockonomics = new Blockonomics();
 	$blockonomics->createOrderTableIfNotExist();
 	
-	return array(
+	$settings_array = array(
 		'FriendlyName' => array(
 			'Type'       => 'System',
 			'Value'      => 'Blockonomics'
 		),
-		'ApiKey' => array(
-			'FriendlyName' => 'API Key',
-			'Description'  => 'BLOCKONOMICS API KEY (Click "Get Started For Free" on <a target="_blank" href="https://www.blockonomics.co/blockonomics#/merchants">Merchants</a> and follow setup wizard)  ',
-			'Type'         => 'text'
-		),
-		'CallbackURL' => array(
+		'GetStarted' => array(
+			'FriendlyName' => '<b>Blockonomics API Key\'s</b>',
+			'Description'  => '<a target="_blank" href="https://www.blockonomics.co/merchants#/" class="btn btn-primary get-api">Get API Key</a> Click <i>Get Started For Free</i> and follow the setup wizard',
+			'Type'         => 'none'
+		)
+	);
+
+	$blockonomics_currencies = $blockonomics->getSupportedCurrencies();
+	foreach ($blockonomics_currencies as $currency_code => $currency_name) {
+		if($currency_code == 'btc'){
+			$settings_array['ApiKey'] = array(
+					'FriendlyName' => '<img src="https://www.blockonomics.co/img/'.$currency_code.'.png" alt="'.$currency_name.' Logo"> '.$currency_name.' API Key',
+					'Type'         => 'text'
+				);
+		}else{
+			$settings_array[ $currency_code.'ApiKey' ] = array(
+					'FriendlyName' => '<img src="https://www.blockonomics.co/img/'.$currency_code.'.png" alt="'.$currency_name.' Logo"> '.$currency_name.' API Key',
+					'Type'         => 'text',
+					'Placeholder'  => 'Optional'
+				);
+		}
+	}
+	$settings_array[ 'CallbackURL' ] = array(
 			'FriendlyName' => 'Callback URL',
-			'Description'  => 'CALLBACK URL (Copy this url and set in <a target="_blank" href="https://www.blockonomics.co/merchants#/page6">Merchants</a>)',
+			'Description'  => 'Copy this url and set in <a target="_blank" href="https://www.blockonomics.co/merchants#/page3">Merchants</a>',
 			'Type'         => 'text'
-		),
-		'TimePeriod' => array(
+		);
+	$settings_array[ 'TimePeriod' ] = array(
 			'FriendlyName' => 'Time Period',
 			'Type' => 'dropdown',
 			'Options' => array(
@@ -164,27 +181,22 @@ HTML;
 				'30' => '30',
 			),
 			'Description' => 'Time period of countdown timer on payment page (in minutes)',
-		),
-		'Altcoins' => array(
-				'FriendlyName' => 'Altcoins enabled',
-				'Type' => 'yesno',
-				'Description' => 'Select if you want to accept altcoins via Flyp.me',
-		),
-		'Margin' => array(
+		);
+	$settings_array[ 'Margin' ] = array(
 				'FriendlyName' => 'Extra Currency Rate Margin %',
 				'Type' => 'text',
 				'Size' => '5',
 				'Default' => 0,
 				'Description' => 'Increase live fiat to BTC rate by small percent',
-		),
-		'Slack' => array(
+		);
+	$settings_array[ 'Slack' ] = array(
 				'FriendlyName' => 'Underpayment Slack %',
 				'Type' => 'text',
 				'Size' => '5',
 				'Default' => 0,
 				'Description' => 'Allow payments that are off by a small percentage',
-			),
-		'Confirmations' => array(
+		);
+	$settings_array[ 'Confirmations' ] = array(
 			'FriendlyName' => 'Confirmations',
 			'Type' => 'dropdown',
 			'Default' => 2,
@@ -194,8 +206,9 @@ HTML;
 				'0' => '0'
 			),
 			'Description' => 'Network Confirmations required for payment to complete',
-		),
-	);
+		);
+	
+	return $settings_array;
 }
 
 function blockonomics_link($params) {
