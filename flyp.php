@@ -16,9 +16,9 @@ if ( isset( $_REQUEST['action'] ) ) {
 }
 
 function bnomics_save_uuid(){
-    $flypAddress    = $_REQUEST['address'];
-    $flypUuid    = $_REQUEST['uuid'];
-    $whmcs_invoice_id = $_REQUEST['order_id'];
+    $flypAddress    = htmlspecialchars($_REQUEST['address']);
+    $flypUuid    = htmlspecialchars($_REQUEST['uuid']);
+    $whmcs_invoice_id = htmlspecialchars($_REQUEST['order_id']);
     $blockonomics = new Blockonomics();
     $whmcs_order = $blockonomics->getOrderByAddress($flypAddress);
     $whmcs_order_id = $whmcs_order["order_id"];
@@ -30,10 +30,10 @@ function bnomics_save_uuid(){
 }
 
 function bnomics_send_email(){
-    $order_id = $_REQUEST['order_id'];
-    $uuid = $_REQUEST['order_uuid'];
-    $order_coin = $_REQUEST['order_coin'];
-    $refund_address = $_REQUEST['refund_address'];
+    $order_id = htmlspecialchars($_REQUEST['order_id']);
+    $uuid = htmlspecialchars($_REQUEST['order_uuid']);
+    $order_coin = htmlspecialchars($_REQUEST['order_coin']);
+    $refund_address = htmlspecialchars($_REQUEST['refund_address']);
     $subject = $order_coin . ' ' . 'Refund';
     $command = 'SendEmail';
     $postData = array(
