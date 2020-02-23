@@ -139,9 +139,16 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
                 "get_order": $scope.order_hash,
                 "blockonomics_currency": $scope.currency.code
             }, function(data) {
-                proccess_order_data(data);
                 $scope.spinner = false;
-                $scope.checkout_panel  = true;
+                if(data.txid != undefined && data.txid != ""){
+                    $scope.txid = data.txid;
+                    $scope.pending_error = true;
+                }else if(data.addr != undefined){
+                    proccess_order_data(data);
+                    $scope.checkout_panel  = true;
+                }else{
+                    $scope.address_error = true;
+                }
             });
         }
     }

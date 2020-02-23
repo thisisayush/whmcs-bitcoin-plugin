@@ -24,15 +24,15 @@
         <div class="bnomics-spinner"></div>
       </div>
       <!-- Address Error -->
-      <div id="address-error" ng-show="address-error" ng-cloak>
+      <div id="address-error" ng-show="address_error" ng-cloak>
         <h2>Could not generate new bitcoin address.</h2>
         <p>Note to webmaster: Please login to admin and go to Setup > Payments > Payment Gateways > Manage Existing Gateways and use the Test Setup button to diagnose the error.</p>
       </div>
       <!-- Pending payment -->
-      <div id="pending-error" ng-show="pending-error" ng-cloak>
+      <div id="pending-error" ng-show="pending_error" ng-cloak>
         <h2>Payment is pending</h2>
         <i>Additional payments to invoice are only allowed after current pending transaction is confirmed. Monitor the transaction here: 
-        <a href="https://www.blockonomics.co/api/tx?txid=[[order.txid]]" target="_blank">[[order.txid]]</a></i>
+        <a href="https://www.blockonomics.co/api/tx?txid=[[txid]]" target="_blank">[[txid]]</a></i>
       </div>
       <!-- Blockonomics Currency Selecter -->
       <div class="bnomics-select-container" ng-show="currency_selecter" ng-cloak>
