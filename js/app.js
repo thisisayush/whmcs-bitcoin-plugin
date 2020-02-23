@@ -159,27 +159,68 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
     
     //Copy bitcoin address to clipboard
     $scope.blockonomics_address_click = function() {
-        var copyText = document.getElementById("bnomics-address-copy");
-        copyText.select();
-        document.execCommand("copy");
-        //Open copy clipboard message
+        // Create a new textarea element and give it id='temp_element'
+        var textarea = document.createElement('textarea');
+        textarea.id = 'temp_element';
+        // Optional step to make less noise on the page, if any!
+        textarea.style.height = 0;
+        // Now append it to your page somewhere, I chose <body>
+        document.body.appendChild(textarea);
+        var divid = "bnomics-address-copy";
+        // Give our textarea a value of whatever inside the div of id=containerid
+        textarea.value = document.getElementById(divid).innerText;
+        // Now copy whatever inside the textarea to clipboard
+        var selector = document.querySelector('#temp_element');
+        selector.select();
+        document.execCommand('copy');
+        // Remove the textarea
+        document.body.removeChild(textarea);
+
+        selectText(divid);
+
         $scope.address_copyshow = true;
         $timeout(function() {
             $scope.address_copyshow = false;
-        //Close copy to clipboard message after 2 sec
+            //Close copy to clipboard message after 2 sec
         }, 2000);
+    }
+
+    function selectText(divid)
+    {
+        selection = window.getSelection();
+        var div = document.createRange();
+
+        div.setStartBefore(document.getElementById(divid));
+        div.setEndAfter(document.getElementById(divid)) ;
+        selection.removeAllRanges();
+        selection.addRange(div);
     }
 
     //Copy bitcoin amount to clipboard
     $scope.blockonomics_amount_click = function() {
-        var copyText = document.getElementById("bnomics-amount-copy");
-        copyText.innerHTML.select();
-        document.execCommand("copy");
-        //Open copy clipboard message
+        // Create a new textarea element and give it id='temp_element'
+        var textarea = document.createElement('textarea');
+        textarea.id = 'temp_element';
+        // Optional step to make less noise on the page, if any!
+        textarea.style.height = 0;
+        // Now append it to your page somewhere, I chose <body>
+        document.body.appendChild(textarea);
+        var divid = "bnomics-amount-copy";
+        // Give our textarea a value of whatever inside the div of id=containerid
+        textarea.value = document.getElementById(divid).innerText;
+        // Now copy whatever inside the textarea to clipboard
+        var selector = document.querySelector('#temp_element');
+        selector.select();
+        document.execCommand('copy');
+        // Remove the textarea
+        document.body.removeChild(textarea);
+
+        selectText(divid);
+
         $scope.amount_copyshow = true;
         $timeout(function() {
             $scope.amount_copyshow = false;
-        //Close copy to clipboard message after 2 sec
+            //Close copy to clipboard message after 2 sec
         }, 2000);
     }
     //Copy bitcoin address to clipboard
