@@ -404,22 +404,6 @@ class Blockonomics {
 	}
 
 	/*
-	 * Try to get order row from db by uuid
-	 */
-	public function updateFlypIdInDb($orderId, $flypId) {
-		try {
-			Capsule::table('blockonomics_bitcoin_orders')
-					->where('id_order', $orderId)
-					->update([
-						'flyp_id' => $flypId
-					]
-				);
-			} catch (\Exception $e) {
-				echo "Unable to update flyp id to blockonomics_bitcoin_orders: {$e->getMessage()}";
-		}
-	}
-
-	/*
 	 * Update existing order information. Use BTC payment address as key
 	 */
 	public function updateOrderInDb($addr, $txid, $status, $bits_payed) {
