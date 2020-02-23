@@ -77,18 +77,64 @@ class Blockonomics {
 	/*
 	 * Get user configured API key from database
 	 */
-	public function getApiKey() {
-		return Capsule::table('tblpaymentgateways')
-			->where('gateway', 'blockonomics')
-			->where('setting', 'ApiKey')
-			->value('value');
+	public function getApiKey($currency = 'btc') {
+		if($currency == 'btc'){
+			return Capsule::table('tblpaymentgateways')
+					->where('gateway', 'blockonomics')
+					->where('setting', 'ApiKey')
+					->value('value');
+		}else{
+			return Capsule::table('tblpaymentgateways')
+					->where('gateway', 'blockonomics')
+					->where('setting', $currency.'ApiKey')
+					->value('value');
+		}
 	}
 
 	/*
 	 * Get list of crypto currencies supported by Blockonomics
 	 */
 	public function getSupportedCurrencies() {
-		return array('btc' => 'Bitcoin', 'bch' => 'Bitcoin Cash');
+		$all_currencies = array(
+  			'currencies' => array(
+  				array(
+			        'code' => 'btc',
+			        'name' => 'Bitcoin',
+			        'uri' => 'bitcoin'
+  				),
+    			array(
+			        'code' => 'bch',
+			        'name' => 'Bitcoin Cash',
+			        'uri' => 'bitcoincash'
+  				)
+  			)
+  		);
+		return json_encode($all_currencies);
+	}
+
+	/*
+	 * Get list of active crypto currencies
+	 */
+	public function getActiveCurrencies() {
+		$active_currencies = array('currencies' => array());
+		$blockonomics_currencies = json_decode($this->getSupportedCurrencies());
+		foreach ($blockonomics_currencies->currencies as $currency) {
+			if($currency->code == 'btc'){
+				$api = Capsule::table('tblpaymentgateways')
+					->where('gateway', 'blockonomics')
+					->where('setting', 'ApiKey')
+					->value('value');
+			}else{
+				$api = Capsule::table('tblpaymentgateways')
+					->where('gateway', 'blockonomics')
+					->where('setting', $currency->code.'ApiKey')
+					->value('value');
+			}
+			if($api){
+				array_push($active_currencies['currencies'], $currency);
+			}
+		}
+		return $active_currencies;
 	}
 
 	/*
@@ -187,9 +233,15 @@ class Blockonomics {
 	/*
 	 * Get new address from Blockonomics Api
 	 */
-	public function getNewBitcoinAddress($reset=false) {
+	public function getNewAddress($currency='btc', $reset=false) {
 
-		$api_key = $this->getApiKey();
+		if($currency=='btc'){
+			$subdomain = 'www';
+		}else{
+			$subdomain = $currency;
+		}
+
+		$api_key = $this->getApiKey($currency);
 		$callback_secret = $this->getCallbackSecret();
 
 		if($reset) {
@@ -201,7 +253,7 @@ class Blockonomics {
 
 		$ch = curl_init();
 
-		curl_setopt($ch, CURLOPT_URL, "https://www.blockonomics.co/api/new_address" . $get_params);
+		curl_setopt($ch, CURLOPT_URL, "https://".$subdomain.".blockonomics.co/api/new_address" . $get_params);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 
@@ -234,11 +286,17 @@ class Blockonomics {
 	/*
 	 * Convert fiat amount to BTC
 	 */
-	public function getBitcoinAmount($fiat_amount, $currency) {
+	public function getNewAmount($fiat_amount, $currency, $blockonomics_currency = 'btc') {
 		try {
+			if($blockonomics_currency=='btc'){
+				$subdomain = 'www';
+			}else{
+				$subdomain = $blockonomics_currency;
+			}
+
 			$ch = curl_init();
 
-			curl_setopt($ch, CURLOPT_URL, "https://www.blockonomics.co/api/price?currency=".$currency);
+			curl_setopt($ch, CURLOPT_URL, "https://".$subdomain.".blockonomics.co/api/price?currency=".$currency);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
 			$contents = curl_exec($ch);
@@ -276,23 +334,37 @@ class Blockonomics {
 							$table->float('value');
 							$table->integer('bits');
 							$table->integer('bits_payed');
-							$table->text('flyp_id');
+							$table->string('currency');
+							$table->string('blockonomics_currency');
+							$table->string('order_hash');
 						}
 				);
 			} catch (\Exception $e) {
 					echo "Unable to create blockonomics_bitcoin_orders: {$e->getMessage()}";
 			}
-		}else if(!Capsule::schema()->hasColumn('blockonomics_bitcoin_orders', 'flyp_id')){
-			 Capsule::schema()->table('blockonomics_bitcoin_orders', function($table){
-				$table->text('flyp_id');
-			 });
+		}else{
+			if(!Capsule::schema()->hasColumn('blockonomics_bitcoin_orders', 'blockonomics_currency')){
+				 Capsule::schema()->table('blockonomics_bitcoin_orders', function($table){
+					$table->string('blockonomics_currency');
+				 });
+			}
+			if(!Capsule::schema()->hasColumn('blockonomics_bitcoin_orders', 'currency')){
+				 Capsule::schema()->table('blockonomics_bitcoin_orders', function($table){
+					$table->string('currency');
+				 });
+			}
+			if(!Capsule::schema()->hasColumn('blockonomics_bitcoin_orders', 'order_hash')){
+				 Capsule::schema()->table('blockonomics_bitcoin_orders', function($table){
+					$table->string('order_hash');
+				 });
+			}
 		}
 	}
 	/*
 	 * Try to insert new order to database
 	 * If order exists, return with false
 	 */
-	public function insertOrderToDb($id_order, $address, $value, $bits) {
+	public function insertOrderToDb($id_order, $address, $value, $bits, $blockonomics_currency = 'btc') {
 
 		try {
 			$existing_order = Capsule::table('blockonomics_bitcoin_orders')
@@ -315,6 +387,7 @@ class Blockonomics {
 					'status' => -1,
 					'value' => $value,
 					'bits' => $bits,
+					'blockonomics_currency' => $blockonomics_currency
 				]
 			);
 		} catch (\Exception $e) {
@@ -324,6 +397,148 @@ class Blockonomics {
 		return true;
 	}
 
+	private function newOrderHash(){
+		$data = openssl_random_pseudo_bytes(16);
+		assert(strlen($data) == 16);
+		$data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+		$data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+		return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+	}
+
+	public function newOrder($amount, $currency, $id_order, $order_hash = "") {
+
+		try {
+			$existing_order = Capsule::table('blockonomics_bitcoin_orders')
+				->where('id_order', $id_order)
+				->where('addr', '')
+				->value('order_hash');
+		} catch (\Exception $e) {
+				echo "Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}";
+		}
+
+		if($existing_order) {
+			return $existing_order;
+		}		
+
+		if(!$order_hash){
+			$order_hash = $this->newOrderHash();
+		}
+		
+		try {
+			Capsule::table('blockonomics_bitcoin_orders')->insert(
+				[
+					'id_order' => $id_order,
+					'timestamp' => time(),
+					'status' => -1,
+					'currency' => $currency,
+					'value' => $amount,
+					'order_hash' => $order_hash
+				]
+			);
+		} catch (\Exception $e) {
+				echo "Unable to insert new order into blockonomics_bitcoin_orders: {$e->getMessage()}";
+		}
+		return $order_hash;
+	}
+	
+	public function getOrderIdByHash($order_hash) {
+		try {
+			$first_order = Capsule::table('blockonomics_bitcoin_orders')
+				->where('order_hash', $order_hash)
+				->orderBy('timestamp', 'desc')
+				->first();
+		} catch (\Exception $e) {
+				echo "Unable to get order id from blockonomics_bitcoin_orders: {$e->getMessage()}";
+		}
+
+		return $first_order->id_order;
+	}
+
+	public function getAllOrdersByHash($order_hash) {
+		$all_orders_by_hash = Capsule::table('blockonomics_bitcoin_orders')
+				->where('order_hash', $order_hash)
+				->orderBy('timestamp', 'desc')->get();
+		return $all_orders_by_hash;
+	}
+	
+	public function isOrderPending($orders) {
+		foreach ($orders as $order) {
+			//check if status 0 or 1
+			if($order->status == 0 || $order->status == 1){
+				return $order;
+			}
+		}
+		return;
+	}
+	
+	public function isOrderWaiting($orders, $blockonomics_currency) {
+		foreach ($orders as $order) {
+			//check for currency address already waiting
+			if($order->blockonomics_currency == $blockonomics_currency && $order->status == -1){
+				//Check if existing order is expired
+				$current_time = time();
+				$total_time = $this->getTimePeriod() * 60;
+				$clock = $order->timestamp + $total_time - $current_time;
+				if($clock < 0){
+					$order->bits = $this->getNewAmount($order->value, $order->currency, $order->blockonomics_currency);
+					$order->timestamp = $current_time;
+				}
+				$this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->bits);
+				return $order;
+			}
+		}
+		return;
+	}
+	
+	public function isOrderNew($orders, $blockonomics_currency) {
+		foreach ($orders as $order) {
+			//check for new blank order in db
+			if($order->addr == ""){
+				$new_addresss_response = $this->getNewAddress($blockonomics_currency);
+				if ($new_addresss_response->response_code == 200){
+					$order->addr = $new_addresss_response->address;
+				}else{
+					exit($new_addresss_response->message);
+				}
+
+				$this->updateOrderAddress($order->order_hash, $order->addr, $blockonomics_currency);
+				$order->blockonomics_currency = $blockonomics_currency;
+				$order->bits = $this->getNewAmount($order->value, $order->currency, $order->blockonomics_currency);
+				$order->timestamp = time();
+				$this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->bits);
+				return $order;
+			}
+		}
+		// blank order already used, create a new blank order with same hash
+		$order_hash = $this->newOrder($orders[0]->value, $orders[0]->currency, $orders[0]->id_order, $orders[0]->order_hash);
+		// Must still check errors do not cause continuous loop
+		$order = $this->getOrderByHash($order_hash, $blockonomics_currency);
+		return $order;
+	}
+	
+	public function getOrderByHash($order_hash, $blockonomics_currency) {
+		// Fetch all orders by hash
+		$all_orders_by_hash = $this->getAllOrdersByHash($order_hash);
+		if(!$all_orders_by_hash){
+			return;
+		}
+		// Check for pending payments
+		$pending_payment = $this->isOrderPending($all_orders_by_hash);
+		if($pending_payment){
+			return $pending_payment;
+		}
+		// Check for existing address
+		$address_waiting = $this->isOrderWaiting($all_orders_by_hash, $blockonomics_currency);
+		if($address_waiting){
+			return $address_waiting;
+		}
+		// Check for new order
+		$new_order = $this->isOrderNew($all_orders_by_hash, $blockonomics_currency);
+		if($new_order){
+			return $new_order;
+		}
+		return;
+	}
 	/*
 	 * Try to get order row from db by address
 	 */
@@ -341,33 +556,6 @@ class Blockonomics {
 			"id" => $existing_order->id,
 			"order_id" => $existing_order->id_order,
 			"timestamp"=> $existing_order->timestamp,
-			"status" => $existing_order->status,
-			"value" => $existing_order->value,
-			"bits" => $existing_order->bits,
-			"bits_payed" => $existing_order->bits_payed
-		);
-
-		return $row_in_array;
-	}
-
-	/*
-	 * Try to get order row from db by uuid
-	 */
-	public function getOrderByUuid($uuid) {
-		try {
-			$existing_order = Capsule::table('blockonomics_bitcoin_orders')
-				->where('flyp_id', $uuid)
-				->orderBy('timestamp', 'desc')
-				->first();
-		} catch (\Exception $e) {
-				echo "Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}";
-		}
-
-		$row_in_array = array(
-			"id" => $existing_order->id,
-			"order_id" => $existing_order->id_order,
-			"timestamp"=> $existing_order->timestamp,
-			"address" => $existing_order->addr,
 			"status" => $existing_order->status,
 			"value" => $existing_order->value,
 			"bits" => $existing_order->bits,
@@ -424,37 +612,37 @@ class Blockonomics {
 	/*
 	 * Update existing order's expected amount and FIAT amount. Use WHMCS invoice id as key
 	 */
-	public function updateOrderExpected($id_order, $timestamp, $expected, $fiat_amount) {
+	public function updateOrderExpected($address, $blockonomics_currency, $timestamp, $bits) {
 		try {
 			Capsule::table('blockonomics_bitcoin_orders')
-					->where('id_order', $id_order)
+					->where('addr', $address)
 					->update([
-						'bits' => $expected,
-						'timestamp' => $timestamp,
-						'value' => $fiat_amount
+						'blockonomics_currency' => $blockonomics_currency,
+						'bits' => $bits,
+						'timestamp' => $timestamp
 					]
 				);
-			} catch (\Exception $e) {
-				echo "Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}";
+		} catch (\Exception $e) {
+			echo "Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}";
 		}
 	}
 
 	/*
 	 * Update existing order's address. Set status, txid and bits_payed to default values. Use WHMCS invoice id as key
 	 */
-	public function updateOrderAddress($id_order, $address) {
+	public function updateOrderAddress($order_hash, $address, $blockonomics_currency) {
 		try {
 			Capsule::table('blockonomics_bitcoin_orders')
-					->where('id_order', $id_order)
+					->where('order_hash', $order_hash)
+					->where('addr', '')
+					->where('blockonomics_currency', '')
 					->update([
 						'addr' => $address,
-						'status' => -1,
-						'txid' => null,
-						'bits_payed' => null
+						'blockonomics_currency' => $blockonomics_currency
 					]
 				);
-			} catch (\Exception $e) {
-				echo "Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}";
+		} catch (\Exception $e) {
+			echo "Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}";
 		}
 	}
 
@@ -570,7 +758,7 @@ class Blockonomics {
 
 		if ($error_str == '') {
 			// Test new address generation
-			$new_addresss_response = $this->getNewBitcoinAddress(true);
+			$new_addresss_response = $this->getNewAddress('btc',true);
 			if ($new_addresss_response->status != 200){
 				$error_str = $new_addresss_response->message;
 			}

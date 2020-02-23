@@ -150,16 +150,16 @@ HTML;
 		)
 	);
 
-	$blockonomics_currencies = $blockonomics->getSupportedCurrencies();
-	foreach ($blockonomics_currencies as $currency_code => $currency_name) {
-		if($currency_code == 'btc'){
+	$blockonomics_currencies = json_decode($blockonomics->getSupportedCurrencies());
+	foreach ($blockonomics_currencies->currencies as $currency) {
+		if($currency->code == 'btc'){
 			$settings_array['ApiKey'] = array(
-					'FriendlyName' => '<img src="https://www.blockonomics.co/img/'.$currency_code.'.png" alt="'.$currency_name.' Logo"> '.$currency_name.' API Key',
+					'FriendlyName' => '<img src="../img/'.$currency->code.'.png" alt="'.$currency->name.' Logo"> '.$currency->name.' API Key',
 					'Type'         => 'text'
 				);
 		}else{
-			$settings_array[ $currency_code.'ApiKey' ] = array(
-					'FriendlyName' => '<img src="https://www.blockonomics.co/img/'.$currency_code.'.png" alt="'.$currency_name.' Logo"> '.$currency_name.' API Key',
+			$settings_array[ $currency->code.'ApiKey' ] = array(
+					'FriendlyName' => '<img src="../img/'.$currency->code.'.png" alt="'.$currency->name.' Logo"> '.$currency->name.' API Key',
 					'Type'         => 'text',
 					'Placeholder'  => 'Optional'
 				);
@@ -218,15 +218,16 @@ function blockonomics_link($params) {
 	}
 
 	$blockonomics = new Blockonomics();
+	$order_hash = $blockonomics->newOrder($params['amount'], $params['currency'], $params['invoiceid']);
+	
 	$system_url = $blockonomics->getSystemUrl();
 	$form_url = $system_url . 'payment.php';
 
-	$form = '<form action="' . $form_url . '" method="POST">';
-	$form .= '<input type="hidden" name="price" value="'. $params['amount'] .'"/>';
-	$form .= '<input type="hidden" name="currency" value="'. $params['currency'] .'"/>';
-	$form .= '<input type="hidden" name="order_id" value="'. $params['invoiceid'] .'"/>';
+	//pass only the hash to the payment page
+	$form = '<form action="' . $form_url . '" method="GET">';
+	$form .= '<input type="hidden" name="order" value="'. $order_hash .'"/>';
 	$form .= '<input type="submit" value="'. $params['langpaynow'] .'"/>';
 	$form .= '</form>';
-
+	
 	return $form;
 }

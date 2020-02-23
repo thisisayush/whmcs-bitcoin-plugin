@@ -29,18 +29,24 @@ function getParameterByNameBlocko(name, url) {
 }
 
 //CheckoutController
-app.controller('CheckoutController', function($scope, $interval, Order, $httpParamSerializer, $timeout, AltcoinNew, AltcoinAccept, AltcoinLimits, InternalApi) {
-    //get order id from url
-    var btcAddressDiv = document.getElementById("btc-address");
-	$scope.address = btcAddressDiv.dataset.address;
-	var timePeriodDiv = document.getElementById("time-period");
-	blockonomics_time_period = timePeriodDiv.dataset.timeperiod;
-    var currencyDiv = document.getElementById("currency");
-    $scope.currency = currencyDiv.dataset.currency;
-    var totalProgress = 100;
-    $scope.copyshow = false;
-    //blockonomics_time_period is defined on JS file as global var
+app.controller('CheckoutController', function($scope, $interval, Order, $httpParamSerializer, $timeout) {
+    //get order hash from url
+    var time_period_div = document.getElementById("time_period");
+    var blockonomics_time_period = time_period_div.dataset.time_period;
     var totalTime = blockonomics_time_period * 60;
+    var totalProgress = 100;
+    
+    var order_hash_div = document.getElementById("order_hash");
+    $scope.order_hash = order_hash_div.dataset.order_hash;
+
+    var order_id_div = document.getElementById("order_id");
+    $scope.order_id = order_id_div.dataset.order_id;
+    
+    var active_currencies_div = document.getElementById("active_currencies");
+    var active_currencies = JSON.parse(active_currencies_div.dataset.active_currencies);
+    $scope.active_currencies = active_currencies.currencies;
+
+    $scope.copyshow = false;
     $scope.display_problems = true;
     //Create url when the order is received 
     $scope.finish_order_url = function() {
