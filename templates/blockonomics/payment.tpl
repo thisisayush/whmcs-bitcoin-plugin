@@ -5,7 +5,7 @@
 <div id="system-url" data-url="{$system_url}"></div>
 <div id="time_period" data-time_period="{$time_period}"></div>
 <div id="active_currencies" data-active_currencies='{$active_currencies}'></div>
-<div id="order_hash" data-order_hash="{$order_hash}"></div>
+<div id="order_uuid" data-order_uuid="{$order_uuid}"></div>
 <div id="order_id" data-order_id="{$order_id}"></div>
 
 <div ng-app="shopping-cart-demo">

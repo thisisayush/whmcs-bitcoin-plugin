@@ -30,14 +30,14 @@ function getParameterByNameBlocko(name, url) {
 
 //CheckoutController
 app.controller('CheckoutController', function($scope, $interval, Order, $httpParamSerializer, $timeout) {
-    //get order hash from url
+    //get order uuid from url
     var time_period_div = document.getElementById("time_period");
     var blockonomics_time_period = time_period_div.dataset.time_period;
     var totalTime = blockonomics_time_period * 60;
     var totalProgress = 100;
     
-    var order_hash_div = document.getElementById("order_hash");
-    $scope.order_hash = order_hash_div.dataset.order_hash;
+    var order_uuid_div = document.getElementById("order_uuid");
+    $scope.order_uuid = order_uuid_div.dataset.order_uuid;
 
     var order_id_div = document.getElementById("order_id");
     $scope.order_id = order_id_div.dataset.order_id;
@@ -90,7 +90,7 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
         for (var i = $scope.active_currencies.length - 1; i >= 0; i--) {
             if($scope.active_currencies[i].code == blockonomics_currency){
                 $scope.currency = $scope.active_currencies[i];
-                check_blockonomics_hash();
+                check_blockonomics_uuid();
             }
         }
     }
@@ -130,13 +130,13 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
         }
     }
     
-    //Check if the blockonomics hash is present
-    function check_blockonomics_hash() {
+    //Check if the blockonomics uuid is present
+    function check_blockonomics_uuid() {
         $scope.spinner = true;
-        if (typeof $scope.order_hash != 'undefined') {
-            //Fetch the order using hash
+        if (typeof $scope.order_uuid != 'undefined') {
+            //Fetch the order using uuid
             Order.get({
-                "get_order": $scope.order_hash,
+                "get_order": $scope.order_uuid,
                 "blockonomics_currency": $scope.currency.code
             }, function(data) {
                 $scope.spinner = false;
@@ -157,7 +157,7 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
     if(Object.keys($scope.active_currencies).length == 1){
         // Auto select currency if 1 activated currency
         $scope.currency = $scope.active_currencies[0];
-        check_blockonomics_hash();
+        check_blockonomics_uuid();
     }else if(Object.keys($scope.active_currencies).length >= 1){
         //Show user currency selector if > 1 activated currency
         $scope.currency_selecter  = true;
