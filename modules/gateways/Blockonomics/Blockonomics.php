@@ -274,6 +274,7 @@ class Blockonomics {
 		curl_close ($ch);
 		return $responseObj;
 	}
+
 	/*
 	 * Get user configured margin from database
 	 */
@@ -283,6 +284,7 @@ class Blockonomics {
 			->where('setting', 'Margin')
 			->value('value');
 	}
+
 	/*
 	 * Convert fiat amount to BTC
 	 */
@@ -360,6 +362,7 @@ class Blockonomics {
 			}
 		}
 	}
+
 	/*
 	 * Try to insert new order to database
 	 * If order exists, return with false
@@ -397,6 +400,9 @@ class Blockonomics {
 		return true;
 	}
 
+	/*
+	 * Generate a new unique id for the order
+	 */
 	private function newOrderUuid(){
 		$data = openssl_random_pseudo_bytes(16);
 		assert(strlen($data) == 16);
@@ -405,6 +411,9 @@ class Blockonomics {
 		return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 	}
 
+	/*
+	 * Add a new order to the db
+	 */
 	public function newOrder($amount, $currency, $id_order, $order_uuid = "") {
 
 		try {
@@ -440,7 +449,10 @@ class Blockonomics {
 		}
 		return $order_uuid;
 	}
-	
+
+	/*
+	 * Get the order id using the order uuid
+	 */	
 	public function getOrderIdByUuid($order_uuid) {
 		try {
 			$first_order = Capsule::table('blockonomics_bitcoin_orders')
@@ -454,13 +466,19 @@ class Blockonomics {
 		return $first_order->id_order;
 	}
 
+	/*
+	 * Get all orders linked to uuid
+	 */	
 	public function getAllOrdersByUuid($order_uuid) {
 		$all_orders_by_uuid = Capsule::table('blockonomics_bitcoin_orders')
 				->where('order_uuid', $order_uuid)
 				->orderBy('timestamp', 'desc')->get();
 		return $all_orders_by_uuid;
 	}
-	
+
+	/*
+	 * Check for pending orders and return if exists
+	 */	
 	public function isOrderPending($orders) {
 		foreach ($orders as $order) {
 			//check if status 0 or 1
@@ -470,7 +488,10 @@ class Blockonomics {
 		}
 		return;
 	}
-	
+
+	/*
+	 * Check for unused address for the currency linked to the order
+	 */		
 	public function isOrderWaiting($orders, $blockonomics_currency) {
 		foreach ($orders as $order) {
 			//check for currency address already waiting
@@ -489,7 +510,10 @@ class Blockonomics {
 		}
 		return;
 	}
-	
+
+	/*
+	 * Check for unused address or create new
+	 */	
 	public function isOrderNew($orders, $blockonomics_currency) {
 		foreach ($orders as $order) {
 			//check for new blank order in db
@@ -511,11 +535,13 @@ class Blockonomics {
 		}
 		// blank order already used, create a new blank order with same uuid
 		$order_uuid = $this->newOrder($orders[0]->value, $orders[0]->currency, $orders[0]->id_order, $orders[0]->order_uuid);
-		// Must still check errors do not cause continuous loop
 		$order = $this->getOrderByUuid($order_uuid, $blockonomics_currency);
 		return $order;
 	}
-	
+
+	/*
+	 * Get existing or create new order
+	 */	
 	public function getOrderByUuid($order_uuid, $blockonomics_currency) {
 		// Fetch all orders by uuid
 		$all_orders_by_uuid = $this->getAllOrdersByUuid($order_uuid);
@@ -539,6 +565,7 @@ class Blockonomics {
 		}
 		return;
 	}
+
 	/*
 	 * Try to get order row from db by address
 	 */
@@ -656,6 +683,9 @@ class Blockonomics {
 				->value('value');
 	}
 
+	/*
+	 * Check for errors in request response
+	 */
 	public function checkForErrors($responseObj) {
 		if(!isset($responseObj->response_code)) {
 				$error = true;
@@ -675,7 +705,10 @@ class Blockonomics {
 		return false;
 	}
 
- public function doCurlCall($url, $post_content='') {
+	/*
+	 * Make a request using curl
+	 */
+	public function doCurlCall($url, $post_content='') {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -699,7 +732,9 @@ class Blockonomics {
 		return $responseObj;
 	}
 
-
+	/*
+	 * Run the test setup
+	 */
 	public function testSetup($new_api)	{
 
 		$xpub_fetch_url = 'https://www.blockonomics.co/api/address?&no_balance=true&only_xpub=true&get_callback=true';
