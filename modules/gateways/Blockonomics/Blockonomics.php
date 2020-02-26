@@ -559,7 +559,8 @@ class Blockonomics {
 			"status" => $existing_order->status,
 			"value" => $existing_order->value,
 			"bits" => $existing_order->bits,
-			"bits_payed" => $existing_order->bits_payed
+			"bits_payed" => $existing_order->bits_payed,
+			"blockonomics_currency" => $existing_order->blockonomics_currency
 		);
 
 		return $row_in_array;
