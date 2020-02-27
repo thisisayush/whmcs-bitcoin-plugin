@@ -22,11 +22,11 @@ if (!$gatewayParams['type']) {
 }
 
 // Retrieve data returned in payment gateway callback
-$secret = $_GET['secret'];
-$status = $_GET['status'];
-$addr = $_GET['addr'];
-$value = $_GET['value'];
-$txid = $_GET['txid'];
+$secret = htmlspecialchars($_GET['secret']);
+$status = htmlspecialchars($_GET['status']);
+$addr = htmlspecialchars($_GET['addr']);
+$value = htmlspecialchars($_GET['value']);
+$txid = htmlspecialchars($_GET['txid']);
 
 /**
  * Validate callback authenticity.

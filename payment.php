@@ -24,16 +24,16 @@ $ca->initPage();
 /*
  * SET POST PARAMETERS TO VARIABLES AND CHECK IF THEY EXIST
  */
-$get_order = isset($_REQUEST['get_order']) ? $_REQUEST['get_order'] : "";
-$finish_order = isset($_REQUEST['finish_order']) ? $_REQUEST['finish_order'] : "";
+$get_order = htmlspecialchars(isset($_REQUEST['get_order']) ? $_REQUEST['get_order'] : "");
+$finish_order = htmlspecialchars(isset($_REQUEST['finish_order']) ? $_REQUEST['finish_order'] : "");
 
-$order_uuid = isset($_REQUEST['order']) ? $_REQUEST['order'] : "";
+$order_uuid = htmlspecialchars(isset($_REQUEST['order']) ? $_REQUEST['order'] : "");
 
 $system_url = $blockonomics->getSystemUrl();
 $ca->assign('system_url', $system_url);
 
 if($get_order){
-	$blockonomics_currency = isset($_REQUEST['blockonomics_currency']) ? $_REQUEST['blockonomics_currency'] : "";
+	$blockonomics_currency = htmlspecialchars(isset($_REQUEST['blockonomics_currency']) ? $_REQUEST['blockonomics_currency'] : "");
 	$existing_order = $blockonomics->getOrderByUuid($get_order, $blockonomics_currency);
 	// No order exists, exit
 	if(is_null($existing_order->id_order)) {
