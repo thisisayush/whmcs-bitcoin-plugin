@@ -51,7 +51,7 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
     //Create url when the order is received 
     $scope.finish_order_url = function() {
         var params = {};
-        params.finish_order = $scope.address;
+        params.finish_order = $scope.order.addr;
         url = window.location.pathname;
         var serializedParams = $httpParamSerializer(params);
         if (serializedParams.length > 0) {

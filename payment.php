@@ -44,7 +44,7 @@ if($get_order){
 	}
 }else if($finish_order){
 	$existing_order = $blockonomics->getOrderByAddress($finish_order);
-	$finish_url = $system_url . 'viewinvoice.php?id=' . $existing_order['id_order'] . '&paymentsuccess=true';
+	$finish_url = $system_url . 'viewinvoice.php?id=' . $existing_order['order_id'] . '&paymentsuccess=true';
 	header("Location: $finish_url");
     exit();
 }else if(!$order_uuid) {
