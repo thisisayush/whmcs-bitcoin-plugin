@@ -78,17 +78,10 @@ class Blockonomics {
 	 * Get user configured API key from database
 	 */
 	public function getApiKey($currency = 'btc') {
-		if($currency == 'btc'){
-			return Capsule::table('tblpaymentgateways')
-					->where('gateway', 'blockonomics')
-					->where('setting', 'ApiKey')
-					->value('value');
-		}else{
-			return Capsule::table('tblpaymentgateways')
-					->where('gateway', 'blockonomics')
-					->where('setting', $currency.'ApiKey')
-					->value('value');
-		}
+		return Capsule::table('tblpaymentgateways')
+				->where('gateway', 'blockonomics')
+				->where('setting', 'ApiKey')
+				->value('value');
 	}
 
 	/*
@@ -127,7 +120,7 @@ class Blockonomics {
 			}else{
 				$api = Capsule::table('tblpaymentgateways')
 					->where('gateway', 'blockonomics')
-					->where('setting', $currency->code.'ApiKey')
+					->where('setting', $currency->code.'Enabled')
 					->value('value');
 			}
 			if($api){

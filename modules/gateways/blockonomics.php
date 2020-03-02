@@ -142,27 +142,22 @@ HTML;
 		'FriendlyName' => array(
 			'Type'       => 'System',
 			'Value'      => 'Blockonomics'
-		),
-		'GetStarted' => array(
-			'FriendlyName' => '<b>Blockonomics API Key\'s</b>',
-			'Description'  => '<a target="_blank" href="https://www.blockonomics.co/merchants#/" class="btn btn-primary get-api">Get API Key</a> Click <i>Get Started For Free</i> and follow the setup wizard',
-			'Type'         => 'none'
 		)
+	);
+	$settings_array['ApiKey'] = array(
+		'FriendlyName' => 'API Key',
+		'Description'  => 'BLOCKONOMICS API KEY (Click "Get Started For Free" on <a target="_blank" href="https://www.blockonomics.co/blockonomics#/merchants">Merchants</a> and follow setup wizard)',
+		'Type'         => 'text'
 	);
 
 	$blockonomics_currencies = json_decode($blockonomics->getSupportedCurrencies());
 	foreach ($blockonomics_currencies->currencies as $currency) {
-		if($currency->code == 'btc'){
-			$settings_array['ApiKey'] = array(
-					'FriendlyName' => '<img src="../img/'.$currency->code.'.png" alt="'.$currency->name.' Logo"> '.$currency->name.' API Key',
-					'Type'         => 'text'
-				);
-		}else{
-			$settings_array[ $currency->code.'ApiKey' ] = array(
-					'FriendlyName' => '<img src="../img/'.$currency->code.'.png" alt="'.$currency->name.' Logo"> '.$currency->name.' API Key',
-					'Type'         => 'text',
-					'Placeholder'  => 'Optional'
-				);
+		if($currency->code != 'btc'){
+			$settings_array[ $currency->code.'Enabled' ] = array(
+				'FriendlyName' => strtoupper($currency->code).' Enabled',
+				'Type' => 'yesno',
+				'Description' => 'Select if you want to accept '.$currency->name
+			);
 		}
 	}
 	$settings_array[ 'CallbackURL' ] = array(
