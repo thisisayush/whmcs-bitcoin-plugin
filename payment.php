@@ -27,14 +27,14 @@ $ca->initPage();
 $get_order = htmlspecialchars(isset($_REQUEST['get_order']) ? $_REQUEST['get_order'] : "");
 $finish_order = htmlspecialchars(isset($_REQUEST['finish_order']) ? $_REQUEST['finish_order'] : "");
 
-$order_uuid = htmlspecialchars(isset($_REQUEST['order']) ? $_REQUEST['order'] : "");
+$order_hash = htmlspecialchars(isset($_REQUEST['order']) ? $_REQUEST['order'] : "");
 
 $system_url = $blockonomics->getSystemUrl();
 $ca->assign('system_url', $system_url);
 
 if($get_order){
 	$blockonomics_currency = htmlspecialchars(isset($_REQUEST['blockonomics_currency']) ? $_REQUEST['blockonomics_currency'] : "");
-	$existing_order = $blockonomics->getOrderByUuid($get_order, $blockonomics_currency);
+	$existing_order = $blockonomics->getOrderByHash($get_order, $blockonomics_currency);
 	// No order exists, exit
 	if(is_null($existing_order->id_order)) {
 		exit;
@@ -47,7 +47,7 @@ if($get_order){
 	$finish_url = $system_url . 'viewinvoice.php?id=' . $existing_order['order_id'] . '&paymentsuccess=true';
 	header("Location: $finish_url");
     exit();
-}else if(!$order_uuid) {
+}else if(!$order_hash) {
 	echo "<b>Error: Failed to fetch order data.</b> <br>
 				Note to admin: Please check that your System URL is configured correctly.
 				If you are using SSL, verify that System URL is set to use HTTPS and not HTTP. <br>
@@ -55,7 +55,7 @@ if($get_order){
 	exit;
 }
 
-$ca->assign('order_uuid', $order_uuid);
+$ca->assign('order_uuid', $order_hash);
 
 $time_period_from_db = $blockonomics->getTimePeriod();
 $time_period = isset($time_period_from_db) ? $time_period_from_db : '10';
@@ -70,7 +70,7 @@ if ($active_currencies) {
 	exit;
 }
 
-$order_id = $blockonomics->getOrderIdByUuid($order_uuid);
+$order_id = $blockonomics->getOrderIdByHash($order_hash);
 $ca->assign('order_id', $order_id);
 
 # Define the template filename to be used without the .tpl extension

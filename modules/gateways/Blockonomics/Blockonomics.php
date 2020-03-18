@@ -281,7 +281,8 @@ class Blockonomics {
 	/*
 	 * Convert fiat amount to BTC
 	 */
-	public function getNewAmount($fiat_amount, $currency, $blockonomics_currency = 'btc') {
+	public function getNewAmount($fiat_amount , $blockonomics_currency = 'btc') {
+		$currency = getCurrency(getClientsDetails()['user_id'])['code'];
 		try {
 			if($blockonomics_currency=='btc'){
 				$subdomain = 'www';
@@ -329,9 +330,7 @@ class Blockonomics {
 							$table->float('value');
 							$table->integer('bits');
 							$table->integer('bits_payed');
-							$table->string('currency');
 							$table->string('blockonomics_currency');
-							$table->string('order_uuid');
 						}
 				);
 			} catch (\Exception $e) {
@@ -341,16 +340,6 @@ class Blockonomics {
 			if(!Capsule::schema()->hasColumn('blockonomics_bitcoin_orders', 'blockonomics_currency')){
 				 Capsule::schema()->table('blockonomics_bitcoin_orders', function($table){
 					$table->string('blockonomics_currency');
-				 });
-			}
-			if(!Capsule::schema()->hasColumn('blockonomics_bitcoin_orders', 'currency')){
-				 Capsule::schema()->table('blockonomics_bitcoin_orders', function($table){
-					$table->string('currency');
-				 });
-			}
-			if(!Capsule::schema()->hasColumn('blockonomics_bitcoin_orders', 'order_uuid')){
-				 Capsule::schema()->table('blockonomics_bitcoin_orders', function($table){
-					$table->string('order_uuid');
 				 });
 			}
 		}
@@ -393,63 +382,106 @@ class Blockonomics {
 		return true;
 	}
 
-	/*
-	 * Generate a new unique id for the order
-	 */
-	private function newOrderUuid(){
-		$data = openssl_random_pseudo_bytes(16);
-		assert(strlen($data) == 16);
-		$data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
-		$data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
-		return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
-	}
+    /**
+     * Decrypts a string using the application secret.
+     */
+    public function decrypt(string $input): string
+    {
+    	$encryption_algorithm = 'AES-256-CBC';
+    	$hashing_algorith = 'sha256';
+    	$secret = $this->getCallbackSecret();
+        // prevent decrypt failing when $input is not hex or has odd length
+        if (strlen($input) % 2 || ! ctype_xdigit($input)) {
+            return '';
+        }
+
+        // we'll need the binary cipher
+        $binaryInput = hex2bin($input);
+        $iv = substr($binaryInput, 0, 16);
+        $hash = substr($binaryInput, 16, 32);
+        $cipherText = substr($binaryInput, 48);
+        $key = hash($hashing_algorith, $secret, true);
+
+        // if the HMAC hash doesn't match the hash string, something has gone wrong
+        if (hash_hmac($hashing_algorith, $cipherText, $key, true) !== $hash) {
+            return '';
+        }
+
+        return openssl_decrypt(
+            $cipherText,
+            $encryption_algorithm,
+            $key,
+            OPENSSL_RAW_DATA,
+            $iv
+        );
+    }
+
+    /**
+     * Encrypts a string using the application secret. This returns a hex representation of the binary cipher text
+     */
+    public function encrypt(string $input): string
+    {
+		$encryption_algorithm = 'AES-256-CBC';
+		$hashing_algorith = 'sha256';
+    	$secret = $this->getCallbackSecret();
+        $key = hash($hashing_algorith, $secret, true);
+        $iv = random_bytes(16);
+
+        $cipherText = openssl_encrypt(
+            $input,
+            $encryption_algorithm,
+            $key,
+            OPENSSL_RAW_DATA,
+            $iv
+        );
+        $hash = hash_hmac($hashing_algorith, $cipherText, $key, true);
+
+        return bin2hex($iv . $hash . $cipherText);
+    }
 
 	/*
 	 * Add a new order to the db
 	 */
-	public function newOrder($amount, $currency, $id_order, $order_uuid = "") {
+	public function newOrder($amount, $id_order) {
 
 		try {
 			$existing_order = Capsule::table('blockonomics_bitcoin_orders')
 				->where('id_order', $id_order)
 				->where('addr', '')
-				->value('order_uuid');
+				->where('value', $amount)
+				->value('id_order');
 		} catch (\Exception $e) {
 				echo "Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}";
 		}
 
-		if($existing_order) {
-			return $existing_order;
+		if(!$existing_order) {
+			try {
+				Capsule::table('blockonomics_bitcoin_orders')->insert(
+					[
+						'id_order' => $id_order,
+						'timestamp' => time(),
+						'status' => -1,
+						'value' => $amount
+					]
+				);
+			} catch (\Exception $e) {
+					echo "Unable to insert new order into blockonomics_bitcoin_orders: {$e->getMessage()}";
+			}
 		}		
 
-		if(!$order_uuid){
-			$order_uuid = $this->newOrderUuid();
-		}
-		
-		try {
-			Capsule::table('blockonomics_bitcoin_orders')->insert(
-				[
-					'id_order' => $id_order,
-					'timestamp' => time(),
-					'status' => -1,
-					'currency' => $currency,
-					'value' => $amount,
-					'order_uuid' => $order_uuid
-				]
-			);
-		} catch (\Exception $e) {
-				echo "Unable to insert new order into blockonomics_bitcoin_orders: {$e->getMessage()}";
-		}
-		return $order_uuid;
+		$crypted_id = $this->encrypt($id_order);
+
+		return $crypted_id;
 	}
 
 	/*
 	 * Get the order id using the order uuid
 	 */	
-	public function getOrderIdByUuid($order_uuid) {
+	public function getOrderIdByHash($order_hash) {
+		$order_id = $this->decrypt($order_hash);
 		try {
 			$first_order = Capsule::table('blockonomics_bitcoin_orders')
-				->where('order_uuid', $order_uuid)
+				->where('id_order', $order_id)
 				->orderBy('timestamp', 'desc')
 				->first();
 		} catch (\Exception $e) {
@@ -462,11 +494,23 @@ class Blockonomics {
 	/*
 	 * Get all orders linked to uuid
 	 */	
-	public function getAllOrdersByUuid($order_uuid) {
-		$all_orders_by_uuid = Capsule::table('blockonomics_bitcoin_orders')
-				->where('order_uuid', $order_uuid)
+	public function getAllOrdersByHash($order_hash) {
+		$order_id = $this->decrypt($order_hash);
+		$all_orders_by_id = Capsule::table('blockonomics_bitcoin_orders')
+				->where('id_order', $order_id)
 				->orderBy('timestamp', 'desc')->get();
-		return $all_orders_by_uuid;
+		return $all_orders_by_id;
+	}
+
+	/*
+	 * Get client currency by invoice id
+	 */	
+	public function getClientCurrency($order_hash) {
+		$order_id = $this->decrypt($order_hash);
+		$all_orders_by_id = Capsule::table('blockonomics_bitcoin_orders')
+				->where('id_order', $order_id)
+				->orderBy('timestamp', 'desc')->get();
+		return $all_orders_by_id;
 	}
 
 	/*
@@ -494,7 +538,7 @@ class Blockonomics {
 				$total_time = $this->getTimePeriod() * 60;
 				$clock = $order->timestamp + $total_time - $current_time;
 				if($clock < 0){
-					$order->bits = $this->getNewAmount($order->value, $order->currency, $order->blockonomics_currency);
+					$order->bits = $this->getNewAmount($order->value, $order->blockonomics_currency);
 					$order->timestamp = $current_time;
 				}
 				$this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->bits);
@@ -520,24 +564,25 @@ class Blockonomics {
 
 				$this->updateOrderAddress($order->order_uuid, $order->addr, $blockonomics_currency);
 				$order->blockonomics_currency = $blockonomics_currency;
-				$order->bits = $this->getNewAmount($order->value, $order->currency, $order->blockonomics_currency);
+				$order->bits = $this->getNewAmount($order->value, $order->blockonomics_currency);
 				$order->timestamp = time();
 				$this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->bits);
 				return $order;
 			}
 		}
 		// blank order already used, create a new blank order with same uuid
-		$order_uuid = $this->newOrder($orders[0]->value, $orders[0]->currency, $orders[0]->id_order, $orders[0]->order_uuid);
-		$order = $this->getOrderByUuid($order_uuid, $blockonomics_currency);
+		// fix this
+		$order_uuid = $this->newOrder($orders[0]->value, $orders[0]->id_order);
+		$order = $this->getOrderByHash($order_uuid, $blockonomics_currency);
 		return $order;
 	}
 
 	/*
 	 * Get existing or create new order
 	 */	
-	public function getOrderByUuid($order_uuid, $blockonomics_currency) {
+	public function getOrderByHash($order_uuid, $blockonomics_currency) {
 		// Fetch all orders by uuid
-		$all_orders_by_uuid = $this->getAllOrdersByUuid($order_uuid);
+		$all_orders_by_uuid = $this->getAllOrdersByHash($order_uuid);
 		if(!$all_orders_by_uuid){
 			return;
 		}
@@ -549,11 +594,13 @@ class Blockonomics {
 		// Check for existing address
 		$address_waiting = $this->isOrderWaiting($all_orders_by_uuid, $blockonomics_currency);
 		if($address_waiting){
+			$address_waiting->currency = getCurrency(getClientsDetails()['user_id'])['code'];
 			return $address_waiting;
 		}
 		// Check for new order
 		$new_order = $this->isOrderNew($all_orders_by_uuid, $blockonomics_currency);
 		if($new_order){
+			$new_order->currency = getCurrency(getClientsDetails()['user_id'])['code'];
 			return $new_order;
 		}
 		return;

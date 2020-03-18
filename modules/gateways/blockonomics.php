@@ -213,14 +213,15 @@ function blockonomics_link($params) {
 	}
 
 	$blockonomics = new Blockonomics();
-	$order_uuid = $blockonomics->newOrder($params['amount'], $params['currency'], $params['invoiceid']);
+
+	$order_sign = $blockonomics->newOrder($params['amount'], $params['invoiceid']);
 	
 	$system_url = $blockonomics->getSystemUrl();
 	$form_url = $system_url . 'payment.php';
 
 	//pass only the uuid to the payment page
 	$form = '<form action="' . $form_url . '" method="GET">';
-	$form .= '<input type="hidden" name="order" value="'. $order_uuid .'"/>';
+	$form .= '<input type="hidden" name="order" value="'. $order_sign .'"/>';
 	$form .= '<input type="submit" value="'. $params['langpaynow'] .'"/>';
 	$form .= '</form>';
 	
