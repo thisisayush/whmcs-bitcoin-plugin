@@ -59,10 +59,6 @@
       </div>
       <!-- Blockonomics Checkout Panel -->
       <div class="bnomics-order-panel" ng-show="order.status == -1" ng-cloak>
-        <h3 class="bnomics-blockonomics-currency">
-          <img src="img/[[currency.code]].png" alt="[[currency.name]] Logo">
-          [[currency.name]] Payment
-        </h3>
         <div class="bnomics-order-info">
           <div class="bnomics-bitcoin-pane">
             <div class="bnomics-btc-info">
