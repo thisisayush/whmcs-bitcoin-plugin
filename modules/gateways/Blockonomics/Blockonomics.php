@@ -568,7 +568,7 @@ class Blockonomics {
 					exit($new_addresss_response->message);
 				}
 
-				$this->updateOrderAddress($order->order_uuid, $order->addr, $blockonomics_currency);
+				$this->updateOrderAddress($order->id_order, $order->addr, $blockonomics_currency);
 				$order->blockonomics_currency = $blockonomics_currency;
 				$order->bits = $this->getNewAmount($order->value, $order->blockonomics_currency);
 				$order->timestamp = time();
