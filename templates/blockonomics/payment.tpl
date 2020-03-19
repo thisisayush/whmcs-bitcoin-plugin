@@ -36,17 +36,12 @@
       </div>
       <!-- Blockonomics Currency Selecter -->
       <div class="bnomics-select-container" ng-show="currency_selecter" ng-cloak>
-        <h2>Select Currency</h2>
-        <p>Choose one of the following currency options to complete your payment</p>
-        <hr>
-        <h3 class="bnomics-select-options" ng-repeat="active_currency in active_currencies" ng-click="select_blockonomics_currency(active_currency.code)">
-          <table width="100%">
-            <tr>
-                <td align="left"><img src="img/[[active_currency.code]].png" alt="[[active_currency.name]] Logo"> <b>[[active_currency.name]]</b></td>
-                <td align="right"><span class="bnomics-select-currency-code">[[active_currency.code]]</span> ></td>
-            </tr>
-          </table>
-        <hr></h3>
+        <h2>Pay With</h2>
+        <table width="100%">
+          <tr class="bnomics-select-options" ng-repeat="active_currency in active_currencies" ng-click="select_blockonomics_currency(active_currency.code)">
+              <td align="left"><img src="img/[[active_currency.code]].png" class="rotateimg[[active_currency.code]]" alt="[[active_currency.name]] Logo"> <h3>[[active_currency.name]]</h3> <span class="bnomics-select-currency-button"><button type="button" class="btn btn-lg bnomics-select-currency-code">[[active_currency.code]]</button></span></td>
+          </tr>
+        </table>
       </div>
       <!-- Payment Expired -->
       <div class="bnomics-order-expired-wrapper" ng-show="order.status == -3" ng-cloak>
