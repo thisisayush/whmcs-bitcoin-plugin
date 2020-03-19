@@ -77,7 +77,7 @@ class Blockonomics {
 	/*
 	 * Get user configured API key from database
 	 */
-	public function getApiKey($currency = 'btc') {
+	public function getApiKey() {
 		return Capsule::table('tblpaymentgateways')
 				->where('gateway', 'blockonomics')
 				->where('setting', 'ApiKey')
@@ -227,14 +227,13 @@ class Blockonomics {
 	 * Get new address from Blockonomics Api
 	 */
 	public function getNewAddress($currency='btc', $reset=false) {
-
 		if($currency=='btc'){
 			$subdomain = 'www';
 		}else{
 			$subdomain = $currency;
 		}
 
-		$api_key = $this->getApiKey($currency);
+		$api_key = $this->getApiKey();
 		$callback_secret = $this->getCallbackSecret();
 
 		if($reset) {
@@ -249,6 +248,8 @@ class Blockonomics {
 		curl_setopt($ch, CURLOPT_URL, "https://".$subdomain.".blockonomics.co/api/new_address" . $get_params);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20); 
+		curl_setopt($ch, CURLOPT_TIMEOUT, 20); //timeout in seconds
 
 		$header = "Authorization: Bearer " . $api_key;
 		$headers = array();
@@ -305,11 +306,12 @@ class Blockonomics {
 			if($margin > 0){
 				$price = $price * 100/(100+$margin);
 			}
+			return intval(1.0e8 * $fiat_amount/$price);
 		} catch (\Exception $e) {
 			echo "Error getting price from Blockonomics! {$e->getMessage()}";
 		}
 
-		return intval(1.0e8 * $fiat_amount/$price);
+		return;
 	}
 
 	/*
@@ -496,10 +498,14 @@ class Blockonomics {
 	 */	
 	public function getAllOrdersByHash($order_hash) {
 		$order_id = $this->decrypt($order_hash);
-		$all_orders_by_id = Capsule::table('blockonomics_bitcoin_orders')
+		try {
+			return Capsule::table('blockonomics_bitcoin_orders')
 				->where('id_order', $order_id)
 				->orderBy('timestamp', 'desc')->get();
-		return $all_orders_by_id;
+		} catch (\Exception $e) {
+				echo "Unable to get order id from blockonomics_bitcoin_orders: {$e->getMessage()}";
+		}
+		return;
 	}
 
 	/*
@@ -698,10 +704,10 @@ class Blockonomics {
 	/*
 	 * Update existing order's address. Set status, txid and bits_payed to default values. Use WHMCS invoice id as key
 	 */
-	public function updateOrderAddress($order_uuid, $address, $blockonomics_currency) {
+	public function updateOrderAddress($order_id, $address, $blockonomics_currency) {
 		try {
 			Capsule::table('blockonomics_bitcoin_orders')
-					->where('order_uuid', $order_uuid)
+					->where('id_order', $order_id)
 					->where('addr', '')
 					->where('blockonomics_currency', '')
 					->update([
