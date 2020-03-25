@@ -280,9 +280,9 @@ class Blockonomics {
 	}
 
 	/*
-	 * Convert fiat amount to BTC
+	 * Convert fiat amount to Blockonomics currency
 	 */
-	public function getNewAmount($fiat_amount , $blockonomics_currency = 'btc') {
+	public function convertFiatToBlockonomicsCurrency($fiat_amount , $blockonomics_currency = 'btc') {
 		$currency = getCurrency(getClientsDetails()['user_id'])['code'];
 		try {
 			if($blockonomics_currency=='btc'){
@@ -537,7 +537,7 @@ class Blockonomics {
 				$total_time = $this->getTimePeriod() * 60;
 				$clock = $order->timestamp + $total_time - $current_time;
 				if($clock < 0){
-					$order->bits = $this->getNewAmount($order->value, $order->blockonomics_currency);
+					$order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->blockonomics_currency);
 					$order->timestamp = $current_time;
 				}
 				$this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->bits);
@@ -563,7 +563,7 @@ class Blockonomics {
 
 				$this->updateOrderAddress($order->id_order, $order->addr, $blockonomics_currency);
 				$order->blockonomics_currency = $blockonomics_currency;
-				$order->bits = $this->getNewAmount($order->value, $order->blockonomics_currency);
+				$order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->blockonomics_currency);
 				$order->timestamp = time();
 				$this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->bits);
 				return $order;
