@@ -513,7 +513,7 @@ class Blockonomics {
 	/*
 	 * Check for pending orders and return if exists
 	 */	
-	public function isOrderPending($orders) {
+	public function getPendingOrder($orders) {
 		foreach ($orders as $order) {
 			//check if status 0 or 1
 			if($order->status == 0 || $order->status == 1){
@@ -525,7 +525,7 @@ class Blockonomics {
 	/*
 	 * Check for unused address for the currency linked to the order
 	 */		
-	public function isOrderWaiting($orders, $blockonomics_currency) {
+	public function getAndUpdateWaitingOrder($orders, $blockonomics_currency) {
 		foreach ($orders as $order) {
 			//check for currency address already waiting
 			if($order->blockonomics_currency == $blockonomics_currency && $order->status == -1){
@@ -546,7 +546,7 @@ class Blockonomics {
 	/*
 	 * Check for unused address or create new
 	 */	
-	public function isOrderNew($orders, $blockonomics_currency) {
+	public function processNewOrder($orders, $blockonomics_currency) {
 		foreach ($orders as $order) {
 			//check for new blank order in db
 			if($order->addr == ""){
@@ -581,19 +581,19 @@ class Blockonomics {
 		if(!$all_orders_by_hash){
 			exit;
 		}
-		// Check for pending payments
-		$pending_payment = $this->isOrderPending($all_orders_by_hash);
+		// Check for pending payments and return the order
+		$pending_payment = $this->getPendingOrder($all_orders_by_hash);
 		if($pending_payment){
 			return $pending_payment;
 		}
 		// Check for existing address
-		$address_waiting = $this->isOrderWaiting($all_orders_by_hash, $blockonomics_currency);
+		$address_waiting = $this->getAndUpdateWaitingOrder($all_orders_by_hash, $blockonomics_currency);
 		if($address_waiting){
 			$address_waiting->currency = getCurrency(getClientsDetails()['user_id'])['code'];
 			return $address_waiting;
 		}
-		// Check for new order available order or create one
-		$new_order = $this->isOrderNew($all_orders_by_hash, $blockonomics_currency);
+		// Process a new order for the hash and blockonomics currency
+		$new_order = $this->processNewOrder($all_orders_by_hash, $blockonomics_currency);
 		if($new_order){
 			$new_order->currency = getCurrency(getClientsDetails()['user_id'])['code'];
 			return $new_order;
