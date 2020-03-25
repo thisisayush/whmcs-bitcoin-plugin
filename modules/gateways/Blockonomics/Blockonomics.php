@@ -389,7 +389,7 @@ class Blockonomics {
      */
     public function decrypt(string $input): string
     {
-    	$encryption_algorithm = 'AES-256-CBC';
+    	$encryption_algorithm = 'AES-128-CBC';
     	$hashing_algorith = 'sha256';
     	$secret = $this->getCallbackSecret();
         // prevent decrypt failing when $input is not hex or has odd length
@@ -399,15 +399,9 @@ class Blockonomics {
 
         // we'll need the binary cipher
         $binaryInput = hex2bin($input);
-        $iv = substr($binaryInput, 0, 16);
-        $hash = substr($binaryInput, 16, 32);
-        $cipherText = substr($binaryInput, 48);
+        $iv = substr($secret, 0, 16);
+        $cipherText = $binaryInput;
         $key = hash($hashing_algorith, $secret, true);
-
-        // if the HMAC hash doesn't match the hash string, something has gone wrong
-        if (hash_hmac($hashing_algorith, $cipherText, $key, true) !== $hash) {
-            return '';
-        }
 
         return openssl_decrypt(
             $cipherText,
@@ -423,11 +417,11 @@ class Blockonomics {
      */
     public function encrypt(string $input): string
     {
-		$encryption_algorithm = 'AES-256-CBC';
+		$encryption_algorithm = 'AES-128-CBC';
 		$hashing_algorith = 'sha256';
     	$secret = $this->getCallbackSecret();
         $key = hash($hashing_algorith, $secret, true);
-        $iv = random_bytes(16);
+        $iv = substr($secret, 0, 16);
 
         $cipherText = openssl_encrypt(
             $input,
@@ -436,9 +430,8 @@ class Blockonomics {
             OPENSSL_RAW_DATA,
             $iv
         );
-        $hash = hash_hmac($hashing_algorith, $cipherText, $key, true);
 
-        return bin2hex($iv . $hash . $cipherText);
+        return bin2hex($cipherText);
     }
 
 	/*
