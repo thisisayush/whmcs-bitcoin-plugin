@@ -306,12 +306,11 @@ class Blockonomics {
 			if($margin > 0){
 				$price = $price * 100/(100+$margin);
 			}
-			return intval(1.0e8 * $fiat_amount/$price);
 		} catch (\Exception $e) {
 			echo "Error getting price from Blockonomics! {$e->getMessage()}";
 		}
 
-		return;
+		return intval(1.0e8 * $fiat_amount/$price);
 	}
 
 	/*
