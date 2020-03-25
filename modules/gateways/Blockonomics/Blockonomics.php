@@ -479,7 +479,7 @@ class Blockonomics {
 				->orderBy('timestamp', 'desc')
 				->first();
 		} catch (\Exception $e) {
-				echo "Unable to get order id from blockonomics_bitcoin_orders: {$e->getMessage()}";
+				echo "Unable to get order from blockonomics_bitcoin_orders: {$e->getMessage()}";
 		}
 
 		return $first_order->id_order;
@@ -495,7 +495,7 @@ class Blockonomics {
 				->where('id_order', $order_id)
 				->orderBy('timestamp', 'desc')->get();
 		} catch (\Exception $e) {
-				echo "Unable to get order id from blockonomics_bitcoin_orders: {$e->getMessage()}";
+				echo "Unable to get orders from blockonomics_bitcoin_orders: {$e->getMessage()}";
 		}
 		return;
 	}
