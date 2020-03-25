@@ -571,32 +571,32 @@ class Blockonomics {
 		// blank order already used, create a new blank order with same uuid
 		// fix this
 		$order_uuid = $this->newOrder($orders[0]->value, $orders[0]->id_order);
-		$order = $this->getOrderByHash($order_uuid, $blockonomics_currency);
+		$order = $this->processOrderHash($order_uuid, $blockonomics_currency);
 		return $order;
 	}
 
 	/*
-	 * Get existing or create new order
+	 * Find an existing order or create a new order
 	 */	
-	public function getOrderByHash($order_uuid, $blockonomics_currency) {
+	public function processOrderHash($order_hash, $blockonomics_currency) {
 		// Fetch all orders by uuid
-		$all_orders_by_uuid = $this->getAllOrdersByHash($order_uuid);
-		if(!$all_orders_by_uuid){
+		$all_orders_by_hash = $this->getAllOrdersByHash($order_hash);
+		if(!$all_orders_by_hash){
 			return;
 		}
 		// Check for pending payments
-		$pending_payment = $this->isOrderPending($all_orders_by_uuid);
+		$pending_payment = $this->isOrderPending($all_orders_by_hash);
 		if($pending_payment){
 			return $pending_payment;
 		}
 		// Check for existing address
-		$address_waiting = $this->isOrderWaiting($all_orders_by_uuid, $blockonomics_currency);
+		$address_waiting = $this->isOrderWaiting($all_orders_by_hash, $blockonomics_currency);
 		if($address_waiting){
 			$address_waiting->currency = getCurrency(getClientsDetails()['user_id'])['code'];
 			return $address_waiting;
 		}
-		// Check for new order
-		$new_order = $this->isOrderNew($all_orders_by_uuid, $blockonomics_currency);
+		// Check for new order available order or create one
+		$new_order = $this->isOrderNew($all_orders_by_hash, $blockonomics_currency);
 		if($new_order){
 			$new_order->currency = getCurrency(getClientsDetails()['user_id'])['code'];
 			return $new_order;

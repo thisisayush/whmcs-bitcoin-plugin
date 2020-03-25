@@ -34,7 +34,7 @@ $ca->assign('system_url', $system_url);
 
 if($get_order){
 	$blockonomics_currency = htmlspecialchars(isset($_REQUEST['blockonomics_currency']) ? $_REQUEST['blockonomics_currency'] : "");
-	$existing_order = $blockonomics->getOrderByHash($get_order, $blockonomics_currency);
+	$existing_order = $blockonomics->processOrderHash($get_order, $blockonomics_currency);
 	// No order exists, exit
 	if(is_null($existing_order->id_order)) {
 		exit;
