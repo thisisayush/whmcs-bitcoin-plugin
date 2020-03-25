@@ -497,7 +497,6 @@ class Blockonomics {
 		} catch (\Exception $e) {
 				echo "Unable to get orders from blockonomics_bitcoin_orders: {$e->getMessage()}";
 		}
-		return;
 	}
 
 	/*
@@ -521,7 +520,6 @@ class Blockonomics {
 				return $order;
 			}
 		}
-		return;
 	}
 
 	/*
@@ -543,7 +541,6 @@ class Blockonomics {
 				return $order;
 			}
 		}
-		return;
 	}
 
 	/*
@@ -579,10 +576,10 @@ class Blockonomics {
 	 * Find an existing order or create a new order
 	 */	
 	public function processOrderHash($order_hash, $blockonomics_currency) {
-		// Fetch all orders by uuid
+		// Fetch all orders by hash
 		$all_orders_by_hash = $this->getAllOrdersByHash($order_hash);
 		if(!$all_orders_by_hash){
-			return;
+			exit;
 		}
 		// Check for pending payments
 		$pending_payment = $this->isOrderPending($all_orders_by_hash);
@@ -601,7 +598,6 @@ class Blockonomics {
 			$new_order->currency = getCurrency(getClientsDetails()['user_id'])['code'];
 			return $new_order;
 		}
-		return;
 	}
 
 	/*
