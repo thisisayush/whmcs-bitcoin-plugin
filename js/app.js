@@ -152,9 +152,9 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
     
     $scope.spinner = true;
     if(Object.keys($scope.active_currencies).length == 1){
-        // Auto select currency if 1 activated currency
-        $scope.currency = $scope.active_currencies[0];
-        $scope.currency.code = Object.keys($scope.active_currencies)[0];
+        // Auto select btc if 1 activated currency
+        $scope.currency = $scope.active_currencies['btc'];
+        $scope.currency.code = 'btc';
         check_blockonomics_uuid();
     }else if(Object.keys($scope.active_currencies).length >= 1){
         //Show user currency selector if > 1 activated currency
