@@ -48,18 +48,12 @@ $bits = $order['bits'];
 $confirmations = $blockonomics->getConfirmations();
 
 $blockonomics_currency_code = $order['blockonomics_currency'];
-$active_currencies = $blockonomics->getActiveCurrencies()['currencies'];
-
-foreach ($active_currencies as $currency) {
-	if ($currency->code == $blockonomics_currency_code) {
-		$blockonomics_currency = $currency;
-	}
-}
+$blockonomics_currency = $blockonomics->getSupportedCurrencies()[$blockonomics_currency_code];
 
 if($status < $confirmations) {
-	$invoiceNote = "<b>Waiting for Confirmation on <img src=\"img/".$blockonomics_currency->code.".png\" style=\"max-width: 20px;\"> ".$blockonomics_currency->name." network</b>\r\r" .
+	$invoiceNote = "<b>Waiting for Confirmation on <img src=\"img/".$blockonomics_currency_code.".png\" style=\"max-width: 20px;\"> ".$blockonomics_currency->name." network</b>\r\r" .
 		$blockonomics_currency->name." transaction id:\r" .
-		"<a target=\"_blank\" href=\"https://".$blockonomics_currency->code.".blockonomics.co/api/tx?txid=$txid&addr=$addr\">$txid</a>";
+		"<a target=\"_blank\" href=\"https://".$blockonomics_currency_code.".blockonomics.co/api/tx?txid=$txid&addr=$addr\">$txid</a>";
 
 	$blockonomics->updateOrderInDb($addr, $txid, $status, $value);
 	$blockonomics->updateInvoiceNote($invoiceId, $invoiceNote);
@@ -143,7 +137,7 @@ $paymentFee = 0;
  */
 addInvoicePayment(
 	$invoiceId,
-	$blockonomics_currency->code ." - ". $txid,
+	$blockonomics_currency_code ." - ". $txid,
 	$paymentAmount,
 	$paymentFee,
 	$gatewayModuleName
