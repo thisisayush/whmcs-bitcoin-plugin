@@ -150,13 +150,13 @@ HTML;
 		'Type'         => 'text'
 	);
 
-	$blockonomics_currencies = json_decode($blockonomics->getSupportedCurrencies());
-	foreach ($blockonomics_currencies->currencies as $currency) {
-		if($currency->code != 'btc'){
-			$settings_array[ $currency->code.'Enabled' ] = array(
-				'FriendlyName' => strtoupper($currency->code).' Enabled',
+	$blockonomics_currencies = $blockonomics->getSupportedCurrencies();
+	foreach ($blockonomics_currencies as $code => $currency) {
+		if($code != 'btc'){
+			$settings_array[ $code.'Enabled' ] = array(
+				'FriendlyName' => strtoupper($code).' Enabled',
 				'Type' => 'yesno',
-				'Description' => 'Select if you want to accept '.$currency->name
+				'Description' => 'Select if you want to accept '.$currency['name']
 			);
 		}
 	}

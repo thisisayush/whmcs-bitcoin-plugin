@@ -38,8 +38,8 @@
       <div class="bnomics-select-container" ng-show="currency_selecter" ng-cloak>
         <h2>Pay With</h2>
         <table width="100%">
-          <tr class="bnomics-select-options" ng-repeat="active_currency in active_currencies" ng-click="select_blockonomics_currency(active_currency.code)">
-              <td align="left"><img src="img/[[active_currency.code]].png" class="rotateimg[[active_currency.code]]" alt="[[active_currency.name]] Logo"> <h3>[[active_currency.name]]</h3> <span class="bnomics-select-currency-button"><button type="button" class="btn btn-lg bnomics-select-currency-code">[[active_currency.code]]</button></span></td>
+          <tr class="bnomics-select-options" ng-repeat="(active_code, active_currency) in active_currencies" ng-click="select_blockonomics_currency(active_code)">
+              <td align="left"><img src="img/[[active_code]].png" class="rotateimg[[active_code]]" alt="[[active_currency.name]] Logo"> <h3>[[active_currency.name]]</h3> <span class="bnomics-select-currency-button"><button type="button" class="btn btn-lg bnomics-select-currency-code">[[active_code]]</button></span></td>
           </tr>
         </table>
       </div>

@@ -30,7 +30,7 @@ class Blockonomics {
 					->value('value');
 
 		} catch(\Exception $e) {
-			echo "Error, could not get Blockonomics secret from database. {$e->getMessage()}";
+			exit("Error, could not get Blockonomics secret from database. {$e->getMessage()}");
 		}
 
 		// Check if old format of callback is still in use
@@ -42,7 +42,7 @@ class Blockonomics {
 						->value('value');
 
 			} catch(\Exception $e) {
-				echo "Error, could not get Blockonomics secret from database. {$e->getMessage()}";
+				exit("Error, could not get Blockonomics secret from database. {$e->getMessage()}");
 			}
 			// Get only the secret from the whole Callback URL
 			$secret = substr($secret, -40);
@@ -68,7 +68,7 @@ class Blockonomics {
 			]);
 
 		} catch(\Exception $e) {
-			echo "Error, could not get Blockonomics secret from database. {$e->getMessage()}";
+			exit("Error, could not get Blockonomics secret from database. {$e->getMessage()}");
 		}
 
 		return $callback_secret;
@@ -89,30 +89,26 @@ class Blockonomics {
 	 */
 	public function getSupportedCurrencies() {
 		$all_currencies = array(
-  			'currencies' => array(
-  				array(
-			        'code' => 'btc',
+  			'btc' => array(
 			        'name' => 'Bitcoin',
 			        'uri' => 'bitcoin'
-  				),
-    			array(
-			        'code' => 'bch',
+  			),
+  			'bch' => array(
 			        'name' => 'Bitcoin Cash',
 			        'uri' => 'bitcoincash'
-  				)
   			)
   		);
-		return json_encode($all_currencies);
+		return $all_currencies;
 	}
 
 	/*
 	 * Get list of active crypto currencies
 	 */
 	public function getActiveCurrencies() {
-		$active_currencies = array('currencies' => array());
-		$blockonomics_currencies = json_decode($this->getSupportedCurrencies());
-		foreach ($blockonomics_currencies->currencies as $currency) {
-			if($currency->code == 'btc'){
+		$active_currencies = array();
+		$blockonomics_currencies = $this->getSupportedCurrencies();
+		foreach ($blockonomics_currencies as $code => $currency) {
+			if($code == 'btc'){
 				$api = Capsule::table('tblpaymentgateways')
 					->where('gateway', 'blockonomics')
 					->where('setting', 'ApiKey')
@@ -120,11 +116,11 @@ class Blockonomics {
 			}else{
 				$api = Capsule::table('tblpaymentgateways')
 					->where('gateway', 'blockonomics')
-					->where('setting', $currency->code.'Enabled')
+					->where('setting', $code.'Enabled')
 					->value('value');
 			}
 			if($api){
-				array_push($active_currencies['currencies'], $currency);
+				$active_currencies[$code] = $currency;
 			}
 		}
 		return $active_currencies;
@@ -258,7 +254,7 @@ class Blockonomics {
 
 		$contents = curl_exec($ch);
 		if (curl_errno($ch)) {
-				echo 'Error:' . curl_error($ch);
+				exit('Error:' . curl_error($ch));
 		}
 
 		$responseObj = json_decode($contents);
@@ -298,7 +294,7 @@ class Blockonomics {
 
 			$contents = curl_exec($ch);
 			if (curl_errno($ch)) {
-					echo 'Error:' . curl_error($ch);
+					exit('Error:' . curl_error($ch));
 			}
 			curl_close ($ch);
 			$price = json_decode($contents)->price;
@@ -307,7 +303,7 @@ class Blockonomics {
 				$price = $price * 100/(100+$margin);
 			}
 		} catch (\Exception $e) {
-			echo "Error getting price from Blockonomics! {$e->getMessage()}";
+			exit("Error getting price from Blockonomics! {$e->getMessage()}");
 		}
 
 		return intval(1.0e8 * $fiat_amount/$price);
@@ -335,7 +331,7 @@ class Blockonomics {
 						}
 				);
 			} catch (\Exception $e) {
-					echo "Unable to create blockonomics_bitcoin_orders: {$e->getMessage()}";
+					exit("Unable to create blockonomics_bitcoin_orders: {$e->getMessage()}");
 			}
 		}else{
 			if(!Capsule::schema()->hasColumn('blockonomics_bitcoin_orders', 'blockonomics_currency')){
@@ -357,7 +353,7 @@ class Blockonomics {
 				->where('id_order', $id_order)
 				->value('id');
 		} catch (\Exception $e) {
-				echo "Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}";
+				exit("Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 
 		if($existing_order) {
@@ -377,7 +373,7 @@ class Blockonomics {
 				]
 			);
 		} catch (\Exception $e) {
-				echo "Unable to insert new order into blockonomics_bitcoin_orders: {$e->getMessage()}";
+				exit("Unable to insert new order into blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 
 		return true;
@@ -445,7 +441,7 @@ class Blockonomics {
 				->where('value', $amount)
 				->value('id_order');
 		} catch (\Exception $e) {
-				echo "Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}";
+				exit("Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 
 		if(!$existing_order) {
@@ -459,7 +455,7 @@ class Blockonomics {
 					]
 				);
 			} catch (\Exception $e) {
-					echo "Unable to insert new order into blockonomics_bitcoin_orders: {$e->getMessage()}";
+					exit("Unable to insert new order into blockonomics_bitcoin_orders: {$e->getMessage()}");
 			}
 		}		
 
@@ -479,7 +475,7 @@ class Blockonomics {
 				->orderBy('timestamp', 'desc')
 				->first();
 		} catch (\Exception $e) {
-				echo "Unable to get order from blockonomics_bitcoin_orders: {$e->getMessage()}";
+				exit("Unable to get order from blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 
 		return $first_order->id_order;
@@ -495,7 +491,7 @@ class Blockonomics {
 				->where('id_order', $order_id)
 				->orderBy('timestamp', 'desc')->get();
 		} catch (\Exception $e) {
-				echo "Unable to get orders from blockonomics_bitcoin_orders: {$e->getMessage()}";
+				exit("Unable to get orders from blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 	}
 
@@ -598,7 +594,7 @@ class Blockonomics {
 				->where('addr', $bitcoinAddress)
 				->first();
 		} catch (\Exception $e) {
-				echo "Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}";
+				exit("Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 
 		$row_in_array = array(
@@ -625,7 +621,7 @@ class Blockonomics {
 				->orderBy('timestamp', 'desc')
 				->first();
 		} catch (\Exception $e) {
-				echo "Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}";
+				exit("Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 
 		$row_in_array = array(
@@ -655,7 +651,7 @@ class Blockonomics {
 					]
 				);
 			} catch (\Exception $e) {
-				echo "Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}";
+				exit("Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 	}
 
@@ -673,7 +669,7 @@ class Blockonomics {
 					]
 				);
 		} catch (\Exception $e) {
-			echo "Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}";
+			exit("Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 	}
 
@@ -692,7 +688,7 @@ class Blockonomics {
 					]
 				);
 		} catch (\Exception $e) {
-			echo "Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}";
+			exit("Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 	}
 

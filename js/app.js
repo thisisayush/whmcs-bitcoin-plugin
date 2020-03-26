@@ -44,7 +44,7 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
     
     var active_currencies_div = document.getElementById("active_currencies");
     var active_currencies = JSON.parse(active_currencies_div.dataset.active_currencies);
-    $scope.active_currencies = active_currencies.currencies;
+    $scope.active_currencies = active_currencies;
 
     $scope.copyshow = false;
     $scope.display_problems = true;
@@ -87,12 +87,9 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
     //Select Blockonomics currency
     $scope.select_blockonomics_currency = function(blockonomics_currency) {
         $scope.currency_selecter  = false;
-        for (var i = $scope.active_currencies.length - 1; i >= 0; i--) {
-            if($scope.active_currencies[i].code == blockonomics_currency){
-                $scope.currency = $scope.active_currencies[i];
-                check_blockonomics_uuid();
-            }
-        }
+        $scope.currency = $scope.active_currencies[blockonomics_currency];
+        $scope.currency.code = blockonomics_currency;
+        check_blockonomics_uuid();
     }
 
     //Fetch the blockonomics_currency symbol from name
@@ -157,6 +154,7 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
     if(Object.keys($scope.active_currencies).length == 1){
         // Auto select currency if 1 activated currency
         $scope.currency = $scope.active_currencies[0];
+        $scope.currency.code = Object.keys($scope.active_currencies)[0];
         check_blockonomics_uuid();
     }else if(Object.keys($scope.active_currencies).length >= 1){
         //Show user currency selector if > 1 activated currency
