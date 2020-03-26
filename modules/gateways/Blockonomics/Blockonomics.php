@@ -244,8 +244,6 @@ class Blockonomics {
 		curl_setopt($ch, CURLOPT_URL, "https://".$subdomain.".blockonomics.co/api/new_address" . $get_params);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 8); 
-		curl_setopt($ch, CURLOPT_TIMEOUT, 8); //timeout in seconds
 
 		$header = "Authorization: Bearer " . $api_key;
 		$headers = array();
