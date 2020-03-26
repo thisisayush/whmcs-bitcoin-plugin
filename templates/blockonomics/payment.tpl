@@ -24,9 +24,14 @@
         <div class="bnomics-spinner"></div>
       </div>
       <!-- Address Error -->
-      <div id="address-error" ng-show="address_error" ng-cloak>
-        <h2>Could not generate new bitcoin address.</h2>
+      <div id="address-error-btc" ng-show="address_error_btc" ng-cloak>
+        <h2>Could not generate new Bitcoin address.</h2>
         <p>Note to webmaster: Please login to admin and go to Setup > Payments > Payment Gateways > Manage Existing Gateways and use the Test Setup button to diagnose the error.</p>
+      </div>
+      <!-- BCH Address Error -->
+      <div id="address-error-bch" ng-show="address_error_bch" ng-cloak>
+        <h2>Could not generate new Bitcoin Cash address.</h2>
+        <p>Note to webmaster: Please follow the instructions <a href="https://help.blockonomics.co/">here</a> to configure BCH payments.</p>
       </div>
       <!-- Pending payment -->
       <div id="pending-error" ng-show="pending_error" ng-cloak>

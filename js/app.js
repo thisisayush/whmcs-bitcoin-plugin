@@ -143,8 +143,10 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
                 }else if(data.addr != undefined){
                     proccess_order_data(data);
                     $scope.checkout_panel  = true;
-                }else{
-                    $scope.address_error = true;
+                }else if($scope.currency.code == 'btc'){
+                    $scope.address_error_btc = true;
+                }else if($scope.currency.code == 'bch'){
+                    $scope.address_error_bch = true;
                 }
             });
         }
