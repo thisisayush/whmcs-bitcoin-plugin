@@ -337,6 +337,11 @@ class Blockonomics {
 					$table->string('blockonomics_currency');
 				 });
 			}
+			if(!Capsule::schema()->hasColumn('blockonomics_bitcoin_orders', 'flyp_id')){
+			    Capsule::schema()->table('blockonomics_bitcoin_orders', function($table){
+			        $table->dropColumn('flyp_id');
+			    });
+			}
 		}
 	}
 
