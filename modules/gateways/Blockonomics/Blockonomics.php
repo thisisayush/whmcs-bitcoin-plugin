@@ -500,17 +500,6 @@ class Blockonomics {
 	}
 
 	/*
-	 * Get client currency by invoice id
-	 */	
-	public function getClientCurrency($order_hash) {
-		$order_id = $this->decrypt($order_hash);
-		$all_orders_by_id = Capsule::table('blockonomics_bitcoin_orders')
-				->where('id_order', $order_id)
-				->orderBy('timestamp', 'desc')->get();
-		return $all_orders_by_id;
-	}
-
-	/*
 	 * Check for pending orders and return if exists
 	 */	
 	public function getPendingOrder($orders) {
