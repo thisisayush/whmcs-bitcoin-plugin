@@ -36,8 +36,7 @@
       <!-- Pending payment -->
       <div id="pending-error" ng-show="pending_error" ng-cloak>
         <h2>Payment is pending</h2>
-        <i>Additional payments to invoice are only allowed after current pending transaction is confirmed. Monitor the transaction here: 
-        <a href="https://www.blockonomics.co/api/tx?txid=[[txid]]" target="_blank">[[txid]]</a></i>
+        <i>Additional payments to invoice are only allowed after current pending transaction is confirmed.</i>
       </div>
       <!-- Blockonomics Currency Selecter -->
       <div class="bnomics-select-container" ng-show="currency_selecter" ng-cloak>
