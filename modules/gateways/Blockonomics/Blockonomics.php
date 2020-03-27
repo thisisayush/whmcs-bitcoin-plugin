@@ -335,6 +335,17 @@ class Blockonomics {
 			if(!Capsule::schema()->hasColumn('blockonomics_bitcoin_orders', 'blockonomics_currency')){
 				 Capsule::schema()->table('blockonomics_bitcoin_orders', function($table){
 					$table->string('blockonomics_currency');
+					// Add btc as the blockonomics_currency for existing orders
+					try {
+						Capsule::table('blockonomics_bitcoin_orders')
+								->where('blockonomics_currency', '')
+								->update([
+									'blockonomics_currency' => 'btc'
+								]
+							);
+					} catch (\Exception $e) {
+						exit("Unable to set default value for existing blockonomics_bitcoin_orders: {$e->getMessage()}");
+					}
 				 });
 			}
 			if(Capsule::schema()->hasColumn('blockonomics_bitcoin_orders', 'flyp_id')){
