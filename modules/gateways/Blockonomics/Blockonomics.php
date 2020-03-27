@@ -404,9 +404,9 @@ class Blockonomics {
     }
 
 	/*
-	 * Add a new order to the db
+	 * Add a new skeleton order in the db
 	 */
-	public function newOrder($amount, $id_order) {
+	public function createSkeletonOrder($amount, $id_order) {
 
 		try {
 			$existing_order = Capsule::table('blockonomics_bitcoin_orders')
@@ -541,7 +541,7 @@ class Blockonomics {
 			}
 		}
 		// blank order already used, create a new blank order with same uuid
-		$order_hash = $this->newOrder($orders[0]->value, $orders[0]->id_order);
+		$order_hash = $this->createSkeletonOrder($orders[0]->value, $orders[0]->id_order);
 		$order = $this->getSkeletonOrderByHash($order_hash);
 		$new_addresss_response = $this->getNewAddress($blockonomics_currency);
 		if ($new_addresss_response->response_code == 200){

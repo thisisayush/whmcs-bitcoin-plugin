@@ -214,7 +214,7 @@ function blockonomics_link($params) {
 
 	$blockonomics = new Blockonomics();
 
-	$order_sign = $blockonomics->newOrder($params['amount'], $params['invoiceid']);
+	$order_sign = $blockonomics->createSkeletonOrder($params['amount'], $params['invoiceid']);
 	
 	$system_url = $blockonomics->getSystemUrl();
 	$form_url = $system_url . 'payment.php';
