@@ -411,7 +411,6 @@ class Blockonomics {
 		try {
 			$existing_order = Capsule::table('blockonomics_bitcoin_orders')
 				->where('id_order', $id_order)
-				->where('addr', '')
 				->where('value', $amount)
 				->value('id_order');
 		} catch (\Exception $e) {
