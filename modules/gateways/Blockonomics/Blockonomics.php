@@ -470,6 +470,22 @@ class Blockonomics {
 	}
 
 	/*
+	 * Get a blank order linked to order_hash
+	 */	
+	public function getSkeletonOrderByHash($order_hash) {
+		$order_id = $this->decrypt($order_hash);
+		try {
+			return Capsule::table('blockonomics_bitcoin_orders')
+				->where('id_order', $order_id)
+				->where('addr', '')
+				->orderBy('timestamp', 'desc')
+				->first();
+		} catch (\Exception $e) {
+				exit("Unable to get order from blockonomics_bitcoin_orders: {$e->getMessage()}");
+		}
+	}
+
+	/*
 	 * Check for pending orders and return if exists
 	 */	
 	public function getPendingOrder($orders) {
@@ -525,9 +541,20 @@ class Blockonomics {
 			}
 		}
 		// blank order already used, create a new blank order with same uuid
-		// fix this
-		$order_uuid = $this->newOrder($orders[0]->value, $orders[0]->id_order);
-		$order = $this->processOrderHash($order_uuid, $blockonomics_currency);
+		$order_hash = $this->newOrder($orders[0]->value, $orders[0]->id_order);
+		$order = $this->getSkeletonOrderByHash($order_hash);
+		$new_addresss_response = $this->getNewAddress($blockonomics_currency);
+		if ($new_addresss_response->response_code == 200){
+			$order->addr = $new_addresss_response->address;
+		}else{
+			exit($new_addresss_response->message);
+		}
+
+		$this->updateOrderAddress($order->id_order, $order->addr, $blockonomics_currency);
+		$order->blockonomics_currency = $blockonomics_currency;
+		$order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->blockonomics_currency);
+		$order->timestamp = time();
+		$this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->bits);
 		return $order;
 	}
 
