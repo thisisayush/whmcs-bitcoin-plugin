@@ -109,17 +109,14 @@ class Blockonomics {
 		$blockonomics_currencies = $this->getSupportedCurrencies();
 		foreach ($blockonomics_currencies as $code => $currency) {
 			if($code == 'btc'){
-				$api = Capsule::table('tblpaymentgateways')
-					->where('gateway', 'blockonomics')
-					->where('setting', 'ApiKey')
-					->value('value');
+				$enabled = true;
 			}else{
-				$api = Capsule::table('tblpaymentgateways')
+				$enabled = Capsule::table('tblpaymentgateways')
 					->where('gateway', 'blockonomics')
 					->where('setting', $code.'Enabled')
 					->value('value');
 			}
-			if($api){
+			if($enabled){
 				$active_currencies[$code] = $currency;
 			}
 		}
