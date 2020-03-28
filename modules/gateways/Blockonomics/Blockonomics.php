@@ -148,48 +148,12 @@ class Blockonomics {
 	}
 
 	/*
-	 * Update order status to 'Waiting for Bitcoin Confirmation'
-	 */
-	public function updateOrderStatus($orderId, $status) {
-		Capsule::table('tblorders')
-			->where('id', $orderId)
-			->update(['status' => $status]);
-	}
-
-	/*
-	 * Update invoice status
-	 */
-	public function updateInvoiceStatus($invoiceId, $status) {
-		Capsule::table('tblinvoices')
-			->where('id', $invoiceId)
-			->update(['status' => $status]);
-	}
-
-	/*
-	 * Update order note
-	 */
-	public function updateOrderNote($orderId, $note) {
-		Capsule::table('tblorders')
-			->where('id', $orderId)
-			->update(['notes' => $note]);
-	}
-
-	/*
 	 * Update invoice note
 	 */
 	public function updateInvoiceNote($invoiceid, $note) {
 		Capsule::table('tblinvoices')
 			->where('id', $invoiceid)
 			->update(['notes' => $note]);
-	}
-
-	/*
-	 * Get order id by invoice id
-	 */
-	public function getOrderIdByInvoiceId($invoiceId) {
-		return Capsule::table('tblorders')
-			->where('invoiceid', $invoiceId)
-			->value('id');
 	}
 
 	/*
@@ -574,32 +538,6 @@ class Blockonomics {
 	}
 
 	/*
-	 * Try to get order row from db by order id
-	 */
-	public function getOrderById($orderId) {
-		try {
-			$existing_order = Capsule::table('blockonomics_bitcoin_orders')
-				->where('id_order', $orderId)
-				->orderBy('timestamp', 'desc')
-				->first();
-		} catch (\Exception $e) {
-				exit("Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}");
-		}
-
-		$row_in_array = array(
-			"id" => $existing_order->id,
-			"order_id" => $existing_order->id_order,
-			"address"=> $existing_order->addr,
-			"bits" => $existing_order->bits,
-			"status" => $existing_order->status,
-			"txid" => $existing_order->txid,
-			"timestamp" => $existing_order->timestamp
-		);
-
-		return $row_in_array;
-	}
-
-	/*
 	 * Get the order id using the order hash
 	 */	
 	public function getOrderIdByHash($order_hash) {
@@ -644,53 +582,12 @@ class Blockonomics {
 	}
 
 	/*
-	 * Update existing order's address. Set status, txid and bits_payed to default values. Use WHMCS invoice id as key
-	 */
-	public function updateOrderAddress($order_id, $address, $blockonomics_currency) {
-		try {
-			Capsule::table('blockonomics_bitcoin_orders')
-					->where('id_order', $order_id)
-					->where('addr', '')
-					->where('blockonomics_currency', '')
-					->update([
-						'addr' => $address,
-						'blockonomics_currency' => $blockonomics_currency
-					]
-				);
-		} catch (\Exception $e) {
-			exit("Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}");
-		}
-	}
-
-	/*
 	 * Get URL of the WHMCS installation
 	 */
 	public function getSystemUrl() {
 		return Capsule::table('tblconfiguration')
 				->where('setting', 'SystemURL')
 				->value('value');
-	}
-
-	/*
-	 * Check for errors in request response
-	 */
-	public function checkForErrors($responseObj) {
-		if(!isset($responseObj->response_code)) {
-				$error = true;
-		} else {
-				switch ($responseObj->response_code) {
-					case '200':
-							break;
-					default:
-							$error = true;
-							break;
-				}
-		}
-		if(isset($error)) {
-			return $error;
-		}
-		// No errors
-		return false;
 	}
 
 	/*
