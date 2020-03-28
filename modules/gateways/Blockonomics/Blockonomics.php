@@ -356,8 +356,7 @@ class Blockonomics {
     /**
      * Decrypts a string using the application secret.
      */
-    public function decrypt(string $input): string
-    {
+    public function decrypt(string $input){
     	$encryption_algorithm = 'AES-128-CBC';
     	$hashing_algorith = 'sha256';
     	$secret = $this->getCallbackSecret();
@@ -372,13 +371,19 @@ class Blockonomics {
         $cipherText = $binaryInput;
         $key = hash($hashing_algorith, $secret, true);
 
-        return openssl_decrypt(
+        $decrypted = openssl_decrypt(
             $cipherText,
             $encryption_algorithm,
             $key,
             OPENSSL_RAW_DATA,
             $iv
         );
+        $parts = explode(':', $decrypted);
+        $order_info = array();
+        $order_info['order_id'] = $parts[0];
+        $order_info['value'] = $parts[1];
+        $order_object = (object) $order_info;
+        return $order_object;
     }
 
     /**
@@ -406,81 +411,21 @@ class Blockonomics {
 	/*
 	 * Add a new skeleton order in the db
 	 */
-	public function createSkeletonOrder($amount, $id_order) {
-
-		try {
-			$existing_order = Capsule::table('blockonomics_bitcoin_orders')
-				->where('id_order', $id_order)
-				->where('value', $amount)
-				->value('id_order');
-		} catch (\Exception $e) {
-				exit("Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}");
-		}
-
-		if(!$existing_order) {
-			try {
-				Capsule::table('blockonomics_bitcoin_orders')->insert(
-					[
-						'id_order' => $id_order,
-						'timestamp' => time(),
-						'status' => -1,
-						'value' => $amount
-					]
-				);
-			} catch (\Exception $e) {
-					exit("Unable to insert new order into blockonomics_bitcoin_orders: {$e->getMessage()}");
-			}
-		}		
-
-		$crypted_id = $this->encrypt($id_order);
-
+	public function getOrderHash($amount, $id_order) {
+		$crypted_id = $this->encrypt($id_order.":".$amount);
 		return $crypted_id;
 	}
 
 	/*
-	 * Get the order id using the order uuid
+	 * Get all orders linked to id
 	 */	
-	public function getOrderIdByHash($order_hash) {
-		$order_id = $this->decrypt($order_hash);
-		try {
-			$first_order = Capsule::table('blockonomics_bitcoin_orders')
-				->where('id_order', $order_id)
-				->orderBy('timestamp', 'desc')
-				->first();
-		} catch (\Exception $e) {
-				exit("Unable to get order from blockonomics_bitcoin_orders: {$e->getMessage()}");
-		}
-
-		return $first_order->id_order;
-	}
-
-	/*
-	 * Get all orders linked to uuid
-	 */	
-	public function getAllOrdersByHash($order_hash) {
-		$order_id = $this->decrypt($order_hash);
+	public function getAllOrdersById($order_id) {
 		try {
 			return Capsule::table('blockonomics_bitcoin_orders')
 				->where('id_order', $order_id)
 				->orderBy('timestamp', 'desc')->get();
 		} catch (\Exception $e) {
 				exit("Unable to get orders from blockonomics_bitcoin_orders: {$e->getMessage()}");
-		}
-	}
-
-	/*
-	 * Get a blank order linked to order_hash
-	 */	
-	public function getSkeletonOrderByHash($order_hash) {
-		$order_id = $this->decrypt($order_hash);
-		try {
-			return Capsule::table('blockonomics_bitcoin_orders')
-				->where('id_order', $order_id)
-				->where('addr', '')
-				->orderBy('timestamp', 'desc')
-				->first();
-		} catch (\Exception $e) {
-				exit("Unable to get order from blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 	}
 
@@ -518,30 +463,47 @@ class Blockonomics {
 	}
 
 	/*
+	* Try to insert new order to database
+	* If order exists, return with false
+	*/
+	public function insertOrderToDb($id_order, $blockonomics_currency, $address, $value, $bits) {
+		try {
+			$existing_order = Capsule::table('blockonomics_bitcoin_orders')
+				->where('id_order', $id_order)
+				->where('blockonomics_currency', $blockonomics_currency)
+				->value('id');
+		} catch (\Exception $e) {
+				echo "Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}";
+		}
+
+		if($existing_order) {
+			return false;
+		}
+
+		try {
+			Capsule::table('blockonomics_bitcoin_orders')->insert(
+				[
+					'id_order' => $id_order,
+					'blockonomics_currency' => $blockonomics_currency,
+					'addr' => $address,
+					'timestamp' => time(),
+					'status' => -1,
+					'value' => $value,
+					'bits' => $bits,
+				]
+			);
+		} catch (\Exception $e) {
+				echo "Unable to insert new order into blockonomics_bitcoin_orders: {$e->getMessage()}";
+		}
+
+		
+		return true;
+	}
+
+	/*
 	 * Check for unused address or create new
 	 */	
-	public function createNewCryptoOrder($orders, $blockonomics_currency) {
-		foreach ($orders as $order) {
-			//check for new blank order in db
-			if($order->addr == ""){
-				$new_addresss_response = $this->getNewAddress($blockonomics_currency);
-				if ($new_addresss_response->response_code == 200){
-					$order->addr = $new_addresss_response->address;
-				}else{
-					exit($new_addresss_response->message);
-				}
-
-				$this->updateOrderAddress($order->id_order, $order->addr, $blockonomics_currency);
-				$order->blockonomics_currency = $blockonomics_currency;
-				$order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->blockonomics_currency);
-				$order->timestamp = time();
-				$this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->bits);
-				return $order;
-			}
-		}
-		// blank order already used, create a new blank order with same uuid
-		$order_hash = $this->createSkeletonOrder($orders[0]->value, $orders[0]->id_order);
-		$order = $this->getSkeletonOrderByHash($order_hash);
+	public function createNewCryptoOrder($order, $blockonomics_currency) {
 		$new_addresss_response = $this->getNewAddress($blockonomics_currency);
 		if ($new_addresss_response->response_code == 200){
 			$order->addr = $new_addresss_response->address;
@@ -549,11 +511,10 @@ class Blockonomics {
 			exit($new_addresss_response->message);
 		}
 
-		$this->updateOrderAddress($order->id_order, $order->addr, $blockonomics_currency);
 		$order->blockonomics_currency = $blockonomics_currency;
 		$order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->blockonomics_currency);
 		$order->timestamp = time();
-		$this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->bits);
+		$this->insertOrderToDb($order->order_id, $blockonomics_currency, $order->addr, $order->value, $order->bits);
 		return $order;
 	}
 
@@ -561,24 +522,25 @@ class Blockonomics {
 	 * Find an existing order or create a new order
 	 */	
 	public function processOrderHash($order_hash, $blockonomics_currency) {
-		// Fetch all orders by hash
-		$all_orders_by_hash = $this->getAllOrdersByHash($order_hash);
-		if(!$all_orders_by_hash){
+		$order_info = $this->decrypt($order_hash);
+		// Fetch all orders by id
+		$orders = $this->getAllOrdersById($order_info->order_id);
+		if(!$orders){
 			exit;
 		}
 		// Check for pending payments and return the order
-		$pending_payment = $this->getPendingOrder($all_orders_by_hash);
+		$pending_payment = $this->getPendingOrder($orders);
 		if($pending_payment){
 			return $pending_payment;
 		}
 		// Check for existing address
-		$address_waiting = $this->getAndUpdateWaitingOrder($all_orders_by_hash, $blockonomics_currency);
+		$address_waiting = $this->getAndUpdateWaitingOrder($orders, $blockonomics_currency);
 		if($address_waiting){
 			$address_waiting->currency = getCurrency(getClientsDetails()['user_id'])['code'];
 			return $address_waiting;
 		}
-		// Process a new order for the hash and blockonomics currency
-		$new_order = $this->createNewCryptoOrder($all_orders_by_hash, $blockonomics_currency);
+		// Process a new order for the id and blockonomics currency
+		$new_order = $this->createNewCryptoOrder($order_info, $blockonomics_currency);
 		if($new_order){
 			$new_order->currency = getCurrency(getClientsDetails()['user_id'])['code'];
 			return $new_order;
@@ -635,6 +597,14 @@ class Blockonomics {
 		);
 
 		return $row_in_array;
+	}
+
+	/*
+	 * Get the order id using the order hash
+	 */	
+	public function getOrderIdByHash($order_hash) {
+		$order_info = $this->decrypt($order_hash);
+		return $order_info->order_id;
 	}
 
 	/*
