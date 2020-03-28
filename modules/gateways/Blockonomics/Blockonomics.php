@@ -520,7 +520,7 @@ class Blockonomics {
 	/*
 	 * Check for unused address or create new
 	 */	
-	public function processNewOrder($orders, $blockonomics_currency) {
+	public function createNewCryptoOrder($orders, $blockonomics_currency) {
 		foreach ($orders as $order) {
 			//check for new blank order in db
 			if($order->addr == ""){
@@ -578,7 +578,7 @@ class Blockonomics {
 			return $address_waiting;
 		}
 		// Process a new order for the hash and blockonomics currency
-		$new_order = $this->processNewOrder($all_orders_by_hash, $blockonomics_currency);
+		$new_order = $this->createNewCryptoOrder($all_orders_by_hash, $blockonomics_currency);
 		if($new_order){
 			$new_order->currency = getCurrency(getClientsDetails()['user_id'])['code'];
 			return $new_order;
