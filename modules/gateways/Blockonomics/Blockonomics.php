@@ -320,7 +320,7 @@ class Blockonomics {
     /**
      * Decrypts a string using the application secret.
      */
-    public function decrypt(string $input){
+    public function decryptHash(string $input){
     	$encryption_algorithm = 'AES-128-CBC';
     	$hashing_algorith = 'sha256';
     	$secret = $this->getCallbackSecret();
@@ -353,8 +353,7 @@ class Blockonomics {
     /**
      * Encrypts a string using the application secret. This returns a hex representation of the binary cipher text
      */
-    public function encrypt(string $input): string
-    {
+    public function encryptHash(string $input){
 		$encryption_algorithm = 'AES-128-CBC';
 		$hashing_algorith = 'sha256';
     	$secret = $this->getCallbackSecret();
@@ -376,7 +375,7 @@ class Blockonomics {
 	 * Add a new skeleton order in the db
 	 */
 	public function getOrderHash($amount, $id_order) {
-		$crypted_id = $this->encrypt($id_order.":".$amount);
+		$crypted_id = $this->encryptHash($id_order.":".$amount);
 		return $crypted_id;
 	}
 
@@ -486,7 +485,7 @@ class Blockonomics {
 	 * Find an existing order or create a new order
 	 */	
 	public function processOrderHash($order_hash, $blockonomics_currency) {
-		$order_info = $this->decrypt($order_hash);
+		$order_info = $this->decryptHash($order_hash);
 		// Fetch all orders by id
 		$orders = $this->getAllOrdersById($order_info->order_id);
 		if(!$orders){
@@ -541,7 +540,7 @@ class Blockonomics {
 	 * Get the order id using the order hash
 	 */	
 	public function getOrderIdByHash($order_hash) {
-		$order_info = $this->decrypt($order_hash);
+		$order_info = $this->decryptHash($order_hash);
 		return $order_info->order_id;
 	}
 
