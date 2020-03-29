@@ -2,6 +2,8 @@
 
 namespace Blockonomics;
 
+use Exception;
+use stdClass;
 use WHMCS\Database\Capsule;
 
 class Blockonomics {
@@ -11,8 +13,7 @@ class Blockonomics {
 	 */
 	public function getCallbackUrl() {
 		$secret = $this->getCallbackSecret();
-		$callback_url = $this->getSystemUrl() . 'modules/gateways/callback/blockonomics.php?secret=' . $secret;
-		return $callback_url;
+        return $this->getSystemUrl() . 'modules/gateways/callback/blockonomics.php?secret=' . $secret;
 	}
 
 	/*
@@ -29,7 +30,7 @@ class Blockonomics {
 					->where('setting', 'CallbackSecret')
 					->value('value');
 
-		} catch(\Exception $e) {
+		} catch(Exception $e) {
 			exit("Error, could not get Blockonomics secret from database. {$e->getMessage()}");
 		}
 
@@ -41,7 +42,7 @@ class Blockonomics {
 						->where('setting', 'ApiSecret')
 						->value('value');
 
-			} catch(\Exception $e) {
+			} catch(Exception $e) {
 				exit("Error, could not get Blockonomics secret from database. {$e->getMessage()}");
 			}
 			// Get only the secret from the whole Callback URL
@@ -67,7 +68,7 @@ class Blockonomics {
 				['gateway' => 'blockonomics', 'setting' => 'CallbackSecret', 'value' => $callback_secret]
 			]);
 
-		} catch(\Exception $e) {
+		} catch(Exception $e) {
 			exit("Error, could not get Blockonomics secret from database. {$e->getMessage()}");
 		}
 
@@ -88,17 +89,16 @@ class Blockonomics {
 	 * Get list of crypto currencies supported by Blockonomics
 	 */
 	public function getSupportedCurrencies() {
-		$all_currencies = array(
-  			'btc' => array(
-			        'name' => 'Bitcoin',
-			        'uri' => 'bitcoin'
-  			),
-  			'bch' => array(
-			        'name' => 'Bitcoin Cash',
-			        'uri' => 'bitcoincash'
-  			)
-  		);
-		return $all_currencies;
+        return array(
+              'btc' => array(
+                    'name' => 'Bitcoin',
+                    'uri' => 'bitcoin'
+              ),
+              'bch' => array(
+                    'name' => 'Bitcoin Cash',
+                    'uri' => 'bitcoincash'
+              )
+          );
 	}
 
 	/*
@@ -218,7 +218,7 @@ class Blockonomics {
 
 		$responseObj = json_decode($contents);
 		//Create response object if it does not exist
-		if (!isset($responseObj)) $responseObj = new \stdClass();
+		if (!isset($responseObj)) $responseObj = new stdClass();
 		$responseObj->{'response_code'} = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close ($ch);
 		return $responseObj;
@@ -261,7 +261,7 @@ class Blockonomics {
 			if($margin > 0){
 				$price = $price * 100/(100+$margin);
 			}
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			exit("Error getting price from Blockonomics! {$e->getMessage()}");
 		}
 
@@ -289,7 +289,7 @@ class Blockonomics {
 							$table->string('blockonomics_currency');
 						}
 				);
-			} catch (\Exception $e) {
+			} catch (Exception $e) {
 					exit("Unable to create blockonomics_bitcoin_orders: {$e->getMessage()}");
 			}
 		}else{
@@ -304,7 +304,7 @@ class Blockonomics {
 									'blockonomics_currency' => 'btc'
 								]
 							);
-					} catch (\Exception $e) {
+					} catch (Exception $e) {
 						exit("Unable to set default value for existing blockonomics_bitcoin_orders: {$e->getMessage()}");
 					}
 				 });
@@ -319,18 +319,20 @@ class Blockonomics {
 
     /**
      * Decrypts a string using the application secret.
+     * @param $hash
+     * @return object
      */
-    public function decryptHash(string $input){
+    public function decryptHash($hash){
     	$encryption_algorithm = 'AES-128-CBC';
     	$hashing_algorith = 'sha256';
     	$secret = $this->getCallbackSecret();
-        // prevent decrypt failing when $input is not hex or has odd length
-        if (strlen($input) % 2 || ! ctype_xdigit($input)) {
+        // prevent decrypt failing when $hash is not hex or has odd length
+        if (strlen($hash) % 2 || ! ctype_xdigit($hash)) {
             return '';
         }
 
         // we'll need the binary cipher
-        $binaryInput = hex2bin($input);
+        $binaryInput = hex2bin($hash);
         $iv = substr($secret, 0, 16);
         $cipherText = $binaryInput;
         $key = hash($hashing_algorith, $secret, true);
@@ -343,17 +345,18 @@ class Blockonomics {
             $iv
         );
         $parts = explode(':', $decrypted);
-        $order_info = array();
-        $order_info['order_id'] = $parts[0];
-        $order_info['value'] = $parts[1];
-        $order_object = (object) $order_info;
-        return $order_object;
+        $order_info = new stdClass();
+        $order_info->order_id = $parts[0];
+        $order_info->value = $parts[1];
+        return $order_info;
     }
 
     /**
      * Encrypts a string using the application secret. This returns a hex representation of the binary cipher text
+     * @param $input
+     * @return string
      */
-    public function encryptHash(string $input){
+    public function encryptHash($input){
 		$encryption_algorithm = 'AES-128-CBC';
 		$hashing_algorith = 'sha256';
     	$secret = $this->getCallbackSecret();
@@ -375,8 +378,7 @@ class Blockonomics {
 	 * Add a new skeleton order in the db
 	 */
 	public function getOrderHash($amount, $id_order) {
-		$crypted_id = $this->encryptHash($id_order.":".$amount);
-		return $crypted_id;
+        return $this->encryptHash($id_order.":".$amount);
 	}
 
 	/*
@@ -387,7 +389,7 @@ class Blockonomics {
 			return Capsule::table('blockonomics_bitcoin_orders')
 				->where('id_order', $order_id)
 				->orderBy('timestamp', 'desc')->get();
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 				exit("Unable to get orders from blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 	}
@@ -435,7 +437,7 @@ class Blockonomics {
 				->where('id_order', $id_order)
 				->where('blockonomics_currency', $blockonomics_currency)
 				->value('id');
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 				echo "Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}";
 		}
 
@@ -455,7 +457,7 @@ class Blockonomics {
 					'bits' => $bits,
 				]
 			);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 				echo "Unable to insert new order into blockonomics_bitcoin_orders: {$e->getMessage()}";
 		}
 
@@ -518,22 +520,20 @@ class Blockonomics {
 			$existing_order = Capsule::table('blockonomics_bitcoin_orders')
 				->where('addr', $bitcoinAddress)
 				->first();
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 				exit("Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 
-		$row_in_array = array(
-			"id" => $existing_order->id,
-			"order_id" => $existing_order->id_order,
-			"timestamp"=> $existing_order->timestamp,
-			"status" => $existing_order->status,
-			"value" => $existing_order->value,
-			"bits" => $existing_order->bits,
-			"bits_payed" => $existing_order->bits_payed,
-			"blockonomics_currency" => $existing_order->blockonomics_currency
-		);
-
-		return $row_in_array;
+        return array(
+            "id" => $existing_order->id,
+            "order_id" => $existing_order->id_order,
+            "timestamp"=> $existing_order->timestamp,
+            "status" => $existing_order->status,
+            "value" => $existing_order->value,
+            "bits" => $existing_order->bits,
+            "bits_payed" => $existing_order->bits_payed,
+            "blockonomics_currency" => $existing_order->blockonomics_currency
+        );
 	}
 
 	/*
@@ -557,7 +557,7 @@ class Blockonomics {
 						'bits_payed' => $bits_payed
 					]
 				);
-			} catch (\Exception $e) {
+			} catch (Exception $e) {
 				exit("Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 	}
@@ -575,7 +575,7 @@ class Blockonomics {
 						'timestamp' => $timestamp
 					]
 				);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			exit("Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}");
 		}
 	}
@@ -610,7 +610,7 @@ class Blockonomics {
 		$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close($ch);
 
-		$responseObj = new \stdClass();
+		$responseObj = new stdClass();
 		$responseObj->data = json_decode($data);
 		$responseObj->response_code = $httpcode;
 		return $responseObj;

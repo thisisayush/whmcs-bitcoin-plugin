@@ -100,13 +100,13 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
     //Proccess the order data
     function proccess_order_data(data) {
         $scope.order = data;
-        if(data.blockonomics_currency == 'btc'){
+        if(data.blockonomics_currency === 'btc'){
             var subdomain = 'www';
         }else{
             var subdomain = data.blockonomics_currency;
         }
         //Check the status of the order
-        if ($scope.order.status == -1) {
+        if ($scope.order.status === -1) {
             $scope.clock = $scope.order.timestamp + totalTime - Math.floor(Date.now() / 1000);
             //Mark order as expired if we ran out of time
             if ($scope.clock < 0) {
@@ -137,15 +137,15 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
                 "blockonomics_currency": $scope.currency.code
             }, function(data) {
                 $scope.spinner = false;
-                if(data.txid != undefined && data.txid != ""){
+                if(data.txid !== undefined && data.txid !== ""){
                     $scope.txid = data.txid;
                     $scope.pending_error = true;
-                }else if(data.addr != undefined){
+                }else if(data.addr !== undefined){
                     proccess_order_data(data);
                     $scope.checkout_panel  = true;
-                }else if($scope.currency.code == 'btc'){
+                }else if($scope.currency.code === 'btc'){
                     $scope.address_error_btc = true;
-                }else if($scope.currency.code == 'bch'){
+                }else if($scope.currency.code === 'bch'){
                     $scope.address_error_bch = true;
                 }
             });
@@ -153,7 +153,7 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
     }
     
     $scope.spinner = true;
-    if(Object.keys($scope.active_currencies).length == 1){
+    if(Object.keys($scope.active_currencies).length === 1){
         // Auto select btc if 1 activated currency
         $scope.currency = $scope.active_currencies['btc'];
         $scope.currency.code = 'btc';
