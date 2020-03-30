@@ -384,6 +384,7 @@ class Blockonomics
         $order_info = new stdClass();
         $order_info->id_order = intval($parts[0]);
         $order_info->value = floatval($parts[1]);
+        $order_info->currency = $parts[2];
         return $order_info;
     }
 
@@ -417,9 +418,9 @@ class Blockonomics
      * @param $amount
      * @return string
      */
-    public function getOrderHash($id_order, $amount)
+    public function getOrderHash($id_order, $amount, $currency)
     {
-        return $this->encryptHash($id_order . ":" . $amount);
+        return $this->encryptHash($id_order . ":" . $amount . ":" . $currency);
     }
 
     /**
@@ -542,11 +543,6 @@ class Blockonomics
     public function processOrderHash($order_hash, $blockonomics_currency)
     {
         $order_info = $this->decryptHash($order_hash);
-        // Check user has not been logged out
-        // Might be better to also pass the currency in hash
-        if (!function_exists('getClientsDetails')) {
-    		exit('Not logged in');
-    	}
         // Fetch all orders by id
         $orders = $this->getAllOrdersById($order_info->id_order);
         if ($orders) {
@@ -558,14 +554,13 @@ class Blockonomics
 	        // Check for existing address
 	        $address_waiting = $this->getAndUpdateWaitingOrder($orders, $blockonomics_currency);
 	        if ($address_waiting) {
-	            $address_waiting->currency = getCurrency(getClientsDetails()['user_id'])['code'];
+	        	$address_waiting->currency = $order_info->currency;
 	            return $address_waiting;
 	        }
         }
         // Process a new order for the id and blockonomics currency
         $new_order = $this->createNewCryptoOrder($order_info, $blockonomics_currency);
         if ($new_order) {
-            $new_order->currency = getCurrency(getClientsDetails()['user_id'])['code'];
             return $new_order;
         }
         return false;
