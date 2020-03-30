@@ -95,7 +95,7 @@ class Blockonomics
     }
 
     /**
-     * Get list of crypto currencies supported by Blockonomics
+     * Get array of crypto currencies supported by Blockonomics
      * @return array
      */
     public function getSupportedCurrencies()
@@ -113,7 +113,7 @@ class Blockonomics
     }
 
     /**
-     * Get list of active crypto currencies
+     * Get array of active crypto currencies
      * @return array
      */
     public function getActiveCurrencies()
@@ -413,11 +413,11 @@ class Blockonomics
 
     /**
      * Get the order hash from the order id
-     * @param $amount
      * @param $id_order
+     * @param $amount
      * @return string
      */
-    public function getOrderHash($amount, $id_order)
+    public function getOrderHash($id_order, $amount)
     {
         return $this->encryptHash($id_order . ":" . $amount);
     }
@@ -542,7 +542,7 @@ class Blockonomics
         $order->blockonomics_currency = $blockonomics_currency;
         $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->blockonomics_currency);
         $order->timestamp = time();
-        $this->insertOrderToDb($order->order_id, $blockonomics_currency, $order->addr, $order->value, $order->bits);
+        $this->insertOrderToDb($order->order_id, $order->blockonomics_currency, $order->addr, $order->value, $order->bits);
         return $order;
     }
 
