@@ -9,8 +9,9 @@ use WHMCS\Database\Capsule;
 class Blockonomics
 {
 
-    /*
+    /**
      * Get callback secret and SystemURL to form the callback URL
+     * @return string
      */
     public function getCallbackUrl()
     {
@@ -18,9 +19,10 @@ class Blockonomics
         return $this->getSystemUrl() . 'modules/gateways/callback/blockonomics.php?secret=' . $secret;
     }
 
-    /*
+    /**
      * Try to get callback secret from db
      * If no secret exists, create new
+     * @return string
      */
     public function getCallbackSecret()
     {
@@ -59,8 +61,9 @@ class Blockonomics
         return $secret;
     }
 
-    /*
+    /**
      * Generate new callback secret using sha1, save it in db under tblpaymentgateways table
+     * @return string
      */
     private function generateCallbackSecret()
     {
@@ -79,8 +82,9 @@ class Blockonomics
         return $callback_secret;
     }
 
-    /*
+    /**
      * Get user configured API key from database
+     * @return string
      */
     public function getApiKey()
     {
@@ -90,8 +94,9 @@ class Blockonomics
             ->value('value');
     }
 
-    /*
+    /**
      * Get list of crypto currencies supported by Blockonomics
+     * @return array
      */
     public function getSupportedCurrencies()
     {
@@ -107,8 +112,9 @@ class Blockonomics
         );
     }
 
-    /*
+    /**
      * Get list of active crypto currencies
+     * @return array
      */
     public function getActiveCurrencies()
     {
@@ -130,8 +136,9 @@ class Blockonomics
         return $active_currencies;
     }
 
-    /*
+    /**
      * Get user configured Time Period from database
+     * @return string
      */
     public function getTimePeriod()
     {
@@ -141,8 +148,9 @@ class Blockonomics
             ->value('value');
     }
 
-    /*
+    /**
      * Get user configured Confirmations from database
+     * @return int
      */
     public function getConfirmations()
     {
@@ -156,8 +164,10 @@ class Blockonomics
         return 2;
     }
 
-    /*
+    /**
      * Update invoice note
+     * @param $invoiceid
+     * @param $note
      */
     public function updateInvoiceNote($invoiceid, $note)
     {
@@ -166,8 +176,10 @@ class Blockonomics
             ->update(['notes' => $note]);
     }
 
-    /*
+    /**
      * Get the BTC price that was calculated when the order price was last updated
+     * @param $invoiceId
+     * @return float
      */
     public function getPriceByExpected($invoiceId)
     {
@@ -181,8 +193,9 @@ class Blockonomics
         return round($btc_price, 2);
     }
 
-    /*
+    /**
      * Get underpayment slack
+     * @return float
      */
     public function getUnderpaymentSlack()
     {
@@ -192,8 +205,11 @@ class Blockonomics
             ->value('value');
     }
 
-    /*
+    /**
      * Get new address from Blockonomics Api
+     * @param string $currency
+     * @param bool $reset
+     * @return string
      */
     public function getNewAddress($currency = 'btc', $reset = false)
     {
@@ -236,8 +252,9 @@ class Blockonomics
         return $responseObj;
     }
 
-    /*
+    /**
      * Get user configured margin from database
+     * @return float
      */
     public function getMargin()
     {
@@ -247,8 +264,11 @@ class Blockonomics
             ->value('value');
     }
 
-    /*
+    /**
      * Convert fiat amount to Blockonomics currency
+     * @param $fiat_amount
+     * @param string $blockonomics_currency
+     * @return float
      */
     public function convertFiatToBlockonomicsCurrency($fiat_amount, $blockonomics_currency = 'btc')
     {
@@ -282,7 +302,7 @@ class Blockonomics
         return intval(1.0e8 * $fiat_amount / $price);
     }
 
-    /*
+    /**
      * If no Blockonomics order table exists, create it
      */
     public function createOrderTableIfNotExist()
@@ -391,16 +411,21 @@ class Blockonomics
         return bin2hex($cipherText);
     }
 
-    /*
-     * Add a new skeleton order in the db
+    /**
+     * Get the order hash from the order id
+     * @param $amount
+     * @param $id_order
+     * @return string
      */
     public function getOrderHash($amount, $id_order)
     {
         return $this->encryptHash($id_order . ":" . $amount);
     }
 
-    /*
+    /**
      * Get all orders linked to id
+     * @param $order_id
+     * @return array
      */
     public function getAllOrdersById($order_id)
     {
@@ -413,8 +438,10 @@ class Blockonomics
         }
     }
 
-    /*
+    /**
      * Check for pending orders and return if exists
+     * @param $orders
+     * @return object | bool
      */
     public function getPendingOrder($orders)
     {
@@ -427,8 +454,11 @@ class Blockonomics
         return false;
     }
 
-    /*
+    /**
      * Check for unused address for the currency linked to the order
+     * @param $orders
+     * @param $blockonomics_currency
+     * @return object | bool
      */
     public function getAndUpdateWaitingOrder($orders, $blockonomics_currency)
     {
@@ -450,10 +480,16 @@ class Blockonomics
         return false;
     }
 
-    /*
-    * Try to insert new order to database
-    * If order exists, return with false
-    */
+    /**
+     * Try to insert new order to database
+     * If order exists, return with false
+     * @param $id_order
+     * @param $blockonomics_currency
+     * @param $address
+     * @param $value
+     * @param $bits
+     * @return bool
+     */
     public function insertOrderToDb($id_order, $blockonomics_currency, $address, $value, $bits)
     {
         try {
@@ -488,8 +524,11 @@ class Blockonomics
         return true;
     }
 
-    /*
+    /**
      * Check for unused address or create new
+     * @param $order
+     * @param $blockonomics_currency
+     * @return object
      */
     public function createNewCryptoOrder($order, $blockonomics_currency)
     {
@@ -507,8 +546,11 @@ class Blockonomics
         return $order;
     }
 
-    /*
+    /**
      * Find an existing order or create a new order
+     * @param $order_hash
+     * @param $blockonomics_currency
+     * @return object | bool
      */
     public function processOrderHash($order_hash, $blockonomics_currency)
     {
@@ -538,8 +580,10 @@ class Blockonomics
         return false;
     }
 
-    /*
+    /**
      * Try to get order row from db by address
+     * @param $bitcoinAddress
+     * @return array
      */
     public function getOrderByAddress($bitcoinAddress)
     {
@@ -563,8 +607,10 @@ class Blockonomics
         );
     }
 
-    /*
+    /**
      * Get the order id using the order hash
+     * @param $order_hash
+     * @return string
      */
     public function getOrderIdByHash($order_hash)
     {
@@ -572,8 +618,12 @@ class Blockonomics
         return $order_info->order_id;
     }
 
-    /*
+    /**
      * Update existing order information. Use BTC payment address as key
+     * @param $addr
+     * @param $txid
+     * @param $status
+     * @param $bits_payed
      */
     public function updateOrderInDb($addr, $txid, $status, $bits_payed)
     {
@@ -591,8 +641,12 @@ class Blockonomics
         }
     }
 
-    /*
+    /**
      * Update existing order's expected amount and FIAT amount. Use WHMCS invoice id as key
+     * @param $address
+     * @param $blockonomics_currency
+     * @param $timestamp
+     * @param $bits
      */
     public function updateOrderExpected($address, $blockonomics_currency, $timestamp, $bits)
     {
@@ -610,8 +664,9 @@ class Blockonomics
         }
     }
 
-    /*
+    /**
      * Get URL of the WHMCS installation
+     * @return string
      */
     public function getSystemUrl()
     {
@@ -620,8 +675,11 @@ class Blockonomics
             ->value('value');
     }
 
-    /*
+    /**
      * Make a request using curl
+     * @param $url
+     * @param string $post_content
+     * @return object
      */
     public function doCurlCall($url, $post_content = '')
     {
@@ -647,8 +705,10 @@ class Blockonomics
         return $responseObj;
     }
 
-    /*
+    /**
      * Run the test setup
+     * @param $new_api
+     * @return string
      */
     public function testSetup($new_api)
     {
