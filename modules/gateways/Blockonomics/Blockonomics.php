@@ -493,18 +493,6 @@ class Blockonomics
     public function insertOrderToDb($id_order, $blockonomics_currency, $address, $value, $bits)
     {
         try {
-            $existing_order = Capsule::table('blockonomics_bitcoin_orders')
-                ->where('id_order', $id_order)
-                ->where('blockonomics_currency', $blockonomics_currency)
-                ->value('id');
-            if ($existing_order) {
-	            return false;
-	        }
-        } catch (Exception $e) {
-            echo "Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}";
-        }
-
-        try {
             Capsule::table('blockonomics_bitcoin_orders')->insert(
                 [
                     'id_order' => $id_order,
@@ -519,7 +507,6 @@ class Blockonomics
         } catch (Exception $e) {
             echo "Unable to insert new order into blockonomics_bitcoin_orders: {$e->getMessage()}";
         }
-
 
         return true;
     }
