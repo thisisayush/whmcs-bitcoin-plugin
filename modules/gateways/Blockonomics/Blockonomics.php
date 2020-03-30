@@ -270,9 +270,8 @@ class Blockonomics
      * @param string $blockonomics_currency
      * @return float
      */
-    public function convertFiatToBlockonomicsCurrency($fiat_amount, $blockonomics_currency = 'btc')
+    public function convertFiatToBlockonomicsCurrency($fiat_amount, $currency, $blockonomics_currency = 'btc')
     {
-        $currency = getCurrency(getClientsDetails()['user_id'])['code'];
         try {
             if ($blockonomics_currency == 'btc') {
                 $subdomain = 'www';
@@ -461,7 +460,7 @@ class Blockonomics
      * @param $blockonomics_currency
      * @return object | bool
      */
-    public function getAndUpdateWaitingOrder($orders, $blockonomics_currency)
+    public function getAndUpdateWaitingOrder($orders, $currency, $blockonomics_currency)
     {
         foreach ($orders as $order) {
             //check for currency address already waiting
@@ -471,7 +470,7 @@ class Blockonomics
                 $total_time = $this->getTimePeriod() * 60;
                 $clock = $order->timestamp + $total_time - $current_time;
                 if ($clock < 0) {
-                    $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->blockonomics_currency);
+                    $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $currency, $order->blockonomics_currency);
                     $order->timestamp = $current_time;
                 }
                 $this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->bits);
@@ -527,7 +526,7 @@ class Blockonomics
         }
 
         $order->blockonomics_currency = $blockonomics_currency;
-        $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->blockonomics_currency);
+        $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->currency, $order->blockonomics_currency);
         $order->timestamp = time();
         $order->status = -1;
         $this->insertOrderToDb($order->id_order, $order->blockonomics_currency, $order->addr, $order->value, $order->bits);
@@ -552,7 +551,7 @@ class Blockonomics
 	            return $pending_payment;
 	        }
 	        // Check for existing address
-	        $address_waiting = $this->getAndUpdateWaitingOrder($orders, $blockonomics_currency);
+	        $address_waiting = $this->getAndUpdateWaitingOrder($orders, $order_info->currency, $blockonomics_currency);
 	        if ($address_waiting) {
 	        	$address_waiting->currency = $order_info->currency;
 	            return $address_waiting;
