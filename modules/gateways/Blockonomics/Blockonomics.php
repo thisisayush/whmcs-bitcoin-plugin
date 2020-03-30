@@ -382,8 +382,8 @@ class Blockonomics
         );
         $parts = explode(':', $decrypted);
         $order_info = new stdClass();
-        $order_info->order_id = $parts[0];
-        $order_info->value = $parts[1];
+        $order_info->id_order = intval($parts[0]);
+        $order_info->value = floatval($parts[1]);
         return $order_info;
     }
 
@@ -505,9 +505,8 @@ class Blockonomics
                 ]
             );
         } catch (Exception $e) {
-            echo "Unable to insert new order into blockonomics_bitcoin_orders: {$e->getMessage()}";
+            exit("Unable to insert new order into blockonomics_bitcoin_orders: {$e->getMessage()}");
         }
-
         return true;
     }
 
@@ -529,7 +528,8 @@ class Blockonomics
         $order->blockonomics_currency = $blockonomics_currency;
         $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->blockonomics_currency);
         $order->timestamp = time();
-        $this->insertOrderToDb($order->order_id, $order->blockonomics_currency, $order->addr, $order->value, $order->bits);
+        $order->status = -1;
+        $this->insertOrderToDb($order->id_order, $order->blockonomics_currency, $order->addr, $order->value, $order->bits);
         return $order;
     }
 
@@ -542,21 +542,25 @@ class Blockonomics
     public function processOrderHash($order_hash, $blockonomics_currency)
     {
         $order_info = $this->decryptHash($order_hash);
+        // Check user has not been logged out
+        // Might be better to also pass the currency in hash
+        if (!function_exists('getClientsDetails')) {
+    		exit('Not logged in');
+    	}
         // Fetch all orders by id
-        $orders = $this->getAllOrdersById($order_info->order_id);
-        if (!$orders) {
-            exit;
-        }
+        $orders = $this->getAllOrdersById($order_info->id_order);
+        if ($orders) {
         // Check for pending payments and return the order
-        $pending_payment = $this->getPendingOrder($orders);
-        if ($pending_payment) {
-            return $pending_payment;
-        }
-        // Check for existing address
-        $address_waiting = $this->getAndUpdateWaitingOrder($orders, $blockonomics_currency);
-        if ($address_waiting) {
-            $address_waiting->currency = getCurrency(getClientsDetails()['user_id'])['code'];
-            return $address_waiting;
+	        $pending_payment = $this->getPendingOrder($orders);
+	        if ($pending_payment) {
+	            return $pending_payment;
+	        }
+	        // Check for existing address
+	        $address_waiting = $this->getAndUpdateWaitingOrder($orders, $blockonomics_currency);
+	        if ($address_waiting) {
+	            $address_waiting->currency = getCurrency(getClientsDetails()['user_id'])['code'];
+	            return $address_waiting;
+	        }
         }
         // Process a new order for the id and blockonomics currency
         $new_order = $this->createNewCryptoOrder($order_info, $blockonomics_currency);
@@ -602,7 +606,7 @@ class Blockonomics
     public function getOrderIdByHash($order_hash)
     {
         $order_info = $this->decryptHash($order_hash);
-        return $order_info->order_id;
+        return $order_info->id_order;
     }
 
     /**
