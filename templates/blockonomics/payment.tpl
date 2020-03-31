@@ -26,14 +26,12 @@
       <!-- Address Error -->
       <div id="address-error-btc" ng-show="address_error_btc" ng-cloak>
         <h2>Could not generate new Bitcoin address.</h2>
-        <p>Note to webmaster: Please login to admin and go to Setup > Payments > Payment Gateways > Manage
-          Existing Gateways and use the Test Setup button to diagnose the error.</p>
+        <p>Note to webmaster: Please login to admin and go to Setup > Payments > Payment Gateways > Manage Existing Gateways and use the Test Setup button to diagnose the error.</p>
       </div>
       <!-- BCH Address Error -->
       <div id="address-error-bch" ng-show="address_error_bch" ng-cloak>
         <h2>Could not generate new Bitcoin Cash address.</h2>
-        <p>Note to webmaster: Please follow the instructions <a href="https://help.blockonomics.co/">here</a> to
-          configure BCH payments.</p>
+        <p>Note to webmaster: Please follow the instructions <a href="https://help.blockonomics.co/">here</a> to configure BCH payments.</p>
       </div>
       <!-- Pending payment -->
       <div id="pending-error" ng-show="pending_error" ng-cloak>
@@ -44,14 +42,8 @@
       <div class="bnomics-select-container" ng-show="currency_selecter" ng-cloak>
         <h2>Pay With</h2>
         <table width="100%">
-          <tr class="bnomics-select-options" ng-repeat="(active_code, active_currency) in active_currencies"
-              ng-click="select_blockonomics_currency(active_code)">
-            <td align="left"><img src="img/[[active_code]].png" class="rotateimg[[active_code]]"
-                                  alt="[[active_currency.name]] Logo">
-              <h3>[[active_currency.name]]</h3> <span class="bnomics-select-currency-button"><button
-                        type="button"
-                        class="btn btn-lg bnomics-select-currency-code">[[active_code]]</button></span>
-            </td>
+          <tr class="bnomics-select-options" ng-repeat="(active_code, active_currency) in active_currencies" ng-click="select_blockonomics_currency(active_code)">
+              <td align="left"><img src="img/[[active_code]].png" class="rotateimg[[active_code]]" alt="[[active_currency.name]] Logo"> <h3>[[active_currency.name]]</h3> <span class="bnomics-select-currency-button"><button type="button" class="btn btn-lg bnomics-select-currency-code">[[active_code]]</button></span></td>
           </tr>
         </table>
       </div>
@@ -73,50 +65,36 @@
               <!-- QR and Open in wallet -->
               <div class="bnomics-qr-code">
                 <div class="bnomics-qr">
-                  <a href="[[currency.uri]]:[[order.addr]]?amount=[[order.bits/1.0e8]]"
-                     target="_blank">
-                    <qrcode data="[[currency.uri]]:[[order.addr]]?amount=[[order.bits/1.0e8]]"
-                            size="160" version="6">
+                  <a href="[[currency.uri]]:[[order.addr]]?amount=[[order.bits/1.0e8]]" target="_blank">
+                    <qrcode data="[[currency.uri]]:[[order.addr]]?amount=[[order.bits/1.0e8]]" size="160" version="6">
                       <canvas class="qrcode"></canvas>
                     </qrcode>
                   </a>
                 </div>
-                <div class="bnomics-qr-code-hint"><a
-                          href="[[currency.uri]]:[[order.addr]]?amount=[[order.bits/1.0e8]]"
-                          target="_blank">Open in wallet</a></div>
+                <div class="bnomics-qr-code-hint"><a href="[[currency.uri]]:[[order.addr]]?amount=[[order.bits/1.0e8]]" target="_blank">Open in wallet</a></div>
               </div>
               <!-- Right Side -->
               <div class="bnomics-amount">
                 <div class="bnomics-bg">
                   <!-- Order Amounts -->
                   <div class="bnomics-amount">
-                    <div class="bnomics-amount-text" ng-hide="amount_copyshow" ng-cloak>To pay, send
-                      exactly this [[currency.code | uppercase]] amount
-                    </div>
-                    <div class="bnomics-copy-amount-text" ng-show="amount_copyshow" ng-cloak>Copied
-                      to clipboard
-                    </div>
-                    <ul ng-click="blockonomics_amount_click()" id="bnomics-amount-input"
-                        class="bnomics-amount-input">
-                      <li id="bnomics-amount-copy">[[order.bits/1.0e8]]</li>
-                      <li>[[order.blockonomics_currency | uppercase]]</li>
-                      <li class="bnomics-grey"> ≈</li>
-                      <li class="bnomics-grey">[[order.value]]</li>
-                      <li class="bnomics-grey">[[order.currency]]</li>
+                    <div class="bnomics-amount-text" ng-hide="amount_copyshow" ng-cloak>To pay, send exactly this [[currency.code | uppercase]] amount</div>
+                    <div class="bnomics-copy-amount-text" ng-show="amount_copyshow" ng-cloak>Copied to clipboard</div>
+                    <ul ng-click="blockonomics_amount_click()" id="bnomics-amount-input" class="bnomics-amount-input">
+                        <li id="bnomics-amount-copy">[[order.bits/1.0e8]]</li>
+                        <li>[[order.blockonomics_currency | uppercase]]</li>
+                        <li class="bnomics-grey"> ≈ </li>
+                        <li class="bnomics-grey">[[order.value]]</li>
+                        <li class="bnomics-grey">[[order.currency]]</li>
                     </ul>
                     <!-- <input ng-click="blockonomics_amount_click()" id="bnomics-amount-input" class="bnomics-amount-input" type="text" ng-value="amount_string" readonly="readonly" style="cursor: pointer;"> -->
                   </div>
                   <!-- Order Address -->
                   <div class="bnomics-address">
-                    <div class="bnomics-address-text" ng-hide="address_copyshow" ng-cloak>To this
-                      [[currency.name | lowercase]] address
-                    </div>
-                    <div class="bnomics-copy-address-text" ng-show="address_copyshow" ng-cloak>
-                      Copied to clipboard
-                    </div>
-                    <ul ng-click="blockonomics_address_click()" id="bnomics-address-input"
-                        class="bnomics-address-input">
-                      <li id="bnomics-address-copy">[[order.addr]]</li>
+                    <div class="bnomics-address-text" ng-hide="address_copyshow" ng-cloak>To this [[currency.name | lowercase]] address</div>
+                    <div class="bnomics-copy-address-text" ng-show="address_copyshow" ng-cloak>Copied to clipboard</div>
+                    <ul ng-click="blockonomics_address_click()" id="bnomics-address-input" class="bnomics-address-input">
+                          <li id="bnomics-address-copy">[[order.addr]]</li>
                     </ul>
                   </div>
                   <!-- Order Countdown Timer -->
@@ -134,9 +112,8 @@
       </div>
       <!-- Blockonomics How to pay + Credit -->
       <div class="bnomics-powered-by">
-        <a href="https://blog.blockonomics.co/how-to-pay-a-bitcoin-invoice-abf4a04d041c" target="_blank">How do
-          I pay?</a><br>
-        <div class="bnomics-powered-by-text bnomics-grey">Powered by Blockonomics</div>
+        <a href="https://blog.blockonomics.co/how-to-pay-a-bitcoin-invoice-abf4a04d041c" target="_blank">How do I pay?</a><br>
+        <div class="bnomics-powered-by-text bnomics-grey" >Powered by Blockonomics</div>
       </div>
     </div>
   </div>

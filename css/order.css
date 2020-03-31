@@ -5,78 +5,78 @@
 [x-ng-cloak],
 .ng-cloak,
 .x-ng-cloak {
-    display: none !important;
+  display: none !important;
 }
 
 .bnomics-order-container {
-    margin: 0 auto;
-    padding: 10px;
-    max-width: 700px;
+  margin: 0 auto;
+  padding: 10px;
+  max-width: 700px;
 }
 
 .bnomics-order-container h4 {
-    padding: 3px 0 3px 0 !important;
-    font-weight: 600;
+  padding: 3px 0 3px 0 !important;
+  font-weight: 600;
 }
 
 .bnomics-order-container h5 {
-    margin: 15px 0;
-    letter-spacing: 1px;
-    font-weight: normal;
-    text-transform: unset;
+  margin: 15px 0;
+  letter-spacing: 1px;
+  font-weight: normal;
+  text-transform: unset;
 }
 
 .bnomics-progress-bar-container {
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    height: 4px;
-    background: #ddd;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 4px;
+  background: #ddd;
 }
 
 .bnomics-progress-bar-container .bnomics-progress-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 4px;
-    background: #B9B9B9;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: #B9B9B9;
 }
 
 .bnomics-order-info {
-    display: flex;
+  display: flex;
 }
 
 .bnomics-order-info > div {
-    padding-top: 5px;
-    padding-bottom: 0;
+  padding-top: 5px;
+  padding-bottom: 0;
 }
 
 .bnomics-order-info .bnomics-bitcoin-pane {
-    flex: 2;
+  flex: 2;
 }
 
 .bnomics-bitcoin-pane .bnomics-btc-info {
-    display: flex;
-    text-align: center;
+  display: flex;
+  text-align: center;
 }
 
 .bnomics-btc-info .bnomics-qr-code {
-    flex: 1;
+  flex: 1;
 }
 
 .bnomics-btc-info .bnomics-amount {
-    flex: 2;
+  flex: 2;
 }
 
 .bnomics-altcoin-pane {
-    align-items: center;
-    flex: 1;
-    text-align: center;
+  align-items: center;
+  flex: 1;
+  text-align: center;
 }
 
 .bnomics-address, .bnomics-amount {
-    position: relative;
-    width: 100%;
+  position:relative;
+  width: 100%;
 }
 
 .bnomics-amount-input, .bnomics-address-input {
@@ -91,290 +91,280 @@
     background-color: #fff;
     box-shadow: none;
     text-align: center;
-    padding: 7px;
+    padding:7px;
     cursor: pointer;
 }
 
 .bnomics-amount-input li, .bnomics-address-input li {
     display: inline-block;
     list-style: none;
-    margin-left: 5px;
+    margin-left: 5px;  
 }
 
 .bnomics-select-container {
-    text-align: center;
-    max-width: 350px;
-    margin: auto;
+  text-align:center;
+  max-width:350px;
+  margin:auto;
 }
 
 .bnomics-select-options {
-    cursor: pointer;
+  cursor:pointer;
 }
 
 .bnomics-select-options h3 {
-    display: inline;
+  display:inline;
 }
 
-.bnomics-select-container table {
-    border-collapse: separate;
-    border-spacing: 0 1em;
+.bnomics-select-container table{
+  border-collapse: separate;
+  border-spacing: 0 1em;
 }
-
 .bnomics-select-container td {
-    border: 1px solid lightgrey;
-    padding: 20px;
-    border-radius: 10px;
+  border: 1px solid lightgrey;
+  padding:20px;
+  border-radius:10px;
 }
 
-.bnomics-select-currency-button {
-    float: right;
+.bnomics-select-currency-button{
+  float: right;
 }
 
 .bnomics-select-currency-code {
-    text-transform: uppercase;
+  text-transform: uppercase;
 }
 
 .bnomics-order-expired-wrapper, .bnomics-order-error-wrapper {
-    text-align: center;
+  text-align: center;
 }
 
 .bnomics-blockonomics-currency {
-    width: 100%;
-    text-align: center;
-    padding: 0 0 20px 0;
+  width: 100%;
+  text-align: center;
+  padding:0 0 20px 0;
 }
 
 .bnomics-grey {
-    color: grey;
+  color:grey;
 }
 
 .bnomics-spinner-wrapper {
-    width: 100%;
-    text-align: center;
-    padding: 20px;
+  width: 100%;
+  text-align: center;
+  padding: 20px;
 }
 
 .bnomics-spinner {
-    margin: auto;
-    width: 60px;
-    height: 60px;
-    animation: rotate 1.4s infinite ease-in-out, background 1.4s infinite ease-in-out alternate;
+  margin: auto;
+  width: 60px;
+  height: 60px;
+  animation: rotate 1.4s infinite ease-in-out, background 1.4s infinite ease-in-out alternate;
 }
 
 .bnomics-powered-by {
-    text-align: center;
-    margin-top: 1.6em;
-    font-size: 0.8em;
-    padding: 0;
+  text-align: center;
+  margin-top: 1.6em;
+  font-size: 0.8em;
+  padding: 0;
 }
 
 .bnomics-qr-code-hint {
-    text-align: center;
-    margin-bottom: 1em;
-    padding: 0 20px;
+  text-align: center;
+  margin-bottom: 1em;
+  padding: 0 20px;
 }
 
 .bnomics-order-number {
-    text-transform: uppercase;
+  text-transform: uppercase;
 }
 
-.bnomics-amount-seperator {
-    width: 10%;
-    margin: 0;
-    margin-left: 45%
+.bnomics-amount-seperator{
+  width:10%;
+  margin:0;
+  margin-left:45%
 }
 
 .bnomics-time-left {
-    line-height: 3;
-    font-size: 12px;
+  line-height: 3;
+  font-size: 12px;
 }
 
 .bnomics-payment-option {
-    text-align: center;
+  text-align:center;
 }
 
 .bnomics-order-id {
-    text-align: right;
+  text-align:right;
 }
 
 .bnomics-bg {
-    min-height: 180px;
-    padding-top: 5px;
+  min-height: 180px;
+  padding-top: 5px;
 }
 
 .bnomics-qr {
-    text-align: center !important;
-    padding: 10px 10px 5px 10px;
-    width: 180px;
-    margin: 0 auto;
-    text-align: left;
+  text-align: center !important;
+  padding: 10px 10px 5px 10px;
+  width:180px;
+  margin: 0 auto;
+  text-align: left;
 }
 
 .bnomics-paywith-btc {
-    border-radius: 10px 0px 0px 10px;
+  border-radius: 10px 0px 0px 10px;
 }
 
 .bnomics-paywith-altcoin {
-    border-radius: 0px 10px 10px 0px;
+  border-radius: 0px 10px 10px 0px;
 }
 
 .bnomics-paywith-option {
-    color: #B9B9B9;
-    background-color: #F3F3F3;
-    border: 1px solid #B9B9B9;
-    padding: 8px 18px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    cursor: pointer;
+  color:#B9B9B9;
+  background-color:#F3F3F3;
+  border: 1px solid #B9B9B9;
+  padding: 8px 18px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
 }
 
 .bnomics-paywith-selected {
-    color: #fff;
-    background-color: #B9B9B9;
+  color:#fff;
+  background-color:#B9B9B9;
 }
 
 .bnomics-symbol-selected {
-    color: #fff;
-    background-color: #B9B9B9;
-    border: 0px solid #B9B9B9;
-    padding: 1px 3px;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 3px;
+  color:#fff;
+  background-color:#B9B9B9;
+  border: 0px solid #B9B9B9;
+  padding: 1px 3px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 3px;
 }
 
 .bnomics-paywith-label {
-    font-size: 1.25em;
+  font-size:1.25em;
 }
 
 .bnomics-altcoin-bg {
-    min-height: 180px;
+  min-height: 180px;
 }
 
-.bnomics-altcoin-bg-color {
-    padding: 15px 10%;
+.bnomics-altcoin-bg-color{
+  padding: 15px 10%;
 }
 
-.bnomics-altcoin-cancel {
-    margin-top: 5px;
+.bnomics-altcoin-cancel{
+  margin-top:5px;
 }
 
-.bnomics-copy-text {
+.bnomics-copy-text{
     padding-bottom: 15px !important;
 }
 
 .bnomics-status-flex {
-    padding-top: 10px;
-    padding-bottom: 10px;
+  padding-top:10px;
+  padding-bottom:10px;
 }
 
 .bnomics-status-flex > div {
-    text-align: center;
-    padding: 5px;
+  text-align: center;
+  padding: 5px;
 }
 
 .bnomics-horizontal-align {
-    margin: auto;
+  margin: auto;
 }
 
-.bnomics-alt-icon {
-    width: 100% !important;
-    font-size: 60px !important;
-    margin: 25px 0px !important;
+.bnomics-alt-icon{
+  width: 100% !important;
+  font-size:60px !important;
+  margin: 25px 0px !important;
 }
 
-.bnomics-small {
-    font-size: 0.8em;
+.bnomics-small{
+  font-size: 0.8em;
 }
 
-.bnomics-bold {
-    font-weight: bold;
+.bnomics-bold{
+  font-weight: bold;
 }
 
-.bnomics-left {
-    text-align: left;
+.bnomics-left{
+  text-align: left;
 }
 
 .bnomics-display-error {
-    animation: errorAnimation 0s 3s forwards;
-    height: 0;
-    width: 0;
-    overflow: hidden;
-    display: inline-block;
-    vertical-align: middle;
+  animation: errorAnimation 0s 3s forwards;
+  height: 0; 
+  width: 0;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 @keyframes errorAnimation {
-    to {
-        width: auto;
-        height: auto;
-    }
+  to   { width:auto;height: auto; }
 }
 
 /* ---- Mobile -----*/
 @media screen and (max-width: 800px) {
-    .bnomics-btc-info {
-        display: block !important;
-    }
+  .bnomics-btc-info {
+    display: block !important;
+  }
 
-    .bnomics-order-container {
-        text-align: center;
-    }
+  .bnomics-order-container {
+    text-align: center;
+  }
 
-    .bnomics-order-container h5 {
-        margin: 10px 0;
-    }
+  .bnomics-order-container h5 {
+    margin: 10px 0;
+  }
 
-    .bnomics-altcoin-pane {
-        display: block;
-    }
+  .bnomics-altcoin-pane {
+    display: block;
+  }
 
-    .bnomics-order-info {
-        display: block;
-    }
-
-    .bnomics-copy-icon {
-        display: none !important;
-    }
+  .bnomics-order-info {
+    display: block;
+  }
+  .bnomics-copy-icon {
+    display:none !important;
+  }
 }
 
 /* ---- Spinner ---- */
 .bnomics-spinner {
-    display: inline-block;
-    width: 70px;
-    height: 70px;
-    border: 3px solid rgba(255, 255, 255, .3);
-    border-radius: 50%;
-    border-top-color: #000;
-    animation: spin 1s ease-in-out infinite;
-    -webkit-animation: spin 1s ease-in-out infinite;
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+  border: 3px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  border-top-color: #000;
+  animation: spin 1s ease-in-out infinite;
+  -webkit-animation: spin 1s ease-in-out infinite;
 }
 
 @keyframes spin {
-    to {
-        -webkit-transform: rotate(360deg);
-    }
+  to { -webkit-transform: rotate(360deg); }
 }
-
 @-webkit-keyframes spin {
-    to {
-        -webkit-transform: rotate(360deg);
-    }
+  to { -webkit-transform: rotate(360deg); }
 }
 
 .rotateimgbtc {
-    -webkit-transform: rotate(15deg);
-    -moz-transform: rotate(15deg);
-    -ms-transform: rotate(15deg);
-    -o-transform: rotate(15deg);
-    transform: rotate(15deg)
+  -webkit-transform:rotate(15deg);
+  -moz-transform: rotate(15deg);
+  -ms-transform: rotate(15deg);
+  -o-transform: rotate(15deg);
+  transform: rotate(15deg)
 }
 
 .rotateimgbch {
-    -webkit-transform: rotate(-15deg);
-    -moz-transform: rotate(-15deg);
-    -ms-transform: rotate(-15deg);
-    -o-transform: rotate(-15deg);
-    transform: rotate(-15deg)
+  -webkit-transform:rotate(-15deg);
+  -moz-transform: rotate(-15deg);
+  -ms-transform: rotate(-15deg);
+  -o-transform: rotate(-15deg);
+  transform: rotate(-15deg)
 }

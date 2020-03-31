@@ -4,24 +4,24 @@ require_once(dirname(__FILE__) . '/Blockonomics/Blockonomics.php');
 
 use Blockonomics\Blockonomics;
 
-function blockonomics_config()
-{
+function blockonomics_config() {
 
-    // When loading plugin setup page, run custom JS
-    add_hook('AdminAreaFooterOutput', 1, function ($vars) {
-        try {
-            // Detect module name from filename.
-            $gatewayModuleName = basename(__FILE__, '.php');
-            // Fetch gateway configuration parameters.
-            $gatewayParams = getGatewayVariables($gatewayModuleName);
-        } catch (exception $e) {
-            return false;
-        }
-        $blockonomics = new Blockonomics();
-        $system_url = $blockonomics->getSystemUrl();
-        $callback_url = $blockonomics->getCallbackUrl();
+	// When loading plugin setup page, run custom JS
+	add_hook('AdminAreaFooterOutput', 1, function($vars) {
+		try {
+		    // Detect module name from filename.
+			$gatewayModuleName = basename(__FILE__, '.php');
+			// Fetch gateway configuration parameters.
+			$gatewayParams = getGatewayVariables($gatewayModuleName);
+		}
+		catch (exception $e) {
+		    return;
+		}
+		$blockonomics = new Blockonomics();
+		$system_url = $blockonomics->getSystemUrl();
+		$callback_url = $blockonomics->getCallbackUrl();
 
-        return <<<HTML
+		return <<<HTML
 		<script type="text/javascript">
 			/**
 			 * Disable callback url editing
@@ -133,87 +133,86 @@ function blockonomics_config()
 		</script>
 HTML;
 
-    });
+	});
 
-    $blockonomics = new Blockonomics();
-    $blockonomics->createOrderTableIfNotExist();
+	$blockonomics = new Blockonomics();
+	$blockonomics->createOrderTableIfNotExist();
+	
+	$settings_array = array(
+		'FriendlyName' => array(
+			'Type'       => 'System',
+			'Value'      => 'Blockonomics'
+		)
+	);
+	$settings_array['ApiKey'] = array(
+		'FriendlyName' => 'API Key',
+		'Description'  => 'BLOCKONOMICS API KEY (Click "Get Started For Free" on <a target="_blank" href="https://www.blockonomics.co/blockonomics#/merchants">Merchants</a> and follow setup wizard)',
+		'Type'         => 'text'
+	);
 
-    $settings_array = array(
-        'FriendlyName' => array(
-            'Type' => 'System',
-            'Value' => 'Blockonomics'
-        )
-    );
-    $settings_array['ApiKey'] = array(
-        'FriendlyName' => 'API Key',
-        'Description' => 'BLOCKONOMICS API KEY (Click "Get Started For Free" on <a target="_blank" href="https://www.blockonomics.co/blockonomics#/merchants">Merchants</a> and follow setup wizard)',
-        'Type' => 'text'
-    );
-
-    $blockonomics_currencies = $blockonomics->getSupportedCurrencies();
-    foreach ($blockonomics_currencies as $code => $currency) {
-        if ($code != 'btc') {
-            $settings_array[$code . 'Enabled'] = array(
-                'FriendlyName' => strtoupper($code) . ' Enabled',
-                'Type' => 'yesno',
-                'Description' => 'Select if you want to accept ' . $currency['name']
-            );
-        }
-    }
-    $settings_array['CallbackURL'] = array(
-        'FriendlyName' => 'Callback URL',
-        'Description' => 'Copy this url and set in <a target="_blank" href="https://www.blockonomics.co/merchants#/page3">Merchants</a>',
-        'Type' => 'text'
-    );
-    $settings_array['TimePeriod'] = array(
-        'FriendlyName' => 'Time Period',
-        'Type' => 'dropdown',
-        'Options' => array(
-            '10' => '10',
-            '15' => '15',
-            '20' => '20',
-            '25' => '25',
-            '30' => '30',
-        ),
-        'Description' => 'Time period of countdown timer on payment page (in minutes)',
-    );
-    $settings_array['Margin'] = array(
-        'FriendlyName' => 'Extra Currency Rate Margin %',
-        'Type' => 'text',
-        'Size' => '5',
-        'Default' => 0,
-        'Description' => 'Increase live fiat to BTC rate by small percent',
-    );
-    $settings_array['Slack'] = array(
-        'FriendlyName' => 'Underpayment Slack %',
-        'Type' => 'text',
-        'Size' => '5',
-        'Default' => 0,
-        'Description' => 'Allow payments that are off by a small percentage',
-    );
-    $settings_array['Confirmations'] = array(
-        'FriendlyName' => 'Confirmations',
-        'Type' => 'dropdown',
-        'Default' => 2,
-        'Options' => array(
-            '2' => '2 (recommended)',
-            '1' => '1',
-            '0' => '0'
-        ),
-        'Description' => 'Network Confirmations required for payment to complete',
-    );
-
-    return $settings_array;
+	$blockonomics_currencies = $blockonomics->getSupportedCurrencies();
+	foreach ($blockonomics_currencies as $code => $currency) {
+		if($code != 'btc'){
+			$settings_array[ $code.'Enabled' ] = array(
+				'FriendlyName' => strtoupper($code).' Enabled',
+				'Type' => 'yesno',
+				'Description' => 'Select if you want to accept '.$currency['name']
+			);
+		}
+	}
+	$settings_array[ 'CallbackURL' ] = array(
+			'FriendlyName' => 'Callback URL',
+			'Description'  => 'Copy this url and set in <a target="_blank" href="https://www.blockonomics.co/merchants#/page3">Merchants</a>',
+			'Type'         => 'text'
+		);
+	$settings_array[ 'TimePeriod' ] = array(
+			'FriendlyName' => 'Time Period',
+			'Type' => 'dropdown',
+			'Options' => array(
+				'10' => '10',
+				'15' => '15',
+				'20' => '20',
+				'25' => '25',
+				'30' => '30',
+			),
+			'Description' => 'Time period of countdown timer on payment page (in minutes)',
+		);
+	$settings_array[ 'Margin' ] = array(
+				'FriendlyName' => 'Extra Currency Rate Margin %',
+				'Type' => 'text',
+				'Size' => '5',
+				'Default' => 0,
+				'Description' => 'Increase live fiat to BTC rate by small percent',
+		);
+	$settings_array[ 'Slack' ] = array(
+				'FriendlyName' => 'Underpayment Slack %',
+				'Type' => 'text',
+				'Size' => '5',
+				'Default' => 0,
+				'Description' => 'Allow payments that are off by a small percentage',
+		);
+	$settings_array[ 'Confirmations' ] = array(
+			'FriendlyName' => 'Confirmations',
+			'Type' => 'dropdown',
+			'Default' => 2,
+			'Options' => array(
+				'2' => '2 (recommended)',
+				'1' => '1',
+				'0' => '0'
+			),
+			'Description' => 'Network Confirmations required for payment to complete',
+		);
+	
+	return $settings_array;
 }
 
-function blockonomics_link($params)
-{
+function blockonomics_link($params) {
+	
+	if (false === isset($params) || true === empty($params)) {
+		die('[ERROR] In modules/gateways/Blockonomics.php::Blockonomics_link() function: Missing or invalid $params data.');
+	}
 
-    if (false === isset($params) || true === empty($params)) {
-        die('[ERROR] In modules/gateways/Blockonomics.php::Blockonomics_link() function: Missing or invalid $params data.');
-    }
-
-    $blockonomics = new Blockonomics();
+	$blockonomics = new Blockonomics();
 
     $order_hash = $blockonomics->getOrderHash($params['invoiceid'], $params['amount'], $params['currency']);
 

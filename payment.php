@@ -32,27 +32,27 @@ $order_hash = htmlspecialchars(isset($_REQUEST['order']) ? $_REQUEST['order'] : 
 $system_url = $blockonomics->getSystemUrl();
 $ca->assign('system_url', $system_url);
 
-if ($get_order) {
-    $blockonomics_currency = htmlspecialchars(isset($_REQUEST['blockonomics_currency']) ? $_REQUEST['blockonomics_currency'] : "");
-    $existing_order = $blockonomics->processOrderHash($get_order, $blockonomics_currency);
-    // No order exists, exit
-    if (is_null($existing_order->id_order)) {
-        exit;
-    } else {
-        header("Content-Type: application/json");
-        exit(json_encode($existing_order));
-    }
-} else if ($finish_order) {
-    $existing_order = $blockonomics->getOrderByAddress($finish_order);
-    $finish_url = $system_url . 'viewinvoice.php?id=' . $existing_order['order_id'] . '&paymentsuccess=true';
-    header("Location: $finish_url");
+if($get_order){
+	$blockonomics_currency = htmlspecialchars(isset($_REQUEST['blockonomics_currency']) ? $_REQUEST['blockonomics_currency'] : "");
+	$existing_order = $blockonomics->processOrderHash($get_order, $blockonomics_currency);
+	// No order exists, exit
+	if(is_null($existing_order->id_order)) {
+		exit;
+	} else {
+		header("Content-Type: application/json");
+		exit(json_encode($existing_order));
+	}
+}else if($finish_order){
+	$existing_order = $blockonomics->getOrderByAddress($finish_order);
+	$finish_url = $system_url . 'viewinvoice.php?id=' . $existing_order['order_id'] . '&paymentsuccess=true';
+	header("Location: $finish_url");
     exit();
-} else if (!$order_hash) {
-    echo "<b>Error: Failed to fetch order data.</b> <br>
+}else if(!$order_hash) {
+	echo "<b>Error: Failed to fetch order data.</b> <br>
 				Note to admin: Please check that your System URL is configured correctly.
 				If you are using SSL, verify that System URL is set to use HTTPS and not HTTP. <br>
 				To configure System URL, please go to WHMCS admin > Setup > General Settings > General";
-    exit;
+	exit;
 }
 
 $ca->assign('order_uuid', $order_hash);
@@ -63,11 +63,11 @@ $ca->assign('time_period', $time_period);
 
 $active_currencies = $blockonomics->getActiveCurrencies();
 if ($active_currencies) {
-    $ca->assign('active_currencies', json_encode($active_currencies));
-} else {
-    echo "<b>Error: No active blockonomics currencies.</b> <br>
+	$ca->assign('active_currencies', json_encode($active_currencies));
+}else{
+	echo "<b>Error: No active blockonomics currencies.</b> <br>
 				Note to admin: Check your API keys are configured.";
-    exit;
+	exit;
 }
 
 $order_id = $blockonomics->getOrderIdByHash($order_hash);
@@ -78,4 +78,4 @@ $ca->setTemplate('../blockonomics/payment');
 
 $ca->output();
 
-
+?>
