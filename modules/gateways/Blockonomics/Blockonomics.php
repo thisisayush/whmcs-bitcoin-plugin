@@ -280,7 +280,7 @@ class Blockonomics {
 							$table->integer('id_order');
 							$table->text('txid');
 							$table->integer('timestamp');
-							$table->text('addr');
+							$table->string('addr');
 							$table->integer('status');
 							$table->decimal('value', 10, 2);
 							$table->integer('bits');
