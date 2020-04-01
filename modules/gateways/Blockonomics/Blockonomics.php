@@ -392,20 +392,21 @@ class Blockonomics {
 	/*
 	 * Check for unused address for the currency linked to the order
 	 */		
-    public function getAndUpdateWaitingOrder($orders, $currency, $blockonomics_currency)
+    public function getAndUpdateWaitingOrder($orders, $order_info, $blockonomics_currency)
     {
         foreach ($orders as $order) {
             //check for currency address already waiting
             if ($order->blockonomics_currency == $blockonomics_currency && $order->status == -1) {
+            	$order->value = $order_info->value;
                 //Check if existing order is expired
                 $current_time = time();
                 $total_time = $this->getTimePeriod() * 60;
                 $clock = $order->timestamp + $total_time - $current_time;
                 if ($clock < 0) {
-                    $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $currency, $order->blockonomics_currency);
+                    $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order_info->currency, $blockonomics_currency);
                     $order->timestamp = $current_time;
                 }
-                $this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->bits);
+                $this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->value, $order->bits);
                 return $order;
             }
         }
@@ -471,7 +472,7 @@ class Blockonomics {
 	            return $pending_payment;
 	        }
 	        // Check for existing address
-	        $address_waiting = $this->getAndUpdateWaitingOrder($orders, $order_info->currency, $blockonomics_currency);
+	        $address_waiting = $this->getAndUpdateWaitingOrder($orders, $order_info, $blockonomics_currency);
 	        if ($address_waiting) {
 	        	$address_waiting->currency = $order_info->currency;
 	            return $address_waiting;
@@ -539,12 +540,13 @@ class Blockonomics {
 	/*
 	 * Update existing order's expected amount and FIAT amount. Use WHMCS invoice id as key
 	 */
-	public function updateOrderExpected($address, $blockonomics_currency, $timestamp, $bits) {
+	public function updateOrderExpected($address, $blockonomics_currency, $timestamp, $value, $bits) {
 		try {
 			Capsule::table('blockonomics_orders')
 					->where('addr', $address)
 					->update([
 						'blockonomics_currency' => $blockonomics_currency,
+						'value' => $value,
 						'bits' => $bits,
 						'timestamp' => $timestamp
 					]
