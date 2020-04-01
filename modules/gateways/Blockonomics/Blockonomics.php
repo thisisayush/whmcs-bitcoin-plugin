@@ -160,7 +160,7 @@ class Blockonomics {
 	 * Get the BTC price that was calculated when the order price was last updated
 	 */
 	public function getPriceByExpected($invoiceId) {
-		$query = Capsule::table('blockonomics_bitcoin_orders')
+		$query = Capsule::table('blockonomics_orders')
 			->where('id_order', $invoiceId)
 			->select('value');
 		$prices = $query->addSelect('bits')->get();
@@ -273,46 +273,25 @@ class Blockonomics {
 	 */
 	public function createOrderTableIfNotExist() {
 
-		if (!Capsule::schema()->hasTable('blockonomics_bitcoin_orders')) {
+		if (!Capsule::schema()->hasTable('blockonomics_orders')) {
 
 			try {
-				Capsule::schema()->create( 'blockonomics_bitcoin_orders', function ($table) {
-							$table->increments('id');
+				Capsule::schema()->create( 'blockonomics_orders', function ($table) {
 							$table->integer('id_order');
 							$table->text('txid');
 							$table->integer('timestamp');
 							$table->text('addr');
 							$table->integer('status');
-							$table->float('value');
+							$table->decimal('value', 10, 2);
 							$table->integer('bits');
 							$table->integer('bits_payed');
 							$table->string('blockonomics_currency');
+							$table->primary('addr');
+							$table->index('id_order');
 						}
 				);
 			} catch (Exception $e) {
-					exit("Unable to create blockonomics_bitcoin_orders: {$e->getMessage()}");
-			}
-		}else{
-			if(!Capsule::schema()->hasColumn('blockonomics_bitcoin_orders', 'blockonomics_currency')){
-				 Capsule::schema()->table('blockonomics_bitcoin_orders', function($table){
-					$table->string('blockonomics_currency');
-					// Add btc as the blockonomics_currency for existing orders
-					try {
-						Capsule::table('blockonomics_bitcoin_orders')
-								->where('blockonomics_currency', '')
-								->update([
-									'blockonomics_currency' => 'btc'
-								]
-							);
-					} catch (Exception $e) {
-						exit("Unable to set default value for existing blockonomics_bitcoin_orders: {$e->getMessage()}");
-					}
-				 });
-			}
-			if(Capsule::schema()->hasColumn('blockonomics_bitcoin_orders', 'flyp_id')){
-			    Capsule::schema()->table('blockonomics_bitcoin_orders', function($table){
-			        $table->dropColumn('flyp_id');
-			    });
+					exit("Unable to create blockonomics_orders: {$e->getMessage()}");
 			}
 		}
 	}
@@ -388,11 +367,11 @@ class Blockonomics {
 	 */	
 	public function getAllOrdersById($order_id) {
 		try {
-			return Capsule::table('blockonomics_bitcoin_orders')
+			return Capsule::table('blockonomics_orders')
 				->where('id_order', $order_id)
 				->orderBy('timestamp', 'desc')->get();
 		} catch (Exception $e) {
-				exit("Unable to get orders from blockonomics_bitcoin_orders: {$e->getMessage()}");
+				exit("Unable to get orders from blockonomics_orders: {$e->getMessage()}");
 		}
 	}
 
@@ -440,7 +419,7 @@ class Blockonomics {
     public function insertOrderToDb($id_order, $blockonomics_currency, $address, $value, $bits)
     {
         try {
-            Capsule::table('blockonomics_bitcoin_orders')->insert(
+            Capsule::table('blockonomics_orders')->insert(
                 [
                     'id_order' => $id_order,
                     'blockonomics_currency' => $blockonomics_currency,
@@ -452,7 +431,7 @@ class Blockonomics {
                 ]
             );
         } catch (Exception $e) {
-            exit("Unable to insert new order into blockonomics_bitcoin_orders: {$e->getMessage()}");
+            exit("Unable to insert new order into blockonomics_orders: {$e->getMessage()}");
         }
         return true;
     }
@@ -511,11 +490,11 @@ class Blockonomics {
 	 */
 	public function getOrderByAddress($bitcoinAddress) {
 		try {
-			$existing_order = Capsule::table('blockonomics_bitcoin_orders')
+			$existing_order = Capsule::table('blockonomics_orders')
 				->where('addr', $bitcoinAddress)
 				->first();
 		} catch (Exception $e) {
-				exit("Unable to select order from blockonomics_bitcoin_orders: {$e->getMessage()}");
+				exit("Unable to select order from blockonomics_orders: {$e->getMessage()}");
 		}
 
         return array(
@@ -544,7 +523,7 @@ class Blockonomics {
 	 */
 	public function updateOrderInDb($addr, $txid, $status, $bits_payed) {
 		try {
-			Capsule::table('blockonomics_bitcoin_orders')
+			Capsule::table('blockonomics_orders')
 					->where('addr', $addr)
 					->update([
 						'txid' => $txid,
@@ -553,7 +532,7 @@ class Blockonomics {
 					]
 				);
 			} catch (Exception $e) {
-				exit("Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}");
+				exit("Unable to update order to blockonomics_orders: {$e->getMessage()}");
 		}
 	}
 
@@ -562,7 +541,7 @@ class Blockonomics {
 	 */
 	public function updateOrderExpected($address, $blockonomics_currency, $timestamp, $bits) {
 		try {
-			Capsule::table('blockonomics_bitcoin_orders')
+			Capsule::table('blockonomics_orders')
 					->where('addr', $address)
 					->update([
 						'blockonomics_currency' => $blockonomics_currency,
@@ -571,7 +550,7 @@ class Blockonomics {
 					]
 				);
 		} catch (Exception $e) {
-			exit("Unable to update order to blockonomics_bitcoin_orders: {$e->getMessage()}");
+			exit("Unable to update order to blockonomics_orders: {$e->getMessage()}");
 		}
 	}
 
