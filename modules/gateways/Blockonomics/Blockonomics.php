@@ -380,9 +380,10 @@ class Blockonomics {
 	 */	
     public function getPendingOrder($orders)
     {
+    	$network_confirmations = $this->getConfirmations();
         foreach ($orders as $order) {
             //check if status 0 or 1
-            if ($order->status == 0 || $order->status == 1) {
+            if ($order->status > -1 && $order->status < $network_confirmations) {
                 return $order;
             }
         }
