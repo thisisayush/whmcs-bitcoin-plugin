@@ -398,14 +398,8 @@ class Blockonomics {
             //check for currency address already waiting
             if ($order->blockonomics_currency == $blockonomics_currency && $order->status == -1) {
             	$order->value = $order_info->value;
-                //Check if existing order is expired
-                $current_time = time();
-                $total_time = $this->getTimePeriod() * 60;
-                $clock = $order->timestamp + $total_time - $current_time;
-                if ($clock < 0) {
-                    $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order_info->currency, $blockonomics_currency);
-                    $order->timestamp = $current_time;
-                }
+                $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order_info->currency, $blockonomics_currency);
+                $order->timestamp = time();
                 $this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->value, $order->bits);
                 return $order;
             }
