@@ -391,15 +391,16 @@ class Blockonomics {
     }
 
 	/*
-	 * Check for unused address for the currency linked to the order
+	 * Fetch unused order for the blockonomics_currency and update order values
 	 */		
-    public function getAndUpdateWaitingOrder($orders, $order_info, $blockonomics_currency)
+    public function getAndUpdateWaitingOrder($orders, $supplied_info, $blockonomics_currency)
     {
         foreach ($orders as $order) {
             //check for currency address already waiting
             if ($order->blockonomics_currency == $blockonomics_currency && $order->status == -1) {
-            	$order->value = $order_info->value;
-                $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order_info->currency, $blockonomics_currency);
+            	$order->value = $supplied_info->value;
+            	$order->currency = $supplied_info->currency;
+                $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->currency, $blockonomics_currency);
                 $order->timestamp = time();
                 $this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->value, $order->bits);
                 return $order;
@@ -469,7 +470,6 @@ class Blockonomics {
 	        // Check for existing address
 	        $address_waiting = $this->getAndUpdateWaitingOrder($orders, $order_info, $blockonomics_currency);
 	        if ($address_waiting) {
-	        	$address_waiting->currency = $order_info->currency;
 	            return $address_waiting;
 	        }
         }
