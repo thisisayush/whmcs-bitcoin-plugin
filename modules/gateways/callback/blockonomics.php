@@ -49,11 +49,15 @@ $confirmations = $blockonomics->getConfirmations();
 
 $blockonomics_currency_code = $order['blockonomics_currency'];
 $blockonomics_currency = $blockonomics->getSupportedCurrencies()[$blockonomics_currency_code];
-
+if($blockonomics_currency_code=='btc'){
+	$subdomain = 'www';
+}else{
+	$subdomain = $currency;
+}
 if($status < $confirmations) {
 	$invoiceNote = "<b>Waiting for Confirmation on <img src=\"img/".$blockonomics_currency_code.".png\" style=\"max-width: 20px;\"> ".$blockonomics_currency->name." network</b>\r\r" .
 		$blockonomics_currency->name." transaction id:\r" .
-		"<a target=\"_blank\" href=\"https://".$blockonomics_currency_code.".blockonomics.co/api/tx?txid=$txid&addr=$addr\">$txid</a>";
+		"<a target=\"_blank\" href=\"https://".$subdomain.".blockonomics.co/api/tx?txid=$txid&addr=$addr\">$txid</a>";
 
 	$blockonomics->updateOrderInDb($addr, $txid, $status, $value);
 	$blockonomics->updateInvoiceNote($invoiceId, $invoiceNote);
