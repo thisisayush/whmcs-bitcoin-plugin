@@ -52,7 +52,7 @@ $blockonomics_currency = $blockonomics->getSupportedCurrencies()[$blockonomics_c
 if($blockonomics_currency_code=='btc'){
 	$subdomain = 'www';
 }else{
-	$subdomain = $currency;
+	$subdomain = $blockonomics_currency_code;
 }
 if($status < $confirmations) {
 	$invoiceNote = "<b>Waiting for Confirmation on <img src=\"img/".$blockonomics_currency_code.".png\" style=\"max-width: 20px;\"> ".$blockonomics_currency->name." network</b>\r\r" .
