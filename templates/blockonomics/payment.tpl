@@ -31,7 +31,7 @@
       <!-- BCH Address Error -->
       <div id="address-error-bch" ng-show="address_error_bch" ng-cloak>
         <h2>Could not generate new Bitcoin Cash address.</h2>
-        <p>Note to webmaster: Please follow the instructions <a href="https://help.blockonomics.co/">here</a> to configure BCH payments.</p>
+        <p>Note to webmaster: Please follow the instructions <a href="https://help.blockonomics.co/support/solutions/articles/33000251576-bch-setup-on-whmcs" target="_blank">here</a> to configure BCH payments.</p>
       </div>
       <!-- Pending payment -->
       <div id="pending-error" ng-show="pending_error" ng-cloak>
