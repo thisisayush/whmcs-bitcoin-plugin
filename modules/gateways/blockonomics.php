@@ -162,7 +162,6 @@ HTML;
 	}
 	$settings_array[ 'CallbackURL' ] = array(
 			'FriendlyName' => 'Callback URL',
-			'Description'  => 'Copy this url and set in <a target="_blank" href="https://www.blockonomics.co/merchants#/page3">Merchants</a>',
 			'Type'         => 'text'
 		);
 	$settings_array[ 'TimePeriod' ] = array(
