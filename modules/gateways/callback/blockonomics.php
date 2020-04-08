@@ -69,7 +69,7 @@ if($value < $bits - $underpayment_slack) {
 	$price_by_expected = $blockonomics->getPriceByExpected($invoiceId);
 	$paymentAmount = round($paid*$price_by_expected, 2);
 } else {
-	$paymentAmount = '';
+	$paymentAmount = $order['value'];
 }
 
 $blockonomics->updateInvoiceNote($invoiceId, null);
