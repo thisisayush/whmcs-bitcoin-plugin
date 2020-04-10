@@ -139,36 +139,8 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
         $scope.currency_selecter  = true;
         $scope.spinner = false;
     }
-    
-    //Copy bitcoin address to clipboard
-    $scope.blockonomics_address_click = function() {
-        // Create a new textarea element and give it id='temp_element'
-        var textarea = document.createElement('textarea');
-        textarea.id = 'temp_element';
-        // Optional step to make less noise on the page, if any!
-        textarea.style.height = 0;
-        // Now append it to your page somewhere, I chose <body>
-        document.body.appendChild(textarea);
-        var divid = "bnomics-address-copy";
-        // Give our textarea a value of whatever inside the div of id=containerid
-        textarea.value = document.getElementById(divid).innerText;
-        // Now copy whatever inside the textarea to clipboard
-        var selector = document.querySelector('#temp_element');
-        selector.select();
-        document.execCommand('copy');
-        // Remove the textarea
-        document.body.removeChild(textarea);
 
-        selectText(divid);
-
-        $scope.address_copyshow = true;
-        $timeout(function() {
-            $scope.address_copyshow = false;
-            //Close copy to clipboard message after 2 sec
-        }, 2000);
-    }
-
-    function selectText(divid)
+    function select_text(divid)
     {
         selection = window.getSelection();
         var div = document.createRange();
@@ -179,8 +151,8 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
         selection.addRange(div);
     }
 
-    //Copy bitcoin amount to clipboard
-    $scope.blockonomics_amount_click = function() {
+    function copy_to_clipboard(divid)
+    {
         // Create a new textarea element and give it id='temp_element'
         var textarea = document.createElement('textarea');
         textarea.id = 'temp_element';
@@ -188,7 +160,6 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
         textarea.style.height = 0;
         // Now append it to your page somewhere, I chose <body>
         document.body.appendChild(textarea);
-        var divid = "bnomics-amount-copy";
         // Give our textarea a value of whatever inside the div of id=containerid
         textarea.value = document.getElementById(divid).innerText;
         // Now copy whatever inside the textarea to clipboard
@@ -198,13 +169,23 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
         // Remove the textarea
         document.body.removeChild(textarea);
 
-        selectText(divid);
+        select_text(divid);
 
-        $scope.amount_copyshow = true;
+        $scope.address_copyshow = true;
         $timeout(function() {
-            $scope.amount_copyshow = false;
+            $scope.address_copyshow = false;
             //Close copy to clipboard message after 2 sec
         }, 2000);
+    }
+
+    //Copy bitcoin address to clipboard
+    $scope.blockonomics_address_click = function() {
+        copy_to_clipboard("bnomics-address-copy");
+    }
+
+    //Copy bitcoin amount to clipboard
+    $scope.blockonomics_amount_click = function() {
+        copy_to_clipboard("bnomics-amount-copy");
     }
     //Copy bitcoin address to clipboard
     $scope.try_again_click = function() {
