@@ -16,18 +16,6 @@ app.config(function($compileProvider) {
     // Angular before v1.2 uses $compileProvider.urlSanitizationWhitelist(...)
 });
 
-function getParameterByNameBlocko(name, url) {
-    if (!url) {
-        url = window.location.href;
-    }
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-
 //CheckoutController
 app.controller('CheckoutController', function($scope, $interval, Order, $httpParamSerializer, $timeout) {
     //get order uuid from url
@@ -52,18 +40,6 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
     $scope.finish_order_url = function() {
         var params = {};
         params.finish_order = $scope.order_id;
-        url = window.location.pathname;
-        var serializedParams = $httpParamSerializer(params);
-        if (serializedParams.length > 0) {
-            url += ((url.indexOf('?') === -1) ? '?' : '&') + serializedParams;
-        }
-        return url;
-    }
-
-    //Create url for altcoin payment
-    $scope.alt_track_url = function(uuid) {
-        var params = {};
-        params.uuid = uuid;
         url = window.location.pathname;
         var serializedParams = $httpParamSerializer(params);
         if (serializedParams.length > 0) {
