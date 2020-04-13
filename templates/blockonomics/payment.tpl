@@ -1,6 +1,4 @@
 <link rel="stylesheet" type="text/css" href="css/order.css">
-<link rel="stylesheet" type="text/css" href="css/icons/icons.css">
-<link rel="stylesheet" type="text/css" href="css/cryptofont/cryptofont.min.css">
 
 <div id="system-url" data-url="{$system_url}"></div>
 <div id="time_period" data-time_period="{$time_period}"></div>
