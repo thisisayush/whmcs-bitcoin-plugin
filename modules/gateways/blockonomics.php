@@ -138,22 +138,33 @@ HTML;
 	$blockonomics = new Blockonomics();
 	$blockonomics->createOrderTableIfNotExist();
 	
-	return array(
+	$settings_array = array(
 		'FriendlyName' => array(
 			'Type'       => 'System',
 			'Value'      => 'Blockonomics'
-		),
-		'ApiKey' => array(
-			'FriendlyName' => 'API Key',
-			'Description'  => 'BLOCKONOMICS API KEY (Click "Get Started For Free" on <a target="_blank" href="https://www.blockonomics.co/blockonomics#/merchants">Merchants</a> and follow setup wizard)  ',
-			'Type'         => 'text'
-		),
-		'CallbackURL' => array(
+		)
+	);
+	$settings_array['ApiKey'] = array(
+		'FriendlyName' => 'API Key',
+		'Description'  => 'BLOCKONOMICS API KEY (Click "Get Started For Free" on <a target="_blank" href="https://www.blockonomics.co/blockonomics#/merchants">Merchants</a> and follow setup wizard)',
+		'Type'         => 'text'
+	);
+
+	$blockonomics_currencies = $blockonomics->getSupportedCurrencies();
+	foreach ($blockonomics_currencies as $code => $currency) {
+		if($code != 'btc'){
+			$settings_array[ $code.'Enabled' ] = array(
+				'FriendlyName' => strtoupper($code).' Enabled',
+				'Type' => 'yesno',
+				'Description' => 'Select if you want to accept '.$currency['name']
+			);
+		}
+	}
+	$settings_array[ 'CallbackURL' ] = array(
 			'FriendlyName' => 'Callback URL',
-			'Description'  => 'CALLBACK URL (Copy this url and set in <a target="_blank" href="https://www.blockonomics.co/merchants#/page6">Merchants</a>)',
 			'Type'         => 'text'
-		),
-		'TimePeriod' => array(
+		);
+	$settings_array[ 'TimePeriod' ] = array(
 			'FriendlyName' => 'Time Period',
 			'Type' => 'dropdown',
 			'Options' => array(
@@ -164,27 +175,22 @@ HTML;
 				'30' => '30',
 			),
 			'Description' => 'Time period of countdown timer on payment page (in minutes)',
-		),
-		'Altcoins' => array(
-				'FriendlyName' => 'Altcoins enabled',
-				'Type' => 'yesno',
-				'Description' => 'Select if you want to accept altcoins via Flyp.me',
-		),
-		'Margin' => array(
+		);
+	$settings_array[ 'Margin' ] = array(
 				'FriendlyName' => 'Extra Currency Rate Margin %',
 				'Type' => 'text',
 				'Size' => '5',
 				'Default' => 0,
 				'Description' => 'Increase live fiat to BTC rate by small percent',
-		),
-		'Slack' => array(
+		);
+	$settings_array[ 'Slack' ] = array(
 				'FriendlyName' => 'Underpayment Slack %',
 				'Type' => 'text',
 				'Size' => '5',
 				'Default' => 0,
 				'Description' => 'Allow payments that are off by a small percentage',
-			),
-		'Confirmations' => array(
+		);
+	$settings_array[ 'Confirmations' ] = array(
 			'FriendlyName' => 'Confirmations',
 			'Type' => 'dropdown',
 			'Default' => 2,
@@ -194,8 +200,9 @@ HTML;
 				'0' => '0'
 			),
 			'Description' => 'Network Confirmations required for payment to complete',
-		),
-	);
+		);
+	
+	return $settings_array;
 }
 
 function blockonomics_link($params) {
@@ -205,15 +212,17 @@ function blockonomics_link($params) {
 	}
 
 	$blockonomics = new Blockonomics();
-	$system_url = $blockonomics->getSystemUrl();
-	$form_url = $system_url . 'payment.php';
 
-	$form = '<form action="' . $form_url . '" method="POST">';
-	$form .= '<input type="hidden" name="price" value="'. $params['amount'] .'"/>';
-	$form .= '<input type="hidden" name="currency" value="'. $params['currency'] .'"/>';
-	$form .= '<input type="hidden" name="order_id" value="'. $params['invoiceid'] .'"/>';
-	$form .= '<input type="submit" value="'. $params['langpaynow'] .'"/>';
-	$form .= '</form>';
+    $order_hash = $blockonomics->getOrderHash($params['invoiceid'], $params['amount'], $params['currency']);
 
-	return $form;
+    $system_url = $blockonomics->getSystemUrl();
+    $form_url = $system_url . 'payment.php';
+
+    //pass only the uuid to the payment page
+    $form = '<form action="' . $form_url . '" method="GET">';
+    $form .= '<input type="hidden" name="order" value="' . $order_hash . '"/>';
+    $form .= '<input type="submit" value="' . $params['langpaynow'] . '"/>';
+    $form .= '</form>';
+
+    return $form;
 }
