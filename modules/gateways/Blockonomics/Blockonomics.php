@@ -8,6 +8,15 @@ use WHMCS\Database\Capsule;
 
 class Blockonomics {
 
+	private $version = '1.5.3';
+
+	/*
+	 * Get the blockonomics version
+	 */
+	public function getVersion() {
+		return $this->version;
+	}
+
 	/*
 	 * Get callback secret and SystemURL to form the callback URL
 	 */
