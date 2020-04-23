@@ -8,7 +8,7 @@ use WHMCS\Database\Capsule;
 
 class Blockonomics {
 
-	private $version = '1.5.3';
+	private $version = '1.4.91';
 
 	/*
 	 * Get the blockonomics version
