@@ -142,6 +142,10 @@ HTML;
 		'FriendlyName' => array(
 			'Type'       => 'System',
 			'Value'      => 'Blockonomics'
+		),
+		array(
+			'FriendlyName' => '<span style="color:grey;">Version</span>',
+			'Description'  => '<span style="color:grey;">'.$blockonomics->getVersion().'</span>'
 		)
 	);
 	$settings_array['ApiKey'] = array(
