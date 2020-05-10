@@ -65,6 +65,11 @@ if($status < $confirmations) {
 	die();
 }
 
+//check if txid already present
+if (isset($order['txid']) && $order['txid'] == $txid) {
+    die();
+}
+
 $expected = $bits / 1.0e8;
 $paid = $value / 1.0e8;
 

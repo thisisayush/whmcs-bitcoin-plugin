@@ -503,14 +503,14 @@ class Blockonomics {
 		}
 
         return array(
-            "id" => $existing_order->id,
             "order_id" => $existing_order->id_order,
             "timestamp"=> $existing_order->timestamp,
             "status" => $existing_order->status,
             "value" => $existing_order->value,
             "bits" => $existing_order->bits,
             "bits_payed" => $existing_order->bits_payed,
-            "blockonomics_currency" => $existing_order->blockonomics_currency
+            "blockonomics_currency" => $existing_order->blockonomics_currency,
+            "txid" => $existing_order->txid,
         );
 	}
 
