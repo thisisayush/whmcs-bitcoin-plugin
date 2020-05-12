@@ -190,6 +190,18 @@ class Blockonomics {
 	}
 
 	/*
+	 * See if given txid is applied to any invoice
+	 */
+	public function checkIfTransactionExists($txid) {
+		$transaction = Capsule::table('tblaccounts')
+			->where('gateway', 'blockonomics')
+			->where('transid', $txid)
+			->value('id');
+
+		return isset($transaction);
+	}
+
+	/*
 	 * Get new address from Blockonomics Api
 	 */
 	public function getNewAddress($currency='btc', $reset=false) {

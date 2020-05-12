@@ -45,6 +45,11 @@ $order = $blockonomics->getOrderByAddress($addr);
 $invoiceId = $order['order_id'];
 $bits = $order['bits'];
 
+// If this is test transaction, generate new transaction ID
+if($txid == 'WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction') {
+	$txid = 'WarningThisIsATestTransaction_' . $invoiceId;
+}
+
 $confirmations = $blockonomics->getConfirmations();
 
 $blockonomics_currency_code = $order['blockonomics_currency'];
@@ -105,11 +110,9 @@ $invoiceId = checkCbInvoiceID($invoiceId, $gatewayParams['name']);
  * @param string $transactionId Unique Transaction ID
  */
 
-//check if txid already present
-if (isset($order['txid']) && $order['txid'] == $txid) {
-    die();
+if ($blockonomics->checkIfTransactionExists($blockonomics_currency_code ." - ". $txid)) {
+	die();
 }
-checkCbTransID($txid);
 
 /**
  * Log Transaction.
