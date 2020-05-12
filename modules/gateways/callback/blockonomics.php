@@ -105,11 +105,6 @@ $invoiceId = checkCbInvoiceID($invoiceId, $gatewayParams['name']);
  * @param string $transactionId Unique Transaction ID
  */
 
-// If this is test transaction, generate new transaction ID
-if($txid == 'WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction') {
-	$txid = 'WarningThisIsATestTransaction_' . md5(uniqid(rand(), true));
-}
-
 //check if txid already present
 if (isset($order['txid']) && $order['txid'] == $txid) {
     die();
