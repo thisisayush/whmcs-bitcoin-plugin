@@ -319,20 +319,11 @@ class Blockonomics
                         $table->integer('bits_payed');
                         $table->string('blockonomics_currency');
                         $table->primary('addr');
-                        $table->string('order_currency');
                         $table->index('id_order');
                     }
                 );
             } catch (Exception $e) {
                 exit("Unable to create blockonomics_orders: {$e->getMessage()}");
-            }
-        } else if (!Capsule::schema()->hasColumn('blockonomics_orders', 'order_currency')) {
-            try {
-                Capsule::schema()->table('blockonomics_orders', function ($table) {
-                    $table->string('order_currency');
-                });
-            } catch (Exception $e) {
-                exit("Unable to update blockonomics_orders: {$e->getMessage()}");
             }
         }
     }
@@ -459,7 +450,7 @@ class Blockonomics
      * Try to insert new order to database
      * If order exists, return with false
      */
-    public function insertOrderToDb($id_order, $blockonomics_currency, $address, $value, $bits, $order_currency)
+    public function insertOrderToDb($id_order, $blockonomics_currency, $address, $value, $bits)
     {
         try {
             Capsule::table('blockonomics_orders')->insert(
@@ -471,7 +462,6 @@ class Blockonomics
                     'status' => -1,
                     'value' => $value,
                     'bits' => $bits,
-                    'order_currency' => $order_currency,
                 ]
             );
         } catch (Exception $e) {
@@ -496,7 +486,7 @@ class Blockonomics
         $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->currency, $order->blockonomics_currency);
         $order->timestamp = time();
         $order->status = -1;
-        $this->insertOrderToDb($order->id_order, $order->blockonomics_currency, $order->addr, $order->value, $order->bits, $order->currency);
+        $this->insertOrderToDb($order->id_order, $order->blockonomics_currency, $order->addr, $order->value, $order->bits);
         return $order;
     }
 
@@ -550,7 +540,6 @@ class Blockonomics
             'bits_payed' => $existing_order->bits_payed,
             'blockonomics_currency' => $existing_order->blockonomics_currency,
             'txid' => $existing_order->txid,
-            'order_currency' => $existing_order->order_currency,
         ];
     }
 
