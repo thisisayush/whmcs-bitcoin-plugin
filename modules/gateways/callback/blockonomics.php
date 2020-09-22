@@ -81,6 +81,7 @@ if($value < $bits - $underpayment_slack) {
 	$paymentAmount = $order['value'];
 }
 
+$paymentAmount = $blockonomics->convertAmountToOrderCurrency($order, $paymentAmount);
 $blockonomics->updateInvoiceNote($invoiceId, null);
 $blockonomics->updateOrderInDb($addr, $txid, $status, $value);
 
