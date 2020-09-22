@@ -282,6 +282,17 @@ class Blockonomics
     }
 
     /*
+     * Convert received amount to order currency
+     */
+    public function convertAmountToOrderCurrency($order, $paymentAmount)
+    {
+        $exchangerate = Capsule::table('tblcurrencies')
+            ->where('code', $order['order_currency'])
+            ->value('rate');
+        return round($paymentAmount / $exchangerate, 2);
+    }
+
+    /*
      * If no Blockonomics order table exists, create it
      */
     public function createOrderTableIfNotExist()
