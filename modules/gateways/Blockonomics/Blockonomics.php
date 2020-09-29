@@ -21,8 +21,7 @@ class Blockonomics {
 	/*
 	 * Get callback secret and SystemURL to form the callback URL
 	 */
-	public function getCallbackUrl() {
-		$secret = $this->getCallbackSecret();
+	public function getCallbackUrl($secret) {
         return $this->getSystemUrl() . 'modules/gateways/callback/blockonomics.php?secret=' . $secret;
 	}
 
@@ -68,13 +67,8 @@ class Blockonomics {
 
 		try {
 			$callback_secret = sha1(openssl_random_pseudo_bytes(20));
-
-			$secret = Capsule::table('tblpaymentgateways')->insert([
-				['gateway' => 'blockonomics', 'setting' => 'CallbackSecret', 'value' => $callback_secret]
-			]);
-
 		} catch(Exception $e) {
-			exit("Error, could not get Blockonomics secret from database. {$e->getMessage()}");
+			exit("Error, could not generate callback secret. {$e->getMessage()}");
 		}
 
 		return $callback_secret;
@@ -603,7 +597,8 @@ class Blockonomics {
 
 		$response = $this->doCurlCall($xpub_fetch_url);
 
-		$callback_url = $this->getCallbackUrl();
+		$secret = $this->getCallbackSecret();
+		$callback_url = $this->getCallbackUrl($secret);
 		$api_key = $this->getApiKey();
 		if ($api_key != $new_api) {
 			$error_str = 'New API Key: Save your changes and then click \'Test Setup\'';//API key changed
