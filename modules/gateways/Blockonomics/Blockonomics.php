@@ -5,10 +5,11 @@ namespace Blockonomics;
 use Exception;
 use stdClass;
 use WHMCS\Database\Capsule;
+require_once __DIR__ . '/../../../includes/gatewayfunctions.php';
 
 class Blockonomics {
 
-	private $version = '1.5.0';
+	private $version = '1.5.1';
 
 	/*
 	 * Get the blockonomics version
@@ -20,8 +21,7 @@ class Blockonomics {
 	/*
 	 * Get callback secret and SystemURL to form the callback URL
 	 */
-	public function getCallbackUrl() {
-		$secret = $this->getCallbackSecret();
+	public function getCallbackUrl($secret) {
         return $this->getSystemUrl() . 'modules/gateways/callback/blockonomics.php?secret=' . $secret;
 	}
 
@@ -34,11 +34,8 @@ class Blockonomics {
 		$secret = '';
 
 		try {
-			$secret = Capsule::table('tblpaymentgateways')
-					->where('gateway', 'blockonomics')
-					->where('setting', 'CallbackSecret')
-					->value('value');
-
+			$gatewayParams = getGatewayVariables('blockonomics');
+			$secret = $gatewayParams['CallbackSecret'];
 		} catch(Exception $e) {
 			exit("Error, could not get Blockonomics secret from database. {$e->getMessage()}");
 		}
@@ -46,10 +43,8 @@ class Blockonomics {
 		// Check if old format of callback is still in use
 		if($secret == '') {
 			try {
-				$secret = Capsule::table('tblpaymentgateways')
-						->where('gateway', 'blockonomics')
-						->where('setting', 'ApiSecret')
-						->value('value');
+				$gatewayParams = getGatewayVariables('blockonomics');
+				$secret = $gatewayParams['ApiSecret'];
 
 			} catch(Exception $e) {
 				exit("Error, could not get Blockonomics secret from database. {$e->getMessage()}");
@@ -72,13 +67,8 @@ class Blockonomics {
 
 		try {
 			$callback_secret = sha1(openssl_random_pseudo_bytes(20));
-
-			$secret = Capsule::table('tblpaymentgateways')->insert([
-				['gateway' => 'blockonomics', 'setting' => 'CallbackSecret', 'value' => $callback_secret]
-			]);
-
 		} catch(Exception $e) {
-			exit("Error, could not get Blockonomics secret from database. {$e->getMessage()}");
+			exit("Error, could not generate callback secret. {$e->getMessage()}");
 		}
 
 		return $callback_secret;
@@ -88,10 +78,8 @@ class Blockonomics {
 	 * Get user configured API key from database
 	 */
 	public function getApiKey() {
-		return Capsule::table('tblpaymentgateways')
-				->where('gateway', 'blockonomics')
-				->where('setting', 'ApiKey')
-				->value('value');
+		$gatewayParams = getGatewayVariables('blockonomics');
+		return $gatewayParams['ApiKey'];
 	}
 
 	/*
@@ -120,10 +108,8 @@ class Blockonomics {
 			if($code == 'btc'){
 				$enabled = true;
 			}else{
-				$enabled = Capsule::table('tblpaymentgateways')
-					->where('gateway', 'blockonomics')
-					->where('setting', $code.'Enabled')
-					->value('value');
+				$gatewayParams = getGatewayVariables('blockonomics');
+				$enabled = $gatewayParams[$code.'Enabled'];
 			}
 			if($enabled){
 				$active_currencies[$code] = $currency;
@@ -136,20 +122,16 @@ class Blockonomics {
 	 * Get user configured Time Period from database
 	 */
 	public function getTimePeriod() {
-		return Capsule::table('tblpaymentgateways')
-			->where('gateway', 'blockonomics')
-			->where('setting', 'TimePeriod')
-			->value('value');
+		$gatewayParams = getGatewayVariables('blockonomics');
+		return $gatewayParams['TimePeriod'];
 	}
 
 	/*
 	 * Get user configured Confirmations from database
 	 */
 	public function getConfirmations() {
-		$confirmations = Capsule::table('tblpaymentgateways')
-			->where('gateway', 'blockonomics')
-			->where('setting', 'Confirmations')
-			->value('value');
+		$gatewayParams = getGatewayVariables('blockonomics');
+		$confirmations = $gatewayParams['Confirmations'];
 		if(isset($confirmations)){
 			return $confirmations;
 		}
@@ -183,10 +165,8 @@ class Blockonomics {
 	 * Get underpayment slack
 	 */
 	public function getUnderpaymentSlack() {
-		return Capsule::table('tblpaymentgateways')
-			->where('gateway', 'blockonomics')
-			->where('setting', 'Slack')
-			->value('value');
+		$gatewayParams = getGatewayVariables('blockonomics');
+		return $gatewayParams['Slack'];
 	}
 
 	/*
@@ -249,10 +229,8 @@ class Blockonomics {
 	 * Get user configured margin from database
 	 */
 	public function getMargin() {
-		return Capsule::table('tblpaymentgateways')
-			->where('gateway', 'blockonomics')
-			->where('setting', 'Margin')
-			->value('value');
+		$gatewayParams = getGatewayVariables('blockonomics');
+		return $gatewayParams['Margin'];
 	}
 
 	/*
@@ -619,7 +597,8 @@ class Blockonomics {
 
 		$response = $this->doCurlCall($xpub_fetch_url);
 
-		$callback_url = $this->getCallbackUrl();
+		$secret = $this->getCallbackSecret();
+		$callback_url = $this->getCallbackUrl($secret);
 		$api_key = $this->getApiKey();
 		if ($api_key != $new_api) {
 			$error_str = 'New API Key: Save your changes and then click \'Test Setup\'';//API key changed

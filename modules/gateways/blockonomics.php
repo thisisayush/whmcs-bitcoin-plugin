@@ -19,10 +19,18 @@ function blockonomics_config() {
 		}
 		$blockonomics = new Blockonomics();
 		$system_url = $blockonomics->getSystemUrl();
-		$callback_url = $blockonomics->getCallbackUrl();
+		$secret = $blockonomics->getCallbackSecret();
+		$callback_url = $blockonomics->getCallbackUrl($secret);
+
 
 		return <<<HTML
 		<script type="text/javascript">
+			var secret = document.getElementsByName('field[CallbackSecret]');
+			secret.forEach(function(element) {
+				element.value = '$secret';
+				element.readOnly = true;
+				element.parentNode.parentNode.style.display = 'none';
+			});
 			/**
 			 * Disable callback url editing
 			 */
@@ -164,6 +172,10 @@ HTML;
 			);
 		}
 	}
+	$settings_array[ 'CallbackSecret' ] = array(
+		'FriendlyName' => 'Callback Secret',
+		'Type'         => 'text'
+	);
 	$settings_array[ 'CallbackURL' ] = array(
 			'FriendlyName' => 'Callback URL',
 			'Type'         => 'text'
