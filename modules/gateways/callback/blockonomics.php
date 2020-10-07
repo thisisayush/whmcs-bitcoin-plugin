@@ -34,10 +34,10 @@ $txid = htmlspecialchars($_GET['txid']);
 $secret_value = $blockonomics->getCallbackSecret();
 
 if ($secret_value != $secret) {
-	$transactionStatus = 'Secret verification failure';
+	$transactionStatus = Lang::trans('blockonomics.error.secret');
 	$success = false;
 
-	echo "Verification error";
+	echo $transactionStatus;
 	die();
 }
 
@@ -60,7 +60,7 @@ if($blockonomics_currency_code=='btc'){
 	$subdomain = $blockonomics_currency_code;
 }
 if($status < $confirmations) {
-	$invoiceNote = "<b>Waiting for Confirmation on <img src=\"img/".$blockonomics_currency_code.".png\" style=\"max-width: 20px;\"> ".$blockonomics_currency->name." network</b>\r\r" .
+	$invoiceNote = "<b>".Lang::trans('blockonomics.invoiceNote.waiting')." <img src=\"img/".$blockonomics_currency_code.".png\" style=\"max-width: 20px;\"> ".$blockonomics_currency->name." ".Lang::trans('blockonomics.invoiceNote.network')."</b>\r\r" .
 		$blockonomics_currency->name." transaction id:\r" .
 		"<a target=\"_blank\" href=\"https://".$subdomain.".blockonomics.co/api/tx?txid=$txid&addr=$addr\">$txid</a>";
 
