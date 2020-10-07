@@ -601,18 +601,18 @@ class Blockonomics {
 		$callback_url = $this->getCallbackUrl($secret);
 		$api_key = $this->getApiKey();
 		if ($api_key != $new_api) {
-			$error_str = 'New API Key: Save your changes and then click \'Test Setup\'';//API key changed
+			$error_str = Lang::trans('blockonomics.testSetup.newApi');//API key changed
 		}
 		elseif (!isset($response->response_code)) {
-			$error_str = 'Your server is blocking outgoing HTTPS calls';
+			$error_str = Lang::trans('blockonomics.testSetup.blockedHttps');
 		}
 		elseif ($response->response_code==401)
-			$error_str = 'API Key is incorrect';
+			$error_str = Lang::trans('blockonomics.testSetup.incorrectApi');
 		elseif ($response->response_code!=200)
 			$error_str = $response->data;
 		elseif (!isset($response->data) || count($response->data) == 0)
 		{
-			$error_str = 'You have not entered an xpub';
+			$error_str = Lang::trans('blockonomics.testSetup.noXpub');
 		}
 		elseif (count($response->data) == 1)
 		{
@@ -634,12 +634,12 @@ class Blockonomics {
 					$this->doCurlCall($set_callback_url, $post_content);  
 				}
 				else
-					$error_str = "Your have an existing callback URL. Refer instructions on integrating multiple websites";
+					$error_str = Lang::trans('blockonomics.testSetup.existingCallbackUrl');
 			}
 		}
 		else 
 		{
-			$error_str = "Your have an existing callback URL or multiple xPubs. Refer instructions on integrating multiple websites";
+			$error_str = Lang::trans('blockonomics.testSetup.multipleXpubs');
 
 			foreach ($response->data as $resObj)
 				if($resObj->callback == $callback_url)

@@ -21,6 +21,12 @@ function blockonomics_config() {
 		$system_url = $blockonomics->getSystemUrl();
 		$secret = $blockonomics->getCallbackSecret();
 		$callback_url = $blockonomics->getCallbackUrl($secret);
+		$trans_text_system_url_error = Lang::trans('blockonomics.testSetup.systemUrl.error');
+		$trans_text_system_url_fix = Lang::trans('blockonomics.testSetup.systemUrl.fix');
+		$trans_text_success = Lang::trans('blockonomics.testSetup.success');
+		$trans_text_protocol_error = Lang::trans('blockonomics.testSetup.protocol.error');
+		$trans_text_protocol_fix = Lang::trans('blockonomics.testSetup.protocol.fix');
+		$trans_text_testing = Lang::trans('blockonomics.testSetup.testing');
 
 
 		return <<<HTML
@@ -98,13 +104,13 @@ function blockonomics_config() {
 				} catch (err) {
 					var testSetupUrl = "$system_url" + "testSetup.php";
 					responseObj.error = true;
-					responseObj.errorStr = 'Unable to locate/execute ' + testSetupUrl + '. Check your WHMCS System URL ';
+					responseObj.errorStr = '$trans_text_system_url_error ' + testSetupUrl + '. $trans_text_system_url_fix';
 				}
 				if (responseObj.error) {
 					testSetupResultCell.innerHTML = "<label style='color:red;'>Error:</label> " + responseObj.errorStr + 
 					"<br>For more information, please consult <a href='https://blockonomics.freshdesk.com/support/solutions/articles/33000215104-troubleshooting-unable-to-generate-new-address' target='_blank'>this troubleshooting article</a>";
 				} else {
-					testSetupResultCell.innerHTML = "<label style='color:green;'>Congrats! Setup is all done</label>";
+					testSetupResultCell.innerHTML = "<label style='color:green;'>$trans_text_success</label>";
 				}
 				newBtn.disabled = false;
 			}
@@ -121,9 +127,8 @@ function blockonomics_config() {
 				}
 
 				if (systemUrlProtocol != location.protocol) {
-					testSetupResultCell.innerHTML = "<label style='color:red;'>Error:</label> \
-							System URL has a different protocol than current URL. Go to Setup > General Settings and verify that WHMCS System URL has \
-							correct protocol set (HTTP or HTTPS).";
+					testSetupResultCell.innerHTML = "<label style='color:red;'>$trans_text_protocol_error</label> \
+							$trans_text_protocol_fix";
 					return false;
 				}
 				
@@ -133,7 +138,7 @@ function blockonomics_config() {
 				oReq.send();
 
 				newBtn.disabled = true;
-				testSetupResultCell.innerHTML = "Testing setup...";
+				testSetupResultCell.innerHTML = "$trans_text_testing";
 
 				return false;
 			}
@@ -152,13 +157,13 @@ HTML;
 			'Value'      => 'Blockonomics'
 		),
 		array(
-			'FriendlyName' => '<span style="color:grey;">Version</span>',
+			'FriendlyName' => '<span style="color:grey;">'.Lang::trans('blockonomics.version.title').'</span>',
 			'Description'  => '<span style="color:grey;">'.$blockonomics->getVersion().'</span>'
 		)
 	);
 	$settings_array['ApiKey'] = array(
-		'FriendlyName' => 'API Key',
-		'Description'  => 'BLOCKONOMICS API KEY (Click "Get Started For Free" on <a target="_blank" href="https://www.blockonomics.co/blockonomics#/merchants">Merchants</a> and follow setup wizard)',
+		'FriendlyName' => Lang::trans('blockonomics.apiKey.title'),
+		'Description'  => Lang::trans('blockonomics.apiKey.description'),
 		'Type'         => 'text'
 	);
 
@@ -166,22 +171,22 @@ HTML;
 	foreach ($blockonomics_currencies as $code => $currency) {
 		if($code != 'btc'){
 			$settings_array[ $code.'Enabled' ] = array(
-				'FriendlyName' => strtoupper($code).' Enabled',
+				'FriendlyName' => strtoupper($code).' '. Lang::trans('blockonomics.enabled.title'),
 				'Type' => 'yesno',
-				'Description' => 'Select if you want to accept '.$currency['name']
+				'Description' => Lang::trans('blockonomics.enabled.description').' '.$currency['name']
 			);
 		}
 	}
 	$settings_array[ 'CallbackSecret' ] = array(
-		'FriendlyName' => 'Callback Secret',
+		'FriendlyName' => Lang::trans('blockonomics.callbackSecret.title'),
 		'Type'         => 'text'
 	);
 	$settings_array[ 'CallbackURL' ] = array(
-			'FriendlyName' => 'Callback URL',
+			'FriendlyName' => Lang::trans('blockonomics.callbackUrl.title'),
 			'Type'         => 'text'
 		);
 	$settings_array[ 'TimePeriod' ] = array(
-			'FriendlyName' => 'Time Period',
+			'FriendlyName' => Lang::trans('blockonomics.timePeriod.title'),
 			'Type' => 'dropdown',
 			'Options' => array(
 				'10' => '10',
@@ -190,32 +195,32 @@ HTML;
 				'25' => '25',
 				'30' => '30',
 			),
-			'Description' => 'Time period of countdown timer on payment page (in minutes)',
+			'Description' => Lang::trans('blockonomics.timePeriod.description'),
 		);
 	$settings_array[ 'Margin' ] = array(
-				'FriendlyName' => 'Extra Currency Rate Margin %',
+				'FriendlyName' => Lang::trans('blockonomics.margin.title'),
 				'Type' => 'text',
 				'Size' => '5',
 				'Default' => 0,
-				'Description' => 'Increase live fiat to BTC rate by small percent',
+				'Description' => Lang::trans('blockonomics.margin.description'),
 		);
 	$settings_array[ 'Slack' ] = array(
-				'FriendlyName' => 'Underpayment Slack %',
+				'FriendlyName' => Lang::trans('blockonomics.slack.title'),
 				'Type' => 'text',
 				'Size' => '5',
 				'Default' => 0,
-				'Description' => 'Allow payments that are off by a small percentage',
+				'Description' => Lang::trans('blockonomics.slack.description'),
 		);
 	$settings_array[ 'Confirmations' ] = array(
-			'FriendlyName' => 'Confirmations',
+			'FriendlyName' => Lang::trans('blockonomics.confirmations.title'),
 			'Type' => 'dropdown',
 			'Default' => 2,
 			'Options' => array(
-				'2' => '2 (recommended)',
+				'2' => '2 ('.Lang::trans('blockonomics.confirmations.recommended').')',
 				'1' => '1',
 				'0' => '0'
 			),
-			'Description' => 'Network Confirmations required for payment to complete',
+			'Description' => Lang::trans('blockonomics.confirmations.description'),
 		);
 	
 	return $settings_array;
