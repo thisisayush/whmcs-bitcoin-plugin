@@ -17,16 +17,26 @@ function blockonomics_config() {
 		catch (exception $e) {
 		    return;
 		}
+
+		$adminlanguage = isset($vars['adminLanguage']) ? $vars['adminLanguage'] : '';
+		$langfilepath = dirname(__FILE__) . '/Blockonomics/lang/'.$vars['adminLanguage'].'.php';
+		if (file_exists($langfilepath)) {
+			require($langfilepath);
+		}
+		else {
+			require(dirname(__FILE__) . '/Blockonomics/lang/english.php');
+		}
+
 		$blockonomics = new Blockonomics();
 		$system_url = $blockonomics->getSystemUrl();
 		$secret = $blockonomics->getCallbackSecret();
 		$callback_url = $blockonomics->getCallbackUrl($secret);
-		$trans_text_system_url_error = Lang::trans('blockonomics.testSetup.systemUrl.error');
-		$trans_text_system_url_fix = Lang::trans('blockonomics.testSetup.systemUrl.fix');
-		$trans_text_success = Lang::trans('blockonomics.testSetup.success');
-		$trans_text_protocol_error = Lang::trans('blockonomics.testSetup.protocol.error');
-		$trans_text_protocol_fix = Lang::trans('blockonomics.testSetup.protocol.fix');
-		$trans_text_testing = Lang::trans('blockonomics.testSetup.testing');
+		$trans_text_system_url_error = $_BLOCKLANG['testSetup']['systemUrl']['error'];
+		$trans_text_system_url_fix = $_BLOCKLANG['testSetup']['systemUrl']['fix'];
+		$trans_text_success = $_BLOCKLANG['testSetup']['success'];
+		$trans_text_protocol_error = $_BLOCKLANG['testSetup']['protocol']['error'];
+		$trans_text_protocol_fix = $_BLOCKLANG['testSetup']['protocol']['fix'];
+		$trans_text_testing = $_BLOCKLANG['testSetup']['testing'];
 
 
 		return <<<HTML
@@ -148,6 +158,14 @@ HTML;
 
 	});
 
+	$adminlanguage = isset($vars['adminLanguage']) ? $vars['adminLanguage'] : '';
+	$langfilepath = dirname(__FILE__) . '/Blockonomics/lang/'.$vars['adminLanguage'].'.php';
+	if (file_exists($langfilepath)) {
+		require($langfilepath);
+	}
+	else {
+		require(dirname(__FILE__) . '/Blockonomics/lang/english.php');
+	}
 	$blockonomics = new Blockonomics();
 	$blockonomics->createOrderTableIfNotExist();
 	
@@ -157,13 +175,13 @@ HTML;
 			'Value'      => 'Blockonomics'
 		),
 		array(
-			'FriendlyName' => '<span style="color:grey;">'.Lang::trans('blockonomics.version.title').'</span>',
+			'FriendlyName' => '<span style="color:grey;">'.$_BLOCKLANG['version']['title'].'</span>',
 			'Description'  => '<span style="color:grey;">'.$blockonomics->getVersion().'</span>'
 		)
 	);
 	$settings_array['ApiKey'] = array(
-		'FriendlyName' => Lang::trans('blockonomics.apiKey.title'),
-		'Description'  => Lang::trans('blockonomics.apiKey.description'),
+		'FriendlyName' => $_BLOCKLANG['apiKey']['title'],
+		'Description'  => $_BLOCKLANG['apiKey']['description'],
 		'Type'         => 'text'
 	);
 
@@ -171,22 +189,22 @@ HTML;
 	foreach ($blockonomics_currencies as $code => $currency) {
 		if($code != 'btc'){
 			$settings_array[ $code.'Enabled' ] = array(
-				'FriendlyName' => strtoupper($code).' '. Lang::trans('blockonomics.enabled.title'),
+				'FriendlyName' => strtoupper($code).' '. $_BLOCKLANG['enabled']['title'],
 				'Type' => 'yesno',
-				'Description' => Lang::trans('blockonomics.enabled.description').' '.$currency['name']
+				'Description' => $_BLOCKLANG['enabled']['description'].' '.$currency['name']
 			);
 		}
 	}
 	$settings_array[ 'CallbackSecret' ] = array(
-		'FriendlyName' => Lang::trans('blockonomics.callbackSecret.title'),
+		'FriendlyName' => $_BLOCKLANG['callbackSecret']['title'],
 		'Type'         => 'text'
 	);
 	$settings_array[ 'CallbackURL' ] = array(
-			'FriendlyName' => Lang::trans('blockonomics.callbackUrl.title'),
+			'FriendlyName' => $_BLOCKLANG['callbackUrl']['title'],
 			'Type'         => 'text'
 		);
 	$settings_array[ 'TimePeriod' ] = array(
-			'FriendlyName' => Lang::trans('blockonomics.timePeriod.title'),
+			'FriendlyName' => $_BLOCKLANG['timePeriod']['title'],
 			'Type' => 'dropdown',
 			'Options' => array(
 				'10' => '10',
@@ -195,32 +213,32 @@ HTML;
 				'25' => '25',
 				'30' => '30',
 			),
-			'Description' => Lang::trans('blockonomics.timePeriod.description'),
+			'Description' => $_BLOCKLANG['timePeriod']['description'],
 		);
 	$settings_array[ 'Margin' ] = array(
-				'FriendlyName' => Lang::trans('blockonomics.margin.title'),
+				'FriendlyName' => $_BLOCKLANG['margin']['title'],
 				'Type' => 'text',
 				'Size' => '5',
 				'Default' => 0,
-				'Description' => Lang::trans('blockonomics.margin.description'),
+				'Description' => $_BLOCKLANG['margin']['description'],
 		);
 	$settings_array[ 'Slack' ] = array(
-				'FriendlyName' => Lang::trans('blockonomics.slack.title'),
+				'FriendlyName' => $_BLOCKLANG['slack']['title'],
 				'Type' => 'text',
 				'Size' => '5',
 				'Default' => 0,
-				'Description' => Lang::trans('blockonomics.slack.description'),
+				'Description' => $_BLOCKLANG['slack']['description'],
 		);
 	$settings_array[ 'Confirmations' ] = array(
-			'FriendlyName' => Lang::trans('blockonomics.confirmations.title'),
+			'FriendlyName' => $_BLOCKLANG['confirmations']['title'],
 			'Type' => 'dropdown',
 			'Default' => 2,
 			'Options' => array(
-				'2' => '2 ('.Lang::trans('blockonomics.confirmations.recommended').')',
+				'2' => '2 ('.$_BLOCKLANG['confirmations']['recommended'].')',
 				'1' => '1',
 				'0' => '0'
 			),
-			'Description' => Lang::trans('blockonomics.confirmations.description'),
+			'Description' => $_BLOCKLANG['confirmations']['description'],
 		);
 	
 	return $settings_array;

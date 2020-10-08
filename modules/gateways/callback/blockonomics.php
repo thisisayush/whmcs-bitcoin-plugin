@@ -21,6 +21,16 @@ if (!$gatewayParams['type']) {
 	die("Module Not Activated");
 }
 
+global $CONFIG;
+$storelanguage = isset($CONFIG['Language']) ? $CONFIG['Language'] : '';
+$langfilepath = dirname(__FILE__) . '/../Blockonomics/lang/'.$storelanguage.'.php';
+if (file_exists($langfilepath)) {
+	require_once($langfilepath);
+}
+else {
+	require_once(dirname(__FILE__) . '/../Blockonomics/lang/english.php');
+}
+
 // Retrieve data returned in payment gateway callback
 $secret = htmlspecialchars($_GET['secret']);
 $status = htmlspecialchars($_GET['status']);
@@ -34,7 +44,7 @@ $txid = htmlspecialchars($_GET['txid']);
 $secret_value = $blockonomics->getCallbackSecret();
 
 if ($secret_value != $secret) {
-	$transactionStatus = Lang::trans('blockonomics.error.secret');
+	$transactionStatus = $_BLOCKLANG['error']['secret'];
 	$success = false;
 
 	echo $transactionStatus;
@@ -60,7 +70,7 @@ if($blockonomics_currency_code=='btc'){
 	$subdomain = $blockonomics_currency_code;
 }
 if($status < $confirmations) {
-	$invoiceNote = "<b>".Lang::trans('blockonomics.invoiceNote.waiting')." <img src=\"img/".$blockonomics_currency_code.".png\" style=\"max-width: 20px;\"> ".$blockonomics_currency->name." ".Lang::trans('blockonomics.invoiceNote.network')."</b>\r\r" .
+	$invoiceNote = "<b>".$_BLOCKLANG['invoiceNote']['waiting']." <img src=\"img/".$blockonomics_currency_code.".png\" style=\"max-width: 20px;\"> ".$blockonomics_currency->name." ".$_BLOCKLANG['invoiceNote']['network']."</b>\r\r" .
 		$blockonomics_currency->name." transaction id:\r" .
 		"<a target=\"_blank\" href=\"https://".$subdomain.".blockonomics.co/api/tx?txid=$txid&addr=$addr\">$txid</a>";
 

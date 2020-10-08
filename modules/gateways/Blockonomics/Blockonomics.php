@@ -590,6 +590,15 @@ class Blockonomics {
 	 * Run the test setup
 	 */
 	public function testSetup($new_api)	{
+		global $CONFIG;
+		$storelanguage = isset($CONFIG['Language']) ? $CONFIG['Language'] : '';
+		$langfilepath = dirname(__FILE__) . '/../Blockonomics/lang/'.$storelanguage.'.php';
+		if (file_exists($langfilepath)) {
+			require_once($langfilepath);
+		}
+		else {
+			require_once(dirname(__FILE__) . '/../Blockonomics/lang/english.php');
+		}
 
 		$xpub_fetch_url = 'https://www.blockonomics.co/api/address?&no_balance=true&only_xpub=true&get_callback=true';
 		$set_callback_url = 'https://www.blockonomics.co/api/update_callback';
@@ -601,18 +610,18 @@ class Blockonomics {
 		$callback_url = $this->getCallbackUrl($secret);
 		$api_key = $this->getApiKey();
 		if ($api_key != $new_api) {
-			$error_str = Lang::trans('blockonomics.testSetup.newApi');//API key changed
+			$error_str = $_BLOCKLANG['testSetup']['newApi'];//API key changed
 		}
 		elseif (!isset($response->response_code)) {
-			$error_str = Lang::trans('blockonomics.testSetup.blockedHttps');
+			$error_str = $_BLOCKLANG['testSetup']['blockedHttps'];
 		}
 		elseif ($response->response_code==401)
-			$error_str = Lang::trans('blockonomics.testSetup.incorrectApi');
+			$error_str = $_BLOCKLANG['testSetup']['incorrectApi'];
 		elseif ($response->response_code!=200)
 			$error_str = $response->data;
 		elseif (!isset($response->data) || count($response->data) == 0)
 		{
-			$error_str = Lang::trans('blockonomics.testSetup.noXpub');
+			$error_str = $_BLOCKLANG['testSetup']['noXpub'];
 		}
 		elseif (count($response->data) == 1)
 		{
@@ -634,12 +643,12 @@ class Blockonomics {
 					$this->doCurlCall($set_callback_url, $post_content);  
 				}
 				else
-					$error_str = Lang::trans('blockonomics.testSetup.existingCallbackUrl');
+					$error_str = $_BLOCKLANG['testSetup']['existingCallbackUrl'];
 			}
 		}
 		else 
 		{
-			$error_str = Lang::trans('blockonomics.testSetup.multipleXpubs');
+			$error_str = $_BLOCKLANG['testSetup']['multipleXpubs'];
 
 			foreach ($response->data as $resObj)
 				if($resObj->callback == $callback_url)
