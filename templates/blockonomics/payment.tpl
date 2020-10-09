@@ -80,7 +80,7 @@
                     <div class="bnomics-copy-amount-text" ng-show="amount_copyshow" ng-cloak>{$_BLOCKLANG.copyClipboard}</div>
                     <ul ng-click="blockonomics_amount_click()" id="bnomics-amount-input" class="bnomics-amount-input">
                         <li id="bnomics-amount-copy">[[order.bits/1.0e8]]</li>
-                        <li>[[order_currency | uppercase]]</li>
+                        <li>[[order.blockonomics_currency | uppercase]]</li>
                         <li class="bnomics-grey"> ≈ </li>
                         <li class="bnomics-grey">[[order.value]]</li>
                         <li class="bnomics-grey">[[order.currency]]</li>
