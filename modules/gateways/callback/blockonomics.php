@@ -21,15 +21,7 @@ if (!$gatewayParams['type']) {
 	die("Module Not Activated");
 }
 
-global $CONFIG;
-$storelanguage = isset($CONFIG['Language']) ? $CONFIG['Language'] : '';
-$langfilepath = dirname(__FILE__) . '/../Blockonomics/lang/'.$storelanguage.'.php';
-if (file_exists($langfilepath)) {
-	require_once($langfilepath);
-}
-else {
-	require_once(dirname(__FILE__) . '/../Blockonomics/lang/english.php');
-}
+require_once(Blockonomics::getLangFilePath());
 
 // Retrieve data returned in payment gateway callback
 $secret = htmlspecialchars($_GET['secret']);
