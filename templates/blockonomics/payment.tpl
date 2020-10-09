@@ -13,7 +13,7 @@
       <div class="bnomics-order-heading">
         <div class="bnomics-order-heading-wrapper">
           <div class="bnomics-order-id">
-            <span class="bnomics-order-number" ng-cloak> {$LANG.blockonomics.orderId}[[order_id]]</span>
+            <span class="bnomics-order-number" ng-cloak> {$_BLOCKLANG.orderId}[[order_id]]</span>
           </div>
         </div>
       </div>
@@ -23,22 +23,22 @@
       </div>
       <!-- Address Error -->
       <div id="address-error-btc" ng-show="address_error_btc" ng-cloak>
-        <h2>{$LANG.blockonomics.error.btc.title}</h2>
-        <p>{$LANG.blockonomics.error.btc.message}</p>
+        <h2>{$_BLOCKLANG.error.btc.title}</h2>
+        <p>{$_BLOCKLANG.error.btc.message}</p>
       </div>
       <!-- BCH Address Error -->
       <div id="address-error-bch" ng-show="address_error_bch" ng-cloak>
-        <h2>{$LANG.blockonomics.error.bch.title}</h2>
-        <p>{$LANG.blockonomics.error.bch.message}</p>
+        <h2>{$_BLOCKLANG.error.bch.title}</h2>
+        <p>{$_BLOCKLANG.error.bch.message}</p>
       </div>
       <!-- Pending payment -->
       <div id="pending-error" ng-show="pending_error" ng-cloak>
-        <h2>{$LANG.blockonomics.error.pending.title}</h2>
-        <i>{$LANG.blockonomics.error.pending.message}</i>
+        <h2>{$_BLOCKLANG.error.pending.title}</h2>
+        <i>{$_BLOCKLANG.error.pending.message}</i>
       </div>
       <!-- Blockonomics Currency Selecter -->
       <div class="bnomics-select-container" ng-show="currency_selecter" ng-cloak>
-        <h2>{$LANG.blockonomics.payWith}</h2>
+        <h2>{$_BLOCKLANG.payWith}</h2>
         <table width="100%">
           <tr class="bnomics-select-options" ng-repeat="(active_code, active_currency) in active_currencies" ng-click="select_blockonomics_currency(active_code)">
               <td align="left"><img src="img/[[active_code]].png" class="rotateimg[[active_code]]" alt="[[active_currency.name]] Logo"> <h3>[[active_currency.name]]</h3> <span class="bnomics-select-currency-button"><button type="button" class="btn btn-lg bnomics-select-currency-code">[[active_code]]</button></span></td>
@@ -47,12 +47,12 @@
       </div>
       <!-- Payment Expired -->
       <div class="bnomics-order-expired-wrapper" ng-show="order.status == -3" ng-cloak>
-        <h3 class="warning bnomics-status-warning">{$LANG.blockonomics.paymentExpired}</h3><br>
-        <p><a href="#" ng-click="try_again_click()">{$LANG.blockonomics.tryAgain}</a></p>
+        <h3 class="warning bnomics-status-warning">{$_BLOCKLANG.paymentExpired}</h3><br>
+        <p><a href="#" ng-click="try_again_click()">{$_BLOCKLANG.tryAgain}</a></p>
       </div>
       <!-- Payment Error -->
       <div class="bnomics-order-error-wrapper" ng-show="order.status == -2" ng-cloak>
-        <h3 class="warning bnomics-status-warning">{$LANG.blockonomics.paymentError}</h3>
+        <h3 class="warning bnomics-status-warning">{$_BLOCKLANG.paymentError}</h3>
       </div>
       <!-- Blockonomics Checkout Panel -->
       <div class="bnomics-order-panel" ng-show="order.status == -1" ng-cloak>
@@ -69,18 +69,18 @@
                     </qrcode>
                   </a>
                 </div>
-                <div class="bnomics-qr-code-hint"><a href="[[currency.uri]]:[[order.addr]]?amount=[[order.bits/1.0e8]]" target="_blank">{$LANG.blockonomics.openWallet}</a></div>
+                <div class="bnomics-qr-code-hint"><a href="[[currency.uri]]:[[order.addr]]?amount=[[order.bits/1.0e8]]" target="_blank">{$_BLOCKLANG.openWallet}</a></div>
               </div>
               <!-- Right Side -->
               <div class="bnomics-amount">
                 <div class="bnomics-bg">
                   <!-- Order Amounts -->
                   <div class="bnomics-amount">
-                    <div class="bnomics-amount-text" ng-hide="amount_copyshow" ng-cloak>{$LANG.blockonomics.payAmount}</div>
-                    <div class="bnomics-copy-amount-text" ng-show="amount_copyshow" ng-cloak>{$LANG.blockonomics.copyClipboard}</div>
+                    <div class="bnomics-amount-text" ng-hide="amount_copyshow" ng-cloak>{$_BLOCKLANG.payAmount}</div>
+                    <div class="bnomics-copy-amount-text" ng-show="amount_copyshow" ng-cloak>{$_BLOCKLANG.copyClipboard}</div>
                     <ul ng-click="blockonomics_amount_click()" id="bnomics-amount-input" class="bnomics-amount-input">
                         <li id="bnomics-amount-copy">[[order.bits/1.0e8]]</li>
-                        <li>[[order.blockonomics_currency | uppercase]]</li>
+                        <li>[[order_currency | uppercase]]</li>
                         <li class="bnomics-grey"> ≈ </li>
                         <li class="bnomics-grey">[[order.value]]</li>
                         <li class="bnomics-grey">[[order.currency]]</li>
@@ -89,8 +89,8 @@
                   </div>
                   <!-- Order Address -->
                   <div class="bnomics-address">
-                    <div class="bnomics-address-text" ng-hide="address_copyshow" ng-cloak>{$LANG.blockonomics.payAddress}</div>
-                    <div class="bnomics-copy-address-text" ng-show="address_copyshow" ng-cloak>{$LANG.blockonomics.copyClipboard}</div>
+                    <div class="bnomics-address-text" ng-hide="address_copyshow" ng-cloak>{$_BLOCKLANG.payAddress}</div>
+                    <div class="bnomics-copy-address-text" ng-show="address_copyshow" ng-cloak>{$_BLOCKLANG.copyClipboard}</div>
                     <ul ng-click="blockonomics_address_click()" id="bnomics-address-input" class="bnomics-address-input">
                           <li id="bnomics-address-copy">[[order.addr]]</li>
                     </ul>
@@ -110,8 +110,8 @@
       </div>
       <!-- Blockonomics How to pay + Credit -->
       <div class="bnomics-powered-by">
-        <a href="https://blog.blockonomics.co/how-to-pay-a-bitcoin-invoice-abf4a04d041c" target="_blank">{$LANG.blockonomics.howToPay}</a><br>
-        <div class="bnomics-powered-by-text bnomics-grey" >{$LANG.blockonomics.poweredBy}</div>
+        <a href="https://blog.co/how-to-pay-a-bitcoin-invoice-abf4a04d041c" target="_blank">{$_BLOCKLANG.howToPay}</a><br>
+        <div class="bnomics-powered-by-text bnomics-grey" >{$_BLOCKLANG.poweredBy}</div>
       </div>
     </div>
   </div>

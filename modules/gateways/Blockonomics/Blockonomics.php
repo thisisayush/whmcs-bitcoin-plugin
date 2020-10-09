@@ -586,19 +586,25 @@ class Blockonomics {
 		return $responseObj;
 	}
 
+	public function getLangFilePath($language=false)	{
+		if ($language && file_exists(dirname(__FILE__) . '/lang/'.$language.'.php')) {
+			$langfilepath = dirname(__FILE__) . '/lang/'.$language.'.php';
+		}else {
+			global $CONFIG;
+			$language = isset($CONFIG['Language']) ? $CONFIG['Language'] : '';
+			$langfilepath = dirname(__FILE__) . '/lang/'.$language.'.php';
+			if (!file_exists($langfilepath)) {
+				$langfilepath = dirname(__FILE__) . '/lang/english.php';
+			}
+		}
+		return $langfilepath;
+	}
+
 	/*
 	 * Run the test setup
 	 */
 	public function testSetup($new_api)	{
-		global $CONFIG;
-		$storelanguage = isset($CONFIG['Language']) ? $CONFIG['Language'] : '';
-		$langfilepath = dirname(__FILE__) . '/../Blockonomics/lang/'.$storelanguage.'.php';
-		if (file_exists($langfilepath)) {
-			require_once($langfilepath);
-		}
-		else {
-			require_once(dirname(__FILE__) . '/../Blockonomics/lang/english.php');
-		}
+		require_once($this::getLangFilePath());
 
 		$xpub_fetch_url = 'https://www.blockonomics.co/api/address?&no_balance=true&only_xpub=true&get_callback=true';
 		$set_callback_url = 'https://www.blockonomics.co/api/update_callback';

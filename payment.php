@@ -11,6 +11,7 @@ require 'init.php';
 
 // Init Blockonomics class
 $blockonomics = new Blockonomics();
+require(Blockonomics::getLangFilePath(isset($_REQUEST['language']) ? $_REQUEST['language'] : ""));
 
 $ca = new ClientArea();
 
@@ -71,6 +72,7 @@ if ($active_currencies) {
 
 $order_id = $blockonomics->getOrderIdByHash($order_hash);
 $ca->assign('order_id', $order_id);
+$ca->assign('_BLOCKLANG', $_BLOCKLANG);
 
 # Define the template filename to be used without the .tpl extension
 $ca->setTemplate('../blockonomics/payment');
