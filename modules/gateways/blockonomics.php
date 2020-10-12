@@ -18,16 +18,8 @@ function blockonomics_config() {
 		    return;
 		}
 
-		$adminlanguage = isset($vars['adminLanguage']) ? $vars['adminLanguage'] : '';
-		$langfilepath = dirname(__FILE__) . '/Blockonomics/lang/'.$vars['adminLanguage'].'.php';
-		if (file_exists($langfilepath)) {
-			require($langfilepath);
-		}
-		else {
-			require(dirname(__FILE__) . '/Blockonomics/lang/english.php');
-		}
-
 		$blockonomics = new Blockonomics();
+		require($blockonomics->getLangFilePath());
 		$system_url = $blockonomics->getSystemUrl();
 		$secret = $blockonomics->getCallbackSecret();
 		$callback_url = $blockonomics->getCallbackUrl($secret);
@@ -158,15 +150,8 @@ HTML;
 
 	});
 
-	$adminlanguage = isset($vars['adminLanguage']) ? $vars['adminLanguage'] : '';
-	$langfilepath = dirname(__FILE__) . '/Blockonomics/lang/'.$vars['adminLanguage'].'.php';
-	if (file_exists($langfilepath)) {
-		require($langfilepath);
-	}
-	else {
-		require(dirname(__FILE__) . '/Blockonomics/lang/english.php');
-	}
 	$blockonomics = new Blockonomics();
+	require($blockonomics->getLangFilePath());
 	$blockonomics->createOrderTableIfNotExist();
 	
 	$settings_array = array(
