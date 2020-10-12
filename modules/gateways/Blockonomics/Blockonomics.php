@@ -604,7 +604,7 @@ class Blockonomics {
 	 * Run the test setup
 	 */
 	public function testSetup($new_api)	{
-		require_once($this::getLangFilePath());
+		require_once($this->getLangFilePath());
 
 		$xpub_fetch_url = 'https://www.blockonomics.co/api/address?&no_balance=true&only_xpub=true&get_callback=true';
 		$set_callback_url = 'https://www.blockonomics.co/api/update_callback';

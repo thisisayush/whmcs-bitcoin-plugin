@@ -11,7 +11,7 @@ require 'init.php';
 
 // Init Blockonomics class
 $blockonomics = new Blockonomics();
-require(Blockonomics::getLangFilePath(isset($_REQUEST['language']) ? $_REQUEST['language'] : ""));
+require($blockonomics->getLangFilePath(isset($_REQUEST['language']) ? $_REQUEST['language'] : ""));
 
 $ca = new ClientArea();
 

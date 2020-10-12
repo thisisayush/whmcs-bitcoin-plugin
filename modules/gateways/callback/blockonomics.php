@@ -21,7 +21,7 @@ if (!$gatewayParams['type']) {
 	die("Module Not Activated");
 }
 
-require_once(Blockonomics::getLangFilePath());
+require_once($blockonomics->getLangFilePath());
 
 // Retrieve data returned in payment gateway callback
 $secret = htmlspecialchars($_GET['secret']);
