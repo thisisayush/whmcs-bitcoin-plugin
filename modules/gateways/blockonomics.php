@@ -106,7 +106,7 @@ function blockonomics_config()
 				try {
 					responseObj = JSON.parse(this.responseText);
 				} catch (err) {
-					var testSetupUrl = "$system_url" + "testSetup.php";
+					var testSetupUrl = "$system_url" + "testsetup.php";
 					responseObj.error = true;
 					responseObj.errorStr = '$trans_text_system_url_error ' + testSetupUrl + '. $trans_text_system_url_fix';
 				}
@@ -122,7 +122,7 @@ function blockonomics_config()
 			newBtn.onclick = function() {
 				testSetupResultRow.style.display = "table-row";
 				var apiKeyField = document.getElementsByName('field[ApiKey]')[0];
-				var testSetupUrl = "$system_url" + "testSetup.php"+"?new_api="+apiKeyField.value;
+				var testSetupUrl = "$system_url" + "testsetup.php"+"?new_api="+apiKeyField.value;
 
 				try {
 					var systemUrlProtocol = new URL("$system_url").protocol;
