@@ -15,14 +15,13 @@ Accept bitcoins on your WHMCS, payments go directly into your wallet
 - After setting API Key refresh page
 - Copy your Callback to Blockonomics Merchants > Settings
 
-## Screenshots ## 
+## Screenshots ##
 
-![](screenshots/screenshot-1.png)     
-Checkout option 
+![](screenshots/screenshot-1.png)
+Checkout option
 
-![](screenshots/screenshot-2.png)     
-Payment screen   
+![](screenshots/screenshot-2.png)
+Payment screen
 
-![](screenshots/screenshot-3.png)   
+![](screenshots/screenshot-3.png)
 Blockonomics configuration
- 
