@@ -9,7 +9,7 @@ require_once __DIR__ . '/../../../includes/gatewayfunctions.php';
 
 class Blockonomics {
 
-	private $version = '1.8.0';
+	private $version = '1.8.1';
 
 	/*
 	 * Get the blockonomics version
