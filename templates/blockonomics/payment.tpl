@@ -110,7 +110,7 @@
       </div>
       <!-- Blockonomics How to pay + Credit -->
       <div class="bnomics-powered-by">
-        <a href="https://blog.co/how-to-pay-a-bitcoin-invoice-abf4a04d041c" target="_blank">{$_BLOCKLANG.howToPay}</a><br>
+        <a href="https://blog.blockonomics.co/how-to-pay-a-bitcoin-invoice-abf4a04d041c" target="_blank">{$_BLOCKLANG.howToPay}</a><br>
         <div class="bnomics-powered-by-text bnomics-grey" >{$_BLOCKLANG.poweredBy}</div>
       </div>
     </div>
