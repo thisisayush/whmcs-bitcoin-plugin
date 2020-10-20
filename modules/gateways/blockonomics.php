@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . '/Blockonomics/Blockonomics.php';
+require_once dirname(__FILE__) . '/blockonomics/blockonomics.php';
 
 use Blockonomics\Blockonomics;
 
@@ -106,7 +106,7 @@ function blockonomics_config()
 				try {
 					responseObj = JSON.parse(this.responseText);
 				} catch (err) {
-					var testSetupUrl = "$system_url" + "testsetup.php";
+					var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php";
 					responseObj.error = true;
 					responseObj.errorStr = '$trans_text_system_url_error ' + testSetupUrl + '. $trans_text_system_url_fix';
 				}
@@ -122,7 +122,7 @@ function blockonomics_config()
 			newBtn.onclick = function() {
 				testSetupResultRow.style.display = "table-row";
 				var apiKeyField = document.getElementsByName('field[ApiKey]')[0];
-				var testSetupUrl = "$system_url" + "testsetup.php"+"?new_api="+apiKeyField.value;
+				var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php"+"?new_api="+apiKeyField.value;
 
 				try {
 					var systemUrlProtocol = new URL("$system_url").protocol;
@@ -234,7 +234,7 @@ HTML;
 function blockonomics_link($params)
 {
     if (false === isset($params) || true === empty($params)) {
-        die('[ERROR] In modules/gateways/Blockonomics.php::Blockonomics_link() function: Missing or invalid $params data.');
+        die('[ERROR] In modules/gateways/blockonomics.php::Blockonomics_link() function: Missing or invalid $params data.');
     }
 
     $blockonomics = new Blockonomics();
@@ -242,7 +242,7 @@ function blockonomics_link($params)
     $order_hash = $blockonomics->getOrderHash($params['invoiceid'], $params['amount'], $params['currency']);
 
     $system_url = $blockonomics->getSystemUrl();
-    $form_url = $system_url . 'payment.php';
+    $form_url = $system_url . 'modules/gateways/blockonomics/payment.php';
 
     //pass only the uuid to the payment page
     $form = '<form action="' . $form_url . '" method="GET">';

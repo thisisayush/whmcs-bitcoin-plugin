@@ -1,11 +1,11 @@
 {
     "schema": "1.0",
     "type": "whmcs-gateways",
-    "name": "blockonomics-gateway-module",
+    "name": "Blockonomics",
     "license": "MIT",
     "category": "payments",
     "description": {
-        "name": "Blockonomics Payment Gateway Module",
+        "name": "Blockonomics",
         "tagline": "Accept bitcoins on your WHMCS, payments go directly into your wallet"
     },
     "logo": {

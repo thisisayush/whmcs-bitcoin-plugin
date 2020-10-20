@@ -5,7 +5,7 @@ require '../../../init.php';
 require '../../../includes/gatewayfunctions.php';
 require '../../../includes/invoicefunctions.php';
 
-require '../Blockonomics/Blockonomics.php';
+require '../blockonomics/blockonomics.php';
 
 use Blockonomics\Blockonomics;
 

@@ -1,13 +1,13 @@
 <?php
 
-require_once dirname(__FILE__) . '/modules/gateways/Blockonomics/Blockonomics.php';
+require_once __DIR__ . '/../../../init.php';
+require_once __DIR__ . '/blockonomics.php';
 
 use Blockonomics\Blockonomics;
 use WHMCS\ClientArea;
 use WHMCS\Database\Capsule;
 
 define('CLIENTAREA', true);
-require 'init.php';
 
 // Init Blockonomics class
 $blockonomics = new Blockonomics();
@@ -75,6 +75,6 @@ $ca->assign('order_id', $order_id);
 $ca->assign('_BLOCKLANG', $_BLOCKLANG);
 
 // Define the template filename to be used without the .tpl extension
-$ca->setTemplate('../blockonomics/payment');
+$ca->setTemplate('/modules/gateways/blockonomics/payment.tpl');
 
 $ca->output();
