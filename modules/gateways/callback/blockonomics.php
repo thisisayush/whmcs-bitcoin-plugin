@@ -63,7 +63,7 @@ if ($blockonomics_currency_code == 'btc') {
     $subdomain = $blockonomics_currency_code;
 }
 
-$systemUrl = App::getSystemUrl();
+$systemUrl = $blockonomics->getSystemUrl();
 if ($status < $confirmations) {
     $invoiceNote = '<b>' . $_BLOCKLANG['invoiceNote']['waiting'] . ' <img src="' . $systemUrl . 'modules/gateways/blockonomics/img/' . $blockonomics_currency_code . '.png" style="max-width: 20px;"> ' . $blockonomics_currency->name . ' ' . $_BLOCKLANG['invoiceNote']['network'] . "</b>\r\r" .
     $blockonomics_currency->name . " transaction id:\r" .
