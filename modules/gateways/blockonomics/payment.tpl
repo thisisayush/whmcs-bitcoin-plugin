@@ -1,4 +1,4 @@
-<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/modules/gateways/blockonomics/css/order.css">
+<link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/modules/gateways/blockonomics/assets/css/order.css">
 
 <div id="system-url" data-url="{$system_url}"></div>
 <div id="time_period" data-time_period="{$time_period}"></div>
@@ -42,7 +42,7 @@
                 <table width="100%">
                     <tr class="bnomics-select-options" ng-repeat="(active_code, active_currency) in active_currencies"
                         ng-click="select_blockonomics_currency(active_code)">
-                        <td align="left"><img src="{$WEB_ROOT}/modules/gateways/blockonomics/img/[[active_code]].png"
+                        <td align="left"><img src="{$WEB_ROOT}/modules/gateways/blockonomics/assets/img/[[active_code]].png"
                                 class="rotateimg[[active_code]]" alt="[[active_currency.name]] Logo">
                             <h3>[[active_currency.name]]</h3> <span class="bnomics-select-currency-button"><button
                                     type="button"
@@ -135,13 +135,10 @@
     </div>
 </div>
 
-<script type="text/javascript" src="{$WEB_ROOT}/modules/gateways/blockonomics/js/angular.min.js"></script>
-<script type="text/javascript" src="{$WEB_ROOT}/modules/gateways/blockonomics/js/angular-resource.min.js"></script>
-<script type="text/javascript" src="{$WEB_ROOT}/modules/gateways/blockonomics/js/app.js"></script>
-<script type="text/javascript" src="{$WEB_ROOT}/modules/gateways/blockonomics/js/qrcode-generator/qrcode.js"></script>
-<script type="text/javascript"
-    src="{$WEB_ROOT}/modules/gateways/blockonomics/js/qrcode-generator/qrcode_UTF8.js"></script>
-<script type="text/javascript"
-    src="{$WEB_ROOT}/modules/gateways/blockonomics/js/angular-qrcode/angular-qrcode.js"></script>
-<script type="text/javascript"
-    src="{$WEB_ROOT}/modules/gateways/blockonomics/js/reconnecting-websocket.min.js"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/modules/gateways/blockonomics/assets/js/angular.min.js"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/modules/gateways/blockonomics/assets/js/angular-resource.min.js"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/modules/gateways/blockonomics/assets/js/app.js"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/modules/gateways/blockonomics/assets/js/qrcode-generator/qrcode.js"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/modules/gateways/blockonomics/assets/js/qrcode-generator/qrcode_UTF8.js"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/modules/gateways/blockonomics/assets/js/angular-qrcode/angular-qrcode.js"></script>
+<script type="text/javascript" src="{$WEB_ROOT}/modules/gateways/blockonomics/assets/js/reconnecting-websocket.min.js"></script>
