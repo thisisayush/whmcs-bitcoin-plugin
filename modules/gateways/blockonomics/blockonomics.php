@@ -631,8 +631,11 @@ class Blockonomics
         return $langfilepath;
     }
 
-    /*
+    /**
      * Run the test setup
+     *
+     * @param string $new_api
+     * @return string error message
      */
     public function testSetup($new_api)
     {
