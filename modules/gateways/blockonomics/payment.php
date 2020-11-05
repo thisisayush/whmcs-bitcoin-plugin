@@ -5,7 +5,6 @@ require_once __DIR__ . '/blockonomics.php';
 
 use Blockonomics\Blockonomics;
 use WHMCS\ClientArea;
-use WHMCS\Database\Capsule;
 
 define('CLIENTAREA', true);
 
