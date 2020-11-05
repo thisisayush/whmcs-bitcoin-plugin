@@ -29,8 +29,7 @@ $finish_order = htmlspecialchars(isset($_REQUEST['finish_order']) ? $_REQUEST['f
 
 $order_hash = htmlspecialchars(isset($_REQUEST['order']) ? $_REQUEST['order'] : '');
 
-$system_url = $blockonomics->getSystemUrl();
-$ca->assign('system_url', $system_url);
+$system_url = App::getSystemURL();
 
 if ($get_order) {
     $blockonomics_currency = htmlspecialchars(isset($_REQUEST['blockonomics_currency']) ? $_REQUEST['blockonomics_currency'] : '');

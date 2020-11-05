@@ -1,6 +1,6 @@
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/modules/gateways/blockonomics/assets/css/order.css">
 
-<div id="system-url" data-url="{$system_url}"></div>
+<div id="system-url" data-url="{$systemurl}"></div>
 <div id="time_period" data-time_period="{$time_period}"></div>
 <div id="active_currencies" data-active_currencies='{$active_currencies}'></div>
 <div id="order_uuid" data-order_uuid="{$order_uuid}"></div>
