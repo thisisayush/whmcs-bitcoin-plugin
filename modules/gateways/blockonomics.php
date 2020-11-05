@@ -11,16 +11,7 @@ function blockonomics_config()
     add_hook(
         'AdminAreaFooterOutput',
         1,
-        function ($vars) {
-            try {
-                // Detect module name from filename.
-                $gatewayModuleName = basename(__FILE__, '.php');
-                // Fetch gateway configuration parameters.
-                $gatewayParams = getGatewayVariables($gatewayModuleName);
-            } catch (exception $e) {
-                return;
-            }
-
+        function () {
             $blockonomics = new Blockonomics();
             include $blockonomics->getLangFilePath();
             $system_url = $blockonomics->getSystemUrl();
