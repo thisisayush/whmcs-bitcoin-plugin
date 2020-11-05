@@ -234,7 +234,7 @@ HTML;
 function blockonomics_link($params)
 {
     if (false === isset($params) || true === empty($params)) {
-        die('[ERROR] In modules/gateways/blockonomics.php::Blockonomics_link() function: Missing or invalid $params data.');
+        exit('[ERROR] In modules/gateways/blockonomics.php::Blockonomics_link() function: Missing or invalid $params data.');
     }
 
     $blockonomics = new Blockonomics();

@@ -19,7 +19,7 @@ $gatewayParams = getGatewayVariables($gatewayModuleName);
 
 // Die if module is not active.
 if (!$gatewayParams['type']) {
-    die('Module Not Activated');
+    exit('Module Not Activated');
 }
 
 require_once $blockonomics->getLangFilePath();
@@ -41,7 +41,7 @@ if ($secret_value != $secret) {
     $success = false;
 
     echo $transactionStatus;
-    die();
+    exit();
 }
 
 $order = $blockonomics->getOrderByAddress($addr);
@@ -72,7 +72,7 @@ if ($status < $confirmations) {
     $blockonomics->updateOrderInDb($addr, $txid, $status, $value);
     $blockonomics->updateInvoiceNote($invoiceId, $invoiceNote);
 
-    die();
+    exit();
 }
 
 $expected = $bits / 1.0e8;
@@ -95,7 +95,7 @@ $blockonomics->updateOrderInDb($addr, $txid, $status, $value);
  * Checks invoice ID is a valid invoice number. Note it will count an
  * invoice in any status as valid.
  *
- * Performs a die upon encountering an invalid Invoice ID.
+ * Performs a exit upon encountering an invalid Invoice ID.
  *
  * Returns a normalised invoice ID.
  *
@@ -110,13 +110,13 @@ $invoiceId = checkCbInvoiceID($invoiceId, $gatewayParams['name']);
  * Performs a check for any existing transactions with the same given
  * transaction number.
  *
- * Performs a die upon encountering a duplicate.
+ * Performs a exit upon encountering a duplicate.
  *
  * @param string $transactionId Unique Transaction ID
  */
 
 if ($blockonomics->checkIfTransactionExists($blockonomics_currency_code . ' - ' . $txid)) {
-    die();
+    exit();
 }
 
 /**

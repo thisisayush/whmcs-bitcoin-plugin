@@ -37,7 +37,7 @@ if ($get_order) {
     $existing_order = $blockonomics->processOrderHash($get_order, $blockonomics_currency);
     // No order exists, exit
     if (is_null($existing_order->id_order)) {
-        exit;
+        exit();
     } else {
         header('Content-Type: application/json');
         exit(json_encode($existing_order));
@@ -51,7 +51,7 @@ if ($get_order) {
 				Note to admin: Please check that your System URL is configured correctly.
 				If you are using SSL, verify that System URL is set to use HTTPS and not HTTP. <br>
 				To configure System URL, please go to WHMCS admin > Setup > General Settings > General';
-    exit;
+    exit();
 }
 
 $ca->assign('order_uuid', $order_hash);
@@ -66,7 +66,7 @@ if ($active_currencies) {
 } else {
     echo '<b>Error: No active blockonomics currencies.</b> <br>
 				Note to admin: Check your API keys are configured.';
-    exit;
+    exit();
 }
 
 $order_id = $blockonomics->getOrderIdByHash($order_hash);
