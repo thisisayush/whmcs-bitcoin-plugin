@@ -1,6 +1,6 @@
 <?php
 if (!defined('WHMCS')) {
-    die('This file cannot be accessed directly');
+    exit('This file cannot be accessed directly');
 }
 // Checkout pages
 $_BLOCKLANG['orderId'] = 'Order #';
