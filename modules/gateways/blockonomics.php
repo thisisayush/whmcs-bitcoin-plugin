@@ -1,37 +1,30 @@
 <?php
 
-require_once(dirname(__FILE__) . '/Blockonomics/Blockonomics.php');
+require_once dirname(__FILE__) . '/blockonomics/blockonomics.php';
 
 use Blockonomics\Blockonomics;
 
-function blockonomics_config() {
+function blockonomics_config()
+{
 
-	// When loading plugin setup page, run custom JS
-	add_hook('AdminAreaFooterOutput', 1, function($vars) {
-		try {
-		    // Detect module name from filename.
-			$gatewayModuleName = basename(__FILE__, '.php');
-			// Fetch gateway configuration parameters.
-			$gatewayParams = getGatewayVariables($gatewayModuleName);
-		}
-		catch (exception $e) {
-		    return;
-		}
+    // When loading plugin setup page, run custom JS
+    add_hook(
+        'AdminAreaFooterOutput',
+        1,
+        function () {
+            $blockonomics = new Blockonomics();
+            include $blockonomics->getLangFilePath();
+            $system_url = $blockonomics->getSystemUrl();
+            $secret = $blockonomics->getCallbackSecret();
+            $callback_url = $blockonomics->getCallbackUrl($secret);
+            $trans_text_system_url_error = $_BLOCKLANG['testSetup']['systemUrl']['error'];
+            $trans_text_system_url_fix = $_BLOCKLANG['testSetup']['systemUrl']['fix'];
+            $trans_text_success = $_BLOCKLANG['testSetup']['success'];
+            $trans_text_protocol_error = $_BLOCKLANG['testSetup']['protocol']['error'];
+            $trans_text_protocol_fix = $_BLOCKLANG['testSetup']['protocol']['fix'];
+            $trans_text_testing = $_BLOCKLANG['testSetup']['testing'];
 
-		$blockonomics = new Blockonomics();
-		require($blockonomics->getLangFilePath());
-		$system_url = $blockonomics->getSystemUrl();
-		$secret = $blockonomics->getCallbackSecret();
-		$callback_url = $blockonomics->getCallbackUrl($secret);
-		$trans_text_system_url_error = $_BLOCKLANG['testSetup']['systemUrl']['error'];
-		$trans_text_system_url_fix = $_BLOCKLANG['testSetup']['systemUrl']['fix'];
-		$trans_text_success = $_BLOCKLANG['testSetup']['success'];
-		$trans_text_protocol_error = $_BLOCKLANG['testSetup']['protocol']['error'];
-		$trans_text_protocol_fix = $_BLOCKLANG['testSetup']['protocol']['fix'];
-		$trans_text_testing = $_BLOCKLANG['testSetup']['testing'];
-
-
-		return <<<HTML
+            return <<<HTML
 		<script type="text/javascript">
 			var secret = document.getElementsByName('field[CallbackSecret]');
 			secret.forEach(function(element) {
@@ -104,12 +97,12 @@ function blockonomics_config() {
 				try {
 					responseObj = JSON.parse(this.responseText);
 				} catch (err) {
-					var testSetupUrl = "$system_url" + "testSetup.php";
+					var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php";
 					responseObj.error = true;
 					responseObj.errorStr = '$trans_text_system_url_error ' + testSetupUrl + '. $trans_text_system_url_fix';
 				}
 				if (responseObj.error) {
-					testSetupResultCell.innerHTML = "<label style='color:red;'>Error:</label> " + responseObj.errorStr + 
+					testSetupResultCell.innerHTML = "<label style='color:red;'>Error:</label> " + responseObj.errorStr +
 					"<br>For more information, please consult <a href='https://blockonomics.freshdesk.com/support/solutions/articles/33000215104-troubleshooting-unable-to-generate-new-address' target='_blank'>this troubleshooting article</a>";
 				} else {
 					testSetupResultCell.innerHTML = "<label style='color:green;'>$trans_text_success</label>";
@@ -120,7 +113,7 @@ function blockonomics_config() {
 			newBtn.onclick = function() {
 				testSetupResultRow.style.display = "table-row";
 				var apiKeyField = document.getElementsByName('field[ApiKey]')[0];
-				var testSetupUrl = "$system_url" + "testSetup.php"+"?new_api="+apiKeyField.value;
+				var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php"+"?new_api="+apiKeyField.value;
 
 				try {
 					var systemUrlProtocol = new URL("$system_url").protocol;
@@ -133,7 +126,7 @@ function blockonomics_config() {
 							$trans_text_protocol_fix";
 					return false;
 				}
-				
+
 				var oReq = new XMLHttpRequest();
 				oReq.addEventListener("load", reqListener);
 				oReq.open("GET", testSetupUrl);
@@ -147,100 +140,100 @@ function blockonomics_config() {
 
 		</script>
 HTML;
+        }
+    );
 
-	});
+    $blockonomics = new Blockonomics();
+    include $blockonomics->getLangFilePath();
+    $blockonomics->createOrderTableIfNotExist();
 
-	$blockonomics = new Blockonomics();
-	require($blockonomics->getLangFilePath());
-	$blockonomics->createOrderTableIfNotExist();
-	
-	$settings_array = array(
-		'FriendlyName' => array(
-			'Type'       => 'System',
-			'Value'      => 'Blockonomics'
-		),
-		array(
-			'FriendlyName' => '<span style="color:grey;">'.$_BLOCKLANG['version']['title'].'</span>',
-			'Description'  => '<span style="color:grey;">'.$blockonomics->getVersion().'</span>'
-		)
-	);
-	$settings_array['ApiKey'] = array(
-		'FriendlyName' => $_BLOCKLANG['apiKey']['title'],
-		'Description'  => $_BLOCKLANG['apiKey']['description'],
-		'Type'         => 'text'
-	);
+    $settings_array = [
+        'FriendlyName' => [
+            'Type' => 'System',
+            'Value' => 'Blockonomics',
+        ],
+        [
+            'FriendlyName' => '<span style="color:grey;">' . $_BLOCKLANG['version']['title'] . '</span>',
+            'Description' => '<span style="color:grey;">' . $blockonomics->getVersion() . '</span>',
+        ],
+    ];
+    $settings_array['ApiKey'] = [
+        'FriendlyName' => $_BLOCKLANG['apiKey']['title'],
+        'Description' => $_BLOCKLANG['apiKey']['description'],
+        'Type' => 'text',
+    ];
 
-	$blockonomics_currencies = $blockonomics->getSupportedCurrencies();
-	foreach ($blockonomics_currencies as $code => $currency) {
-		if($code != 'btc'){
-			$settings_array[ $code.'Enabled' ] = array(
-				'FriendlyName' => strtoupper($code).' '. $_BLOCKLANG['enabled']['title'],
-				'Type' => 'yesno',
-				'Description' => $_BLOCKLANG['enabled']['description'].' '.$currency['name']
-			);
-		}
-	}
-	$settings_array[ 'CallbackSecret' ] = array(
-		'FriendlyName' => $_BLOCKLANG['callbackSecret']['title'],
-		'Type'         => 'text'
-	);
-	$settings_array[ 'CallbackURL' ] = array(
-			'FriendlyName' => $_BLOCKLANG['callbackUrl']['title'],
-			'Type'         => 'text'
-		);
-	$settings_array[ 'TimePeriod' ] = array(
-			'FriendlyName' => $_BLOCKLANG['timePeriod']['title'],
-			'Type' => 'dropdown',
-			'Options' => array(
-				'10' => '10',
-				'15' => '15',
-				'20' => '20',
-				'25' => '25',
-				'30' => '30',
-			),
-			'Description' => $_BLOCKLANG['timePeriod']['description'],
-		);
-	$settings_array[ 'Margin' ] = array(
-				'FriendlyName' => $_BLOCKLANG['margin']['title'],
-				'Type' => 'text',
-				'Size' => '5',
-				'Default' => 0,
-				'Description' => $_BLOCKLANG['margin']['description'],
-		);
-	$settings_array[ 'Slack' ] = array(
-				'FriendlyName' => $_BLOCKLANG['slack']['title'],
-				'Type' => 'text',
-				'Size' => '5',
-				'Default' => 0,
-				'Description' => $_BLOCKLANG['slack']['description'],
-		);
-	$settings_array[ 'Confirmations' ] = array(
-			'FriendlyName' => $_BLOCKLANG['confirmations']['title'],
-			'Type' => 'dropdown',
-			'Default' => 2,
-			'Options' => array(
-				'2' => '2 ('.$_BLOCKLANG['confirmations']['recommended'].')',
-				'1' => '1',
-				'0' => '0'
-			),
-			'Description' => $_BLOCKLANG['confirmations']['description'],
-		);
-	
-	return $settings_array;
+    $blockonomics_currencies = $blockonomics->getSupportedCurrencies();
+    foreach ($blockonomics_currencies as $code => $currency) {
+        if ($code != 'btc') {
+            $settings_array[$code . 'Enabled'] = [
+                'FriendlyName' => strtoupper($code) . ' ' . $_BLOCKLANG['enabled']['title'],
+                'Type' => 'yesno',
+                'Description' => $_BLOCKLANG['enabled']['description'] . ' ' . $currency['name'],
+            ];
+        }
+    }
+    $settings_array['CallbackSecret'] = [
+        'FriendlyName' => $_BLOCKLANG['callbackSecret']['title'],
+        'Type' => 'text',
+    ];
+    $settings_array['CallbackURL'] = [
+        'FriendlyName' => $_BLOCKLANG['callbackUrl']['title'],
+        'Type' => 'text',
+    ];
+    $settings_array['TimePeriod'] = [
+        'FriendlyName' => $_BLOCKLANG['timePeriod']['title'],
+        'Type' => 'dropdown',
+        'Options' => [
+            '10' => '10',
+            '15' => '15',
+            '20' => '20',
+            '25' => '25',
+            '30' => '30',
+        ],
+        'Description' => $_BLOCKLANG['timePeriod']['description'],
+    ];
+    $settings_array['Margin'] = [
+        'FriendlyName' => $_BLOCKLANG['margin']['title'],
+        'Type' => 'text',
+        'Size' => '5',
+        'Default' => 0,
+        'Description' => $_BLOCKLANG['margin']['description'],
+    ];
+    $settings_array['Slack'] = [
+        'FriendlyName' => $_BLOCKLANG['slack']['title'],
+        'Type' => 'text',
+        'Size' => '5',
+        'Default' => 0,
+        'Description' => $_BLOCKLANG['slack']['description'],
+    ];
+    $settings_array['Confirmations'] = [
+        'FriendlyName' => $_BLOCKLANG['confirmations']['title'],
+        'Type' => 'dropdown',
+        'Default' => 2,
+        'Options' => [
+            '2' => '2 (' . $_BLOCKLANG['confirmations']['recommended'] . ')',
+            '1' => '1',
+            '0' => '0',
+        ],
+        'Description' => $_BLOCKLANG['confirmations']['description'],
+    ];
+
+    return $settings_array;
 }
 
-function blockonomics_link($params) {
-	
-	if (false === isset($params) || true === empty($params)) {
-		die('[ERROR] In modules/gateways/Blockonomics.php::Blockonomics_link() function: Missing or invalid $params data.');
-	}
+function blockonomics_link($params)
+{
+    if (false === isset($params) || true === empty($params)) {
+        exit('[ERROR] In modules/gateways/blockonomics.php::Blockonomics_link() function: Missing or invalid $params data.');
+    }
 
-	$blockonomics = new Blockonomics();
+    $blockonomics = new Blockonomics();
 
     $order_hash = $blockonomics->getOrderHash($params['invoiceid'], $params['amount'], $params['currency']);
 
     $system_url = $blockonomics->getSystemUrl();
-    $form_url = $system_url . 'payment.php';
+    $form_url = $system_url . 'modules/gateways/blockonomics/payment.php';
 
     //pass only the uuid to the payment page
     $form = '<form action="' . $form_url . '" method="GET">';

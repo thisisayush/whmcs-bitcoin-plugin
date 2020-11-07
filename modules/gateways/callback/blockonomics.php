@@ -1,13 +1,14 @@
 <?php
 
 // Require libraries needed for gateway module functions.
-include '../../../init.php';
-include '../../../includes/gatewayfunctions.php';
-include '../../../includes/invoicefunctions.php';
+require '../../../init.php';
+require '../../../includes/gatewayfunctions.php';
+require '../../../includes/invoicefunctions.php';
 
-include '../Blockonomics/Blockonomics.php';
+require '../blockonomics/blockonomics.php';
 
 use Blockonomics\Blockonomics;
+
 // Init Blockonomics class
 $blockonomics = new Blockonomics();
 
@@ -18,10 +19,10 @@ $gatewayParams = getGatewayVariables($gatewayModuleName);
 
 // Die if module is not active.
 if (!$gatewayParams['type']) {
-	die("Module Not Activated");
+    exit('Module Not Activated');
 }
 
-require_once($blockonomics->getLangFilePath());
+require_once $blockonomics->getLangFilePath();
 
 // Retrieve data returned in payment gateway callback
 $secret = htmlspecialchars($_GET['secret']);
@@ -36,11 +37,11 @@ $txid = htmlspecialchars($_GET['txid']);
 $secret_value = $blockonomics->getCallbackSecret();
 
 if ($secret_value != $secret) {
-	$transactionStatus = $_BLOCKLANG['error']['secret'];
-	$success = false;
+    $transactionStatus = $_BLOCKLANG['error']['secret'];
+    $success = false;
 
-	echo $transactionStatus;
-	die();
+    echo $transactionStatus;
+    exit();
 }
 
 $order = $blockonomics->getOrderByAddress($addr);
@@ -48,39 +49,41 @@ $invoiceId = $order['order_id'];
 $bits = $order['bits'];
 
 // If this is test transaction, generate new transaction ID
-if($txid == 'WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction') {
-	$txid = 'WarningThisIsATestTransaction_' . $invoiceId;
+if ($txid == 'WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction') {
+    $txid = 'WarningThisIsATestTransaction_' . $invoiceId;
 }
 
 $confirmations = $blockonomics->getConfirmations();
 
 $blockonomics_currency_code = $order['blockonomics_currency'];
 $blockonomics_currency = $blockonomics->getSupportedCurrencies()[$blockonomics_currency_code];
-if($blockonomics_currency_code=='btc'){
-	$subdomain = 'www';
-}else{
-	$subdomain = $blockonomics_currency_code;
+if ($blockonomics_currency_code == 'btc') {
+    $subdomain = 'www';
+} else {
+    $subdomain = $blockonomics_currency_code;
 }
-if($status < $confirmations) {
-	$invoiceNote = "<b>".$_BLOCKLANG['invoiceNote']['waiting']." <img src=\"img/".$blockonomics_currency_code.".png\" style=\"max-width: 20px;\"> ".$blockonomics_currency->name." ".$_BLOCKLANG['invoiceNote']['network']."</b>\r\r" .
-		$blockonomics_currency->name." transaction id:\r" .
-		"<a target=\"_blank\" href=\"https://".$subdomain.".blockonomics.co/api/tx?txid=$txid&addr=$addr\">$txid</a>";
 
-	$blockonomics->updateOrderInDb($addr, $txid, $status, $value);
-	$blockonomics->updateInvoiceNote($invoiceId, $invoiceNote);
+$systemUrl = $blockonomics->getSystemUrl();
+if ($status < $confirmations) {
+    $invoiceNote = '<b>' . $_BLOCKLANG['invoiceNote']['waiting'] . ' <img src="' . $systemUrl . 'modules/gateways/blockonomics/assets/img/' . $blockonomics_currency_code . '.png" style="max-width: 20px;"> ' . $blockonomics_currency->name . ' ' . $_BLOCKLANG['invoiceNote']['network'] . "</b>\r\r" .
+    $blockonomics_currency->name . " transaction id:\r" .
+        '<a target="_blank" href="https://' . $subdomain . ".blockonomics.co/api/tx?txid=$txid&addr=$addr\">$txid</a>";
 
-	die();
+    $blockonomics->updateOrderInDb($addr, $txid, $status, $value);
+    $blockonomics->updateInvoiceNote($invoiceId, $invoiceNote);
+
+    exit();
 }
 
 $expected = $bits / 1.0e8;
 $paid = $value / 1.0e8;
 
-$underpayment_slack = $blockonomics->getUnderpaymentSlack()/100 * $bits;
-if($value < $bits - $underpayment_slack) {
-	$price_by_expected = $blockonomics->getPriceByExpected($invoiceId);
-	$paymentAmount = round($paid*$price_by_expected, 2);
+$underpayment_slack = $blockonomics->getUnderpaymentSlack() / 100 * $bits;
+if ($value < $bits - $underpayment_slack) {
+    $price_by_expected = $blockonomics->getPriceByExpected($invoiceId);
+    $paymentAmount = round($paid * $price_by_expected, 2);
 } else {
-	$paymentAmount = $order['value'];
+    $paymentAmount = $order['value'];
 }
 
 $blockonomics->updateInvoiceNote($invoiceId, null);
@@ -92,7 +95,7 @@ $blockonomics->updateOrderInDb($addr, $txid, $status, $value);
  * Checks invoice ID is a valid invoice number. Note it will count an
  * invoice in any status as valid.
  *
- * Performs a die upon encountering an invalid Invoice ID.
+ * Performs a exit upon encountering an invalid Invoice ID.
  *
  * Returns a normalised invoice ID.
  *
@@ -107,13 +110,13 @@ $invoiceId = checkCbInvoiceID($invoiceId, $gatewayParams['name']);
  * Performs a check for any existing transactions with the same given
  * transaction number.
  *
- * Performs a die upon encountering a duplicate.
+ * Performs a exit upon encountering a duplicate.
  *
  * @param string $transactionId Unique Transaction ID
  */
 
-if ($blockonomics->checkIfTransactionExists($blockonomics_currency_code ." - ". $txid)) {
-	die();
+if ($blockonomics->checkIfTransactionExists($blockonomics_currency_code . ' - ' . $txid)) {
+    exit();
 }
 
 /**
@@ -128,7 +131,7 @@ if ($blockonomics->checkIfTransactionExists($blockonomics_currency_code ." - ". 
  * @param string|array $debugData    Data to log
  * @param string $transactionStatus  Status
  */
-logTransaction($gatewayParams['name'], $_GET, "Successful");
+logTransaction($gatewayParams['name'], $_GET, 'Successful');
 
 $paymentFee = 0;
 
@@ -144,9 +147,9 @@ $paymentFee = 0;
  * @param string $gatewayModule  Gateway module name
  */
 addInvoicePayment(
-	$invoiceId,
-	$blockonomics_currency_code ." - ". $txid,
-	$paymentAmount,
-	$paymentFee,
-	$gatewayModuleName
+    $invoiceId,
+    $blockonomics_currency_code . ' - ' . $txid,
+    $paymentAmount,
+    $paymentFee,
+    $gatewayModuleName
 );
