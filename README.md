@@ -19,7 +19,7 @@ Accept bitcoins on your WHMCS, payments go directly into your wallet
 The entire file structure has been refactored to match the WHMCS code standard and the code has been ported to comply the syntax PSR2 for PHP.
 
 - Just upload and replace the folder `modules` in your own WHMCS installation with the one we provide. You don't need to upload any other folder or file like `screnshots` or `README.md`.
-- Now just execute the script using your browser, this is located in: https://xxxxxxx.ccc/modules/gateways/blockonomics/updater.php (replace xxxxxxx.ccc with your own WHMCS domain)
+- Now just execute the script updater.php using your browser. Example: https://xxxxxxx.ccc/modules/gateways/blockonomics/updater.php (replace xxxxxxx.ccc with your own WHMCS domain)
 - That's it!
 
 ## Screenshots ##
