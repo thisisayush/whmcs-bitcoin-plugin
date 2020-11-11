@@ -14,7 +14,7 @@ function blockonomics_config()
         function () {
             $blockonomics = new Blockonomics();
             include $blockonomics->getLangFilePath();
-            $system_url = $blockonomics->getSystemUrl();
+            $system_url = \App::getSystemURL();
             $secret = $blockonomics->getCallbackSecret();
             $callback_url = $blockonomics->getCallbackUrl($secret);
             $trans_text_system_url_error = $_BLOCKLANG['testSetup']['systemUrl']['error'];
@@ -232,7 +232,7 @@ function blockonomics_link($params)
 
     $order_hash = $blockonomics->getOrderHash($params['invoiceid'], $params['amount'], $params['currency']);
 
-    $system_url = $blockonomics->getSystemUrl();
+    $system_url = \App::getSystemURL();
     $form_url = $system_url . 'modules/gateways/blockonomics/payment.php';
 
     //pass only the uuid to the payment page

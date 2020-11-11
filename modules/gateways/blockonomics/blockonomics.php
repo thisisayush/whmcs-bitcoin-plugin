@@ -25,7 +25,7 @@ class Blockonomics
      */
     public function getCallbackUrl($secret)
     {
-        return $this->getSystemUrl() . 'modules/gateways/callback/blockonomics.php?secret=' . $secret;
+        return \App::getSystemURL() . 'modules/gateways/callback/blockonomics.php?secret=' . $secret;
     }
 
     /*
@@ -573,16 +573,6 @@ class Blockonomics
         } catch (Exception $e) {
             exit("Unable to update order to blockonomics_orders: {$e->getMessage()}");
         }
-    }
-
-    /*
-     * Get URL of the WHMCS installation
-     */
-    public function getSystemUrl()
-    {
-        return Capsule::table('tblconfiguration')
-            ->where('setting', 'SystemURL')
-            ->value('value');
     }
 
     /*
