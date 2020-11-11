@@ -8,19 +8,19 @@ Accept bitcoins on your WHMCS, payments go directly into your wallet
 ## Installation ##
 [Blog Tutorial](https://blog.blockonomics.co/friendly-bitcoin-payments-for-web-hosting-businesses-using-whmcs-88de8eef4e81) | [Video Tutorial](https://www.youtube.com/watch?v=jORcxsV-OOg)
 
-- Copy the files to your WHMCS directory
+- Copy the folder `modules` to your WHMCS directory. You don't need to upload any other folder or file like `screnshots` or `README.md`.
 - Go to your WHMCS admin, Setup -> Payments -> Payment Gateways
 - Activate Blockonomics in All Payment Gateways
 - Set your API key in Manage Existing Gateways
 - After setting API Key refresh page
 - Copy your Callback to Blockonomics Merchants > Settings
 
-## Upgrade from 1.8.X to 1.9 ##
+## Upgrade from 1.8.X to 1.9.X ##
 The entire file structure has been refactored to match the WHMCS code standard and the code has been ported to comply the syntax PSR2 for PHP.
-- Delete the folders css/ img/ js/ located in your WHMCS root installation. They are now located inside the module.
-- Delete the files payment.php testSetup.php located in your WHMCS root installation.
-- Delete the folder templates/blockonomics since the template now is located inside the module.
-- Replace using the content located in modules/gateways into your WHMCS.
+
+- Just upload and replace the folder `modules` in your own WHMCS installation with the one we provide. You don't need to upload any other folder or file like `screnshots` or `README.md`.
+- Now just execute the script using your browser, this is located in: https://xxxxxxx.ccc/modules/gateways/blockonomics/updater.php (replace xxxxxxx.ccc with your own WHMCS domain)
+- That's it!
 
 ## Screenshots ##
 
