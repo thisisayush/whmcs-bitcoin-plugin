@@ -281,15 +281,26 @@ class Blockonomics
         return intval(1.0e8 * $fiat_amount / $price);
     }
 
-    /*
-     * Convert received amount to order currency
+    /**
+     * Convert received amount based in client currency
+     *
+     * @param array $order
+     * @param string $paymentAmount
+     * @return float converted value
      */
     public function convertAmountToOrderCurrency($order, $paymentAmount)
     {
-        $exchangerate = Capsule::table('tblcurrencies')
-            ->where('code', $order['order_currency'])
-            ->value('rate');
-        return round($paymentAmount / $exchangerate, 2);
+        $clientByorder = Capsule::table('tblclients')
+            ->join('tblinvoices', 'tblclients.id', '=', 'tblinvoices.userid')
+            ->join('tblcurrencies', 'tblclients.currency', '=', 'tblcurrencies.id')
+            ->where('tblinvoices.id', $order['order_id'])
+            ->first();
+
+        if ($clientByorder->code == $order['order_currency']) {
+            return floatval($paymentAmount); // no convertion is requiered
+        }
+
+        return round(floatval($paymentAmount) * floatval($clientByorder->rate), 2);
     }
 
     /*
