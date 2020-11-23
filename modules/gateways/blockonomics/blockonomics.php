@@ -12,6 +12,13 @@ class Blockonomics
 {
     private $version = '1.9.0';
 
+    public $gatewayParams = [];
+
+    public function __construct()
+    {
+        $this->gatewayParams = getGatewayVariables('blockonomics');
+    }
+
     /*
      * Get the blockonomics version
      */
@@ -37,8 +44,7 @@ class Blockonomics
         $secret = '';
 
         try {
-            $gatewayParams = getGatewayVariables('blockonomics');
-            $secret = $gatewayParams['CallbackSecret'];
+            $secret = $this->gatewayParams['CallbackSecret'];
         } catch (Exception $e) {
             exit("Error, could not get Blockonomics secret from database. {$e->getMessage()}");
         }
@@ -46,8 +52,7 @@ class Blockonomics
         // Check if old format of callback is still in use
         if ($secret == '') {
             try {
-                $gatewayParams = getGatewayVariables('blockonomics');
-                $secret = $gatewayParams['ApiSecret'];
+                $secret = $this->gatewayParams['ApiSecret'];
             } catch (Exception $e) {
                 exit("Error, could not get Blockonomics secret from database. {$e->getMessage()}");
             }
@@ -81,8 +86,7 @@ class Blockonomics
      */
     public function getApiKey()
     {
-        $gatewayParams = getGatewayVariables('blockonomics');
-        return $gatewayParams['ApiKey'];
+        return $this->gatewayParams['ApiKey'];
     }
 
     /*
@@ -113,8 +117,7 @@ class Blockonomics
             if ($code == 'btc') {
                 $enabled = true;
             } else {
-                $gatewayParams = getGatewayVariables('blockonomics');
-                $enabled = $gatewayParams[$code . 'Enabled'];
+                $enabled = $this->gatewayParams[$code . 'Enabled'];
             }
             if ($enabled) {
                 $active_currencies[$code] = $currency;
@@ -128,8 +131,7 @@ class Blockonomics
      */
     public function getTimePeriod()
     {
-        $gatewayParams = getGatewayVariables('blockonomics');
-        return $gatewayParams['TimePeriod'];
+        return $this->gatewayParams['TimePeriod'];
     }
 
     /*
@@ -137,8 +139,7 @@ class Blockonomics
      */
     public function getConfirmations()
     {
-        $gatewayParams = getGatewayVariables('blockonomics');
-        $confirmations = $gatewayParams['Confirmations'];
+        $confirmations = $this->gatewayParams['Confirmations'];
         if (isset($confirmations)) {
             return $confirmations;
         }
@@ -160,7 +161,7 @@ class Blockonomics
      */
     public function getPriceByExpected($invoiceId)
     {
-        $query = Capsule::table('blockonomics_orders')
+        $query = Capsule::table('mod_blockonomics_orders')
             ->where('id_order', $invoiceId)
             ->select('value');
         $prices = $query->addSelect('bits')->get();
@@ -175,8 +176,7 @@ class Blockonomics
      */
     public function getUnderpaymentSlack()
     {
-        $gatewayParams = getGatewayVariables('blockonomics');
-        return $gatewayParams['Slack'];
+        return $this->gatewayParams['Slack'];
     }
 
     /*
@@ -243,8 +243,7 @@ class Blockonomics
      */
     public function getMargin()
     {
-        $gatewayParams = getGatewayVariables('blockonomics');
-        return $gatewayParams['Margin'];
+        return $this->gatewayParams['Margin'];
     }
 
     /*
@@ -303,22 +302,44 @@ class Blockonomics
         return round(floatval($paymentAmount) * floatval($clientByorder->rate), 2);
     }
 
+    /**
+     * WHMCS amounts are always 2 decimals, which can lead to incorrect values on different currencies.
+     * So better to establish the real value of the invoice based in our own internal calculations
+     * using the exchange rate defined by system owner.
+     *
+     * @param array $params
+     * @return float converted amount
+     */
+    public function fixWhmcsAmount($params)
+    {
+        $clientCurrency = $params['clientdetails']['currency'];
+        $amount = $params['amount'];
+        $paymentCurrency = $params['currencyId'];
+
+        if ($paymentCurrency && $clientCurrency != $paymentCurrency) {
+            $callbackCurrency = Capsule::table('tblcurrencies')->where('code', $params['basecurrency'])->first();
+            $amount = $params['basecurrencyamount'] / $callbackCurrency->rate;
+        }
+
+        return doubleval($amount);
+    }
+
     /*
      * If no Blockonomics order table exists, create it
      */
     public function createOrderTableIfNotExist()
     {
-        if (!Capsule::schema()->hasTable('blockonomics_orders')) {
+        if (!Capsule::schema()->hasTable('mod_blockonomics_orders')) {
             try {
                 Capsule::schema()->create(
-                    'blockonomics_orders',
+                    'mod_blockonomics_orders',
                     function ($table) {
                         $table->integer('id_order');
                         $table->text('txid');
                         $table->integer('timestamp');
                         $table->string('addr');
                         $table->integer('status');
-                        $table->decimal('value', 10, 2);
+                        $table->decimal('value', 10, 5);
                         $table->integer('bits');
                         $table->integer('bits_payed');
                         $table->string('blockonomics_currency');
@@ -328,15 +349,7 @@ class Blockonomics
                     }
                 );
             } catch (Exception $e) {
-                exit("Unable to create blockonomics_orders: {$e->getMessage()}");
-            }
-        } else if (!Capsule::schema()->hasColumn('blockonomics_orders', 'order_currency')) {
-            try {
-                Capsule::schema()->table('blockonomics_orders', function ($table) {
-                    $table->string('order_currency');
-                });
-            } catch (Exception $e) {
-                exit("Unable to update blockonomics_orders: {$e->getMessage()}");
+                exit("Unable to create mod_blockonomics_orders: {$e->getMessage()}");
             }
         }
     }
@@ -417,11 +430,11 @@ class Blockonomics
     public function getAllOrdersById($order_id)
     {
         try {
-            return Capsule::table('blockonomics_orders')
+            return Capsule::table('mod_blockonomics_orders')
                 ->where('id_order', $order_id)
                 ->orderBy('timestamp', 'desc')->get();
         } catch (Exception $e) {
-            exit("Unable to get orders from blockonomics_orders: {$e->getMessage()}");
+            exit("Unable to get orders from mod_blockonomics_orders: {$e->getMessage()}");
         }
     }
 
@@ -466,7 +479,7 @@ class Blockonomics
     public function insertOrderToDb($id_order, $blockonomics_currency, $address, $value, $bits, $order_currency)
     {
         try {
-            Capsule::table('blockonomics_orders')->insert(
+            Capsule::table('mod_blockonomics_orders')->insert(
                 [
                     'id_order' => $id_order,
                     'blockonomics_currency' => $blockonomics_currency,
@@ -479,7 +492,7 @@ class Blockonomics
                 ]
             );
         } catch (Exception $e) {
-            exit("Unable to insert new order into blockonomics_orders: {$e->getMessage()}");
+            exit("Unable to insert new order into mod_blockonomics_orders: {$e->getMessage()}");
         }
         return true;
     }
@@ -538,11 +551,11 @@ class Blockonomics
     public function getOrderByAddress($bitcoinAddress)
     {
         try {
-            $existing_order = Capsule::table('blockonomics_orders')
+            $existing_order = Capsule::table('mod_blockonomics_orders')
                 ->where('addr', $bitcoinAddress)
                 ->first();
         } catch (Exception $e) {
-            exit("Unable to select order from blockonomics_orders: {$e->getMessage()}");
+            exit("Unable to select order from mod_mod_blockonomics_orders: {$e->getMessage()}");
         }
 
         return [
@@ -573,7 +586,7 @@ class Blockonomics
     public function updateOrderInDb($addr, $txid, $status, $bits_payed)
     {
         try {
-            Capsule::table('blockonomics_orders')
+            Capsule::table('mod_blockonomics_orders')
                 ->where('addr', $addr)
                 ->update(
                     [
@@ -583,7 +596,7 @@ class Blockonomics
                     ]
                 );
         } catch (Exception $e) {
-            exit("Unable to update order to blockonomics_orders: {$e->getMessage()}");
+            exit("Unable to update order to mod_blockonomics_orders: {$e->getMessage()}");
         }
     }
 
@@ -593,7 +606,7 @@ class Blockonomics
     public function updateOrderExpected($address, $blockonomics_currency, $timestamp, $value, $bits)
     {
         try {
-            Capsule::table('blockonomics_orders')
+            Capsule::table('mod_blockonomics_orders')
                 ->where('addr', $address)
                 ->update(
                     [
@@ -604,7 +617,7 @@ class Blockonomics
                     ]
                 );
         } catch (Exception $e) {
-            exit("Unable to update order to blockonomics_orders: {$e->getMessage()}");
+            exit("Unable to update order to mod_blockonomics_orders: {$e->getMessage()}");
         }
     }
 
