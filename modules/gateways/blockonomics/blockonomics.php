@@ -288,19 +288,15 @@ class Blockonomics
      * @param string $paymentAmount
      * @return float converted value
      */
-    public function convertAmountToOrderCurrency($order, $paymentAmount)
+    public function convertAmountToOrderCurrency($order, $percentPaid)
     {
-        $clientByorder = Capsule::table('tblclients')
-            ->join('tblinvoices', 'tblclients.id', '=', 'tblinvoices.userid')
-            ->join('tblcurrencies', 'tblclients.currency', '=', 'tblcurrencies.id')
+        $whmcsInvoice = Capsule::table('tblinvoices')
             ->where('tblinvoices.id', $order['order_id'])
             ->first();
 
-        if ($clientByorder->code == $order['order_currency']) {
-            return floatval($paymentAmount); // no convertion is requiered
-        }
+        $paymentAmount = $percentPaid / 100 * $whmcsInvoice->total;
 
-        return round(floatval($paymentAmount) * floatval($clientByorder->rate), 2);
+        return round(floatval($paymentAmount), 2);
     }
 
     /*
