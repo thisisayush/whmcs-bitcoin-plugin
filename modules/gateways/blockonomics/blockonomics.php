@@ -282,13 +282,13 @@ class Blockonomics
     }
 
     /**
-     * Convert received amount based in client currency
+     * Convert received btc percentage to invoice currency
      *
      * @param array $order
-     * @param string $paymentAmount
+     * @param string $percentPaid
      * @return float converted value
      */
-    public function convertAmountToOrderCurrency($order, $percentPaid)
+    public function convertPercentPaidToInvoiceCurrency($order, $percentPaid)
     {
         $whmcsInvoice = Capsule::table('tblinvoices')
             ->where('tblinvoices.id', $order['order_id'])

@@ -85,7 +85,7 @@ if ($value < $bits - $underpayment_slack) {
     $btcAmount = $expected;
 }
 $percentPaid = $btcAmount / $expected * 100;
-$paymentAmount = $blockonomics->convertAmountToOrderCurrency($order, $percentPaid);
+$paymentAmount = $blockonomics->convertPercentPaidToInvoiceCurrency($order, $percentPaid);
 $blockonomics->updateInvoiceNote($invoiceId, null);
 $blockonomics->updateOrderInDb($addr, $txid, $status, $value);
 
