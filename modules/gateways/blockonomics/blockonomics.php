@@ -156,21 +156,6 @@ class Blockonomics
     }
 
     /*
-     * Get the BTC price that was calculated when the order price was last updated
-     */
-    public function getPriceByExpected($invoiceId)
-    {
-        $query = Capsule::table('blockonomics_orders')
-            ->where('id_order', $invoiceId)
-            ->select('value');
-        $prices = $query->addSelect('bits')->get();
-        $fiat = $prices[0]->value;
-        $btc = $prices[0]->bits / 1.0e8;
-        $btc_price = $fiat / $btc;
-        return round($btc_price, 2);
-    }
-
-    /*
      * Get underpayment slack
      */
     public function getUnderpaymentSlack()
