@@ -50,7 +50,7 @@ $bits = $order['bits'];
 
 // If this is test transaction, generate new transaction ID
 if ($txid == 'WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction') {
-    $txid = 'WarningThisIsATestTransaction_' . $invoiceId;
+    $txid = 'WarningThisIsATestTransaction_' . $addr;
 }
 
 $confirmations = $blockonomics->getConfirmations();
