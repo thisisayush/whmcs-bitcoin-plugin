@@ -275,12 +275,7 @@ class Blockonomics
      */
     public function convertPercentPaidToInvoiceCurrency($order, $percentPaid)
     {
-        $whmcsInvoice = Capsule::table('tblinvoices')
-            ->where('tblinvoices.id', $order['order_id'])
-            ->first();
-
-        $paymentAmount = $percentPaid / 100 * $whmcsInvoice->total;
-
+        $paymentAmount = $percentPaid / 100 * $order->basecurrencyamount;
         return round(floatval($paymentAmount), 2);
     }
 
