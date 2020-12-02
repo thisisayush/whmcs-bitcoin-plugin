@@ -230,7 +230,7 @@ function blockonomics_link($params)
 
     $blockonomics = new Blockonomics();
 
-    $order_hash = $blockonomics->getOrderHash($params['invoiceid'], $params['amount'], $params['currency']);
+    $order_hash = $blockonomics->getOrderHash($params['invoiceid'], $params['amount'], $params['currency'], $params['basecurrencyamount']);
 
     $system_url = \App::getSystemURL();
     $form_url = $system_url . 'modules/gateways/blockonomics/payment.php';
