@@ -275,7 +275,7 @@ class Blockonomics
      */
     public function convertPercentPaidToInvoiceCurrency($order, $percentPaid)
     {
-        $paymentAmount = $percentPaid / 100 * $order->basecurrencyamount;
+        $paymentAmount = $percentPaid / 100 * $order["basecurrencyamount"];
         return round(floatval($paymentAmount), 2);
     }
 
@@ -309,7 +309,7 @@ class Blockonomics
         } else if (!Capsule::schema()->hasColumn('blockonomics_orders', 'basecurrencyamount')) {
             try {
                 Capsule::schema()->table('blockonomics_orders', function ($table) {
-                    $table->string('basecurrencyamount');
+                    $table->decimal('basecurrencyamount', 10, 2);
                 });
             } catch (Exception $e) {
                 exit("Unable to update blockonomics_orders: {$e->getMessage()}");
