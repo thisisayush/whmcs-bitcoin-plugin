@@ -275,6 +275,9 @@ class Blockonomics
      */
     public function convertPercentPaidToInvoiceCurrency($order, $percentPaid)
     {
+        if (floatval($order['basecurrencyamount']) == 0) {
+            $order['basecurrencyamount'] = $order['value'];
+        }
         $paymentAmount = $percentPaid / 100 * $order["basecurrencyamount"];
         return round(floatval($paymentAmount), 2);
     }
