@@ -12,6 +12,16 @@ function blockonomics_config()
         'AdminAreaFooterOutput',
         1,
         function () {
+            // Check if the blockonomics module is activated
+            try {
+                // Detect module name from filename.
+                $gatewayModuleName = basename(__FILE__, '.php');
+                // Fetch gateway configuration parameters.
+                $gatewayParams = getGatewayVariables($gatewayModuleName);
+            }
+            catch (exception $e) {
+                return;
+            }
             $blockonomics = new Blockonomics();
             include $blockonomics->getLangFilePath();
             $system_url = \App::getSystemURL();
