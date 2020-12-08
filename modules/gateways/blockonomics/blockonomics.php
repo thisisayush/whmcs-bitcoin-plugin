@@ -299,7 +299,7 @@ class Blockonomics
                         $table->integer('bits_payed');
                         $table->string('blockonomics_currency');
                         $table->primary('addr');
-                        $table->string('basecurrencyamount');
+                        $table->decimal('basecurrencyamount', 10, 2);
                         $table->index('id_order');
                     }
                 );
@@ -351,7 +351,7 @@ class Blockonomics
         $order_info->id_order = intval($parts[0]);
         $order_info->value = floatval($parts[1]);
         $order_info->currency = $parts[2];
-        $order_info->basecurrencyamount = $parts[3];
+        $order_info->basecurrencyamount = floatval($parts[3]);
         return $order_info;
     }
 
