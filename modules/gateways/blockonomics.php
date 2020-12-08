@@ -239,7 +239,9 @@ function blockonomics_link($params)
     }
 
     $blockonomics = new Blockonomics();
-
+    if (!isset($params['basecurrencyamount'])) {
+        $params['basecurrencyamount'] = $params['amount'];
+    }
     $order_hash = $blockonomics->getOrderHash($params['invoiceid'], $params['amount'], $params['currency'], $params['basecurrencyamount']);
 
     $system_url = \App::getSystemURL();
