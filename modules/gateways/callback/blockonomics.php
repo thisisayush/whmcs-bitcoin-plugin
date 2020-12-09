@@ -50,7 +50,7 @@ $bits = $order['bits'];
 
 // If this is test transaction, generate new transaction ID
 if ($txid == 'WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction') {
-    $txid = 'WarningThisIsATestTransaction_' . $invoiceId;
+    $txid = 'WarningThisIsATestTransaction_' . $addr;
 }
 
 $confirmations = $blockonomics->getConfirmations();
@@ -80,12 +80,12 @@ $paid = $value / 1.0e8;
 
 $underpayment_slack = $blockonomics->getUnderpaymentSlack() / 100 * $bits;
 if ($value < $bits - $underpayment_slack) {
-    $price_by_expected = $blockonomics->getPriceByExpected($invoiceId);
-    $paymentAmount = round($paid * $price_by_expected, 2);
+    $btcAmount = $paid;
 } else {
-    $paymentAmount = $order['value'];
+    $btcAmount = $expected;
 }
-
+$percentPaid = $btcAmount / $expected * 100;
+$paymentAmount = $blockonomics->convertPercentPaidToInvoiceCurrency($order, $percentPaid);
 $blockonomics->updateInvoiceNote($invoiceId, null);
 $blockonomics->updateOrderInDb($addr, $txid, $status, $value);
 

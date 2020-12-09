@@ -156,21 +156,6 @@ class Blockonomics
     }
 
     /*
-     * Get the BTC price that was calculated when the order price was last updated
-     */
-    public function getPriceByExpected($invoiceId)
-    {
-        $query = Capsule::table('blockonomics_orders')
-            ->where('id_order', $invoiceId)
-            ->select('value');
-        $prices = $query->addSelect('bits')->get();
-        $fiat = $prices[0]->value;
-        $btc = $prices[0]->bits / 1.0e8;
-        $btc_price = $fiat / $btc;
-        return round($btc_price, 2);
-    }
-
-    /*
      * Get underpayment slack
      */
     public function getUnderpaymentSlack()
@@ -281,6 +266,26 @@ class Blockonomics
         return intval(1.0e8 * $fiat_amount / $price);
     }
 
+    /**
+     * Convert received btc percentage to correct invoice currency
+     * Uses percent paid to ensure no rounding issues during conversions
+     *
+     * @param array $order
+     * @param string $percentPaid
+     * @return float converted value
+     */
+    public function convertPercentPaidToInvoiceCurrency($order, $percentPaid)
+    {
+        // Check if the invoice was converted during checkout
+        if (floatval($order['basecurrencyamount']) > 0) {
+            $order_total = $order['basecurrencyamount'];
+        }else {
+            $order_total = $order['value'];
+        }
+        $paymentAmount = $percentPaid / 100 * $order_total;
+        return round(floatval($paymentAmount), 2);
+    }
+
     /*
      * If no Blockonomics order table exists, create it
      */
@@ -301,11 +306,22 @@ class Blockonomics
                         $table->integer('bits_payed');
                         $table->string('blockonomics_currency');
                         $table->primary('addr');
+                        $table->decimal('basecurrencyamount', 10, 2);
                         $table->index('id_order');
                     }
                 );
             } catch (Exception $e) {
                 exit("Unable to create blockonomics_orders: {$e->getMessage()}");
+            }
+        } else if (!Capsule::schema()->hasColumn('blockonomics_orders', 'basecurrencyamount')) {
+            try {
+                // basecurrencyamount fixes payment amounts when convertToForProcessing is activated
+                // https://github.com/blockonomics/whmcs-bitcoin-plugin/pull/103
+                Capsule::schema()->table('blockonomics_orders', function ($table) {
+                    $table->decimal('basecurrencyamount', 10, 2);
+                });
+            } catch (Exception $e) {
+                exit("Unable to update blockonomics_orders: {$e->getMessage()}");
             }
         }
     }
@@ -344,6 +360,7 @@ class Blockonomics
         $order_info->id_order = intval($parts[0]);
         $order_info->value = floatval($parts[1]);
         $order_info->currency = $parts[2];
+        $order_info->basecurrencyamount = floatval($parts[3]);
         return $order_info;
     }
 
@@ -375,9 +392,9 @@ class Blockonomics
     /*
      * Add a new skeleton order in the db
      */
-    public function getOrderHash($id_order, $amount, $currency)
+    public function getOrderHash($id_order, $amount, $currency, $basecurrencyamount)
     {
-        return $this->encryptHash($id_order . ':' . $amount . ':' . $currency);
+        return $this->encryptHash($id_order . ':' . $amount . ':' . $currency. ':' . $basecurrencyamount);
     }
 
     /*
@@ -432,7 +449,7 @@ class Blockonomics
      * Try to insert new order to database
      * If order exists, return with false
      */
-    public function insertOrderToDb($id_order, $blockonomics_currency, $address, $value, $bits)
+    public function insertOrderToDb($id_order, $blockonomics_currency, $address, $value, $bits, $basecurrencyamount)
     {
         try {
             Capsule::table('blockonomics_orders')->insert(
@@ -444,6 +461,7 @@ class Blockonomics
                     'status' => -1,
                     'value' => $value,
                     'bits' => $bits,
+                    'basecurrencyamount' => $basecurrencyamount,
                 ]
             );
         } catch (Exception $e) {
@@ -468,7 +486,7 @@ class Blockonomics
         $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->currency, $order->blockonomics_currency);
         $order->timestamp = time();
         $order->status = -1;
-        $this->insertOrderToDb($order->id_order, $order->blockonomics_currency, $order->addr, $order->value, $order->bits);
+        $this->insertOrderToDb($order->id_order, $order->blockonomics_currency, $order->addr, $order->value, $order->bits, $order->basecurrencyamount);
         return $order;
     }
 
@@ -522,6 +540,7 @@ class Blockonomics
             'bits_payed' => $existing_order->bits_payed,
             'blockonomics_currency' => $existing_order->blockonomics_currency,
             'txid' => $existing_order->txid,
+            'basecurrencyamount' => $existing_order->basecurrencyamount,
         ];
     }
 
