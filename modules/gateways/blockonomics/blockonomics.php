@@ -267,7 +267,8 @@ class Blockonomics
     }
 
     /**
-     * Convert received btc percentage to invoice currency
+     * Convert received btc percentage to correct invoice currency
+     * Uses percent paid to ensure no rounding issues during conversions
      *
      * @param array $order
      * @param string $percentPaid
@@ -275,6 +276,7 @@ class Blockonomics
      */
     public function convertPercentPaidToInvoiceCurrency($order, $percentPaid)
     {
+        // Check if the invoice was converted during checkout
         if (floatval($order['basecurrencyamount']) > 0) {
             $order_total = $order['basecurrencyamount'];
         }else {
@@ -313,6 +315,8 @@ class Blockonomics
             }
         } else if (!Capsule::schema()->hasColumn('blockonomics_orders', 'basecurrencyamount')) {
             try {
+                // basecurrencyamount fixes payment amounts when convertToForProcessing is activated
+                // https://github.com/blockonomics/whmcs-bitcoin-plugin/pull/103
                 Capsule::schema()->table('blockonomics_orders', function ($table) {
                     $table->decimal('basecurrencyamount', 10, 2);
                 });
