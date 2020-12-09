@@ -15,7 +15,7 @@ Accept bitcoins on your WHMCS, payments go directly into your wallet
 - After setting API Key refresh page
 - Copy your Callback to Blockonomics Merchants > Settings
 
-## Cleanup on upgrade from 1.8.X to 1.9.X  (Optional) ##
+### Cleanup on upgrade from 1.8.X to 1.9.X  (Optional) ###
 If you are upgrading from 1.8.X to 1.9.X, you can use the below script to remove uncessary files: 
  
 - Execute the script upgrade.php using your browser. Example: https://xxxxxxx.ccc/modules/gateways/blockonomics/upgrade.php (replace xxxxxxx.ccc with your own WHMCS domain)
