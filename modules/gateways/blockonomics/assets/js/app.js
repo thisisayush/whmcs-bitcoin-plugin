@@ -81,9 +81,13 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
         }else{
             var subdomain = data.blockonomics_currency;
         }
+        console.log("processing order data");
+        console.log(data);
         //Check the status of the order
         if ($scope.order.status == -1) {
+            console.log("calculating time remaining");
             $scope.clock = $scope.order.timestamp + totalTime - Math.floor(Date.now() / 1000);
+            console.log($scope.order.timestamp + totalTime - Math.floor(Date.now() / 1000));
             //Mark order as expired if we ran out of time
             if ($scope.clock < 0) {
                 $scope.order.status = -3;
