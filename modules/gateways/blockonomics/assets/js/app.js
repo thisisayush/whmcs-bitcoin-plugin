@@ -171,11 +171,19 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
 
         select_text(divid);
 
-        $scope.address_copyshow = true;
-        $timeout(function() {
-            $scope.address_copyshow = false;
-            //Close copy to clipboard message after 2 sec
-        }, 2000);
+        if (divid == "bnomics-address-copy") {
+            $scope.address_copyshow = true;
+            $timeout(function() {
+                $scope.address_copyshow = false;
+                //Close copy to clipboard message after 2 sec
+            }, 2000);
+        }else{
+            $scope.amount_copyshow = true;
+            $timeout(function() {
+                $scope.amount_copyshow = false;
+                //Close copy to clipboard message after 2 sec
+            }, 2000);            
+        }
     }
 
     //Copy bitcoin address to clipboard
