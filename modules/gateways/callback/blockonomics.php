@@ -81,6 +81,8 @@ $paid = $value / 1.0e8;
 $underpayment_slack = $blockonomics->getUnderpaymentSlack() / 100 * $bits;
 if ($value < $bits - $underpayment_slack) {
     $btcAmount = $paid;
+} else if ($value > $bits) {
+    $btcAmount = $paid;
 } else {
     $btcAmount = $expected;
 }
