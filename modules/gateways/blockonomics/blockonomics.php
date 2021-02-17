@@ -438,6 +438,7 @@ class Blockonomics
                 $order->currency = $supplied_info->currency;
                 $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->currency, $blockonomics_currency);
                 $order->timestamp = time();
+                $order->time_remaining = $this->getTimePeriod()*60;
                 $this->updateOrderExpected($order->addr, $order->blockonomics_currency, $order->timestamp, $order->value, $order->bits);
                 return $order;
             }
@@ -486,6 +487,7 @@ class Blockonomics
         $order->bits = $this->convertFiatToBlockonomicsCurrency($order->value, $order->currency, $order->blockonomics_currency);
         $order->timestamp = time();
         $order->status = -1;
+        $order->time_remaining = $this->getTimePeriod()*60;
         $this->insertOrderToDb($order->id_order, $order->blockonomics_currency, $order->addr, $order->value, $order->bits, $order->basecurrencyamount);
         return $order;
     }
