@@ -75,16 +75,13 @@ if ($status < $confirmations) {
     exit();
 }
 
-$expected = $bits / 1.0e8;
-$paid = $value / 1.0e8;
-
 $underpayment_slack = $blockonomics->getUnderpaymentSlack() / 100 * $bits;
-if ($value < $bits - $underpayment_slack) {
-    $btcAmount = $paid;
+if ($value < $bits - $underpayment_slack || $value > $bits) {
+    $satoshiAmount = $value;
 } else {
-    $btcAmount = $expected;
+    $satoshiAmount = $bits;
 }
-$percentPaid = $btcAmount / $expected * 100;
+$percentPaid = $satoshiAmount / $bits * 100;
 $paymentAmount = $blockonomics->convertPercentPaidToInvoiceCurrency($order, $percentPaid);
 $blockonomics->updateInvoiceNote($invoiceId, null);
 $blockonomics->updateOrderInDb($addr, $txid, $status, $value);
