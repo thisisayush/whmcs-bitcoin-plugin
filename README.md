@@ -4,7 +4,6 @@ Accept bitcoins on your WHMCS, payments go directly into your wallet
 ## Description ##
 - Accept bitcoin payments on your website with ease
 - No security risk, payments go directly into your own bitcoin wallet  
-- [![huntr](https://cdn.huntr.dev/huntr_security_badge_mono.svg)](https://huntr.dev)
 
 ## Installation ##
 [Blog Tutorial](https://blog.blockonomics.co/friendly-bitcoin-payments-for-web-hosting-businesses-using-whmcs-88de8eef4e81) | [Video Tutorial](https://www.youtube.com/watch?v=jORcxsV-OOg)
@@ -27,3 +26,5 @@ Payment screen
 
 ![](screenshots/screenshot-3.png)
 Blockonomics configuration
+
+[![huntr](https://cdn.huntr.dev/huntr_security_badge_mono.svg)](https://huntr.dev)
