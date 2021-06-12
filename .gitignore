@@ -1,0 +1,6 @@
+/*
+!.gitignore
+!/screenshots
+!/modules/gateways/blockonomics
+!/modules/gateways/blockonomics.php
+!/modules/gateways/callback
