@@ -35,6 +35,7 @@ function blockonomics_config()
             $trans_text_testing = $_BLOCKLANG['testSetup']['testing'];
 
             return <<<HTML
+            <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/modules/gateways/blockonomics/assets/css/admin.css">
 		<script type="text/javascript">
 			var secret = document.getElementsByName('field[CallbackSecret]');
 			secret.forEach(function(element) {
@@ -82,6 +83,22 @@ function blockonomics_config()
 			 * Generate Test Setup button and setup result field
 			 */
 			var settingsTable = document.getElementById("Payment-Gateway-Config-blockonomics");
+
+            var text = $('#Payment-Gateway-Config-blockonomics td:contains(Callback URL)');
+
+            var advancedSettingsBtnRow = settingsTable.insertRow(text.parent()[0].rowIndex + 1 );
+			var advancedSettingsLabelCell = advancedSettingsBtnRow.insertCell(0);
+			var advancedSettingsBtnCell = advancedSettingsBtnRow.insertCell(1);
+			advancedSettingsBtnCell.className = "fieldarea";
+            
+            var advancedTitle = document.createElement('p');
+			advancedTitle.className = "bnomics-options-bold";
+            var advancedLink = document.createElement('a');
+            console.log(advancedLink);
+            advancedLink.textContent = 'Advanced Settings ▼';
+
+            advancedTitle.appendChild(advancedLink);
+            advancedSettingsLabelCell.appendChild(advancedTitle);
 
 			var testSetupBtnRow = settingsTable.insertRow(settingsTable.rows.length - 1);
 			var testSetupLabelCell = testSetupBtnRow.insertCell(0);
@@ -184,17 +201,11 @@ HTML;
         'Type' => 'text',
     ];
 
-    $blockonomics_currencies = $blockonomics->getSupportedCurrencies();
-    foreach ($blockonomics_currencies as $code => $currency) {
-        if ($code != 'btc') {
-            $settings_array[$code . 'Enabled'] = [
-                'FriendlyName' => strtoupper($code) . ' ' . $_BLOCKLANG['enabled']['title'],
-                'Type' => 'yesno',
-                'Description' => $_BLOCKLANG['enabled']['description'] . ' ' . $currency['name'],
-            ];
-        }
-    }
-    
+    // $settings_array['AvancedSettings'] = [
+    //     'FriendlyName' => $_BLOCKLANG['AvancedSettings']['title'],
+    //     // 'Type' => 'text',
+    // ];
+
     $settings_array['TimePeriod'] = [
         'FriendlyName' => $_BLOCKLANG['timePeriod']['title'],
         'Type' => 'dropdown',
@@ -234,6 +245,17 @@ HTML;
         ],
         'Description' => $_BLOCKLANG['confirmations']['description'],
     ];
+
+    $blockonomics_currencies = $blockonomics->getSupportedCurrencies();
+    foreach ($blockonomics_currencies as $code => $currency) {
+        if ($code != 'btc') {
+            $settings_array[$code . 'Enabled'] = [
+                'FriendlyName' => strtoupper($code) . ' ' . $_BLOCKLANG['enabled']['title'],
+                'Type' => 'yesno',
+                'Description' => $_BLOCKLANG['enabled']['description'] . ' ' . $currency['name'],
+            ];
+        }
+    }
 
     return $settings_array;
 }

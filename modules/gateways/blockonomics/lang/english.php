@@ -34,6 +34,7 @@ $_BLOCKLANG['enabled']['title'] = 'Enabled';
 $_BLOCKLANG['enabled']['description'] = 'Select if you want to accept';
 $_BLOCKLANG['callbackSecret']['title'] = 'Callback Secret';
 $_BLOCKLANG['callbackUrl']['title'] = 'Callback URL';
+$_BLOCKLANG['AvancedSettings']['title'] = 'Advanced Settings ▼';
 $_BLOCKLANG['timePeriod']['title'] = 'Time Period';
 $_BLOCKLANG['timePeriod']['description'] = 'Time period of countdown timer on payment page (in minutes)';
 $_BLOCKLANG['margin']['title'] = 'Extra Currency Rate Margin %';
