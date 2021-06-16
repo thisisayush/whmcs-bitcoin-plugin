@@ -29,7 +29,7 @@ $_BLOCKLANG['invoiceNote']['network'] = 'network';
 // Admin Menu
 $_BLOCKLANG['version']['title'] = 'Version';
 $_BLOCKLANG['apiKey']['title'] = 'API Key';
-$_BLOCKLANG['apiKey']['description'] = 'BLOCKONOMICS API KEY (Click "Get Started For Free" on <a target="_blank" href="https://www.blockonomics.co/blockonomics#/merchants">Merchants</a> and follow setup wizard)';
+$_BLOCKLANG['apiKey']['description'] = 'To get your API Key, click <b>Get Started for Free</b> on <a target="_blank" href="https://blockonomics.co/merchants">https://blockonomics.co/merchants</a>';
 $_BLOCKLANG['enabled']['title'] = 'Enabled';
 $_BLOCKLANG['enabled']['description'] = 'Select if you want to accept';
 $_BLOCKLANG['callbackSecret']['title'] = 'Callback Secret';
