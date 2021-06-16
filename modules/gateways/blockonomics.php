@@ -173,6 +173,17 @@ HTML;
         'Type' => 'text',
     ];
 
+    $settings_array['CallbackSecret'] = [
+        'FriendlyName' => $_BLOCKLANG['callbackSecret']['title'],
+        'Type' => 'text',
+    ];
+
+
+    $settings_array['CallbackURL'] = [
+        'FriendlyName' => $_BLOCKLANG['callbackUrl']['title'],
+        'Type' => 'text',
+    ];
+
     $blockonomics_currencies = $blockonomics->getSupportedCurrencies();
     foreach ($blockonomics_currencies as $code => $currency) {
         if ($code != 'btc') {
@@ -183,14 +194,7 @@ HTML;
             ];
         }
     }
-    $settings_array['CallbackSecret'] = [
-        'FriendlyName' => $_BLOCKLANG['callbackSecret']['title'],
-        'Type' => 'text',
-    ];
-    $settings_array['CallbackURL'] = [
-        'FriendlyName' => $_BLOCKLANG['callbackUrl']['title'],
-        'Type' => 'text',
-    ];
+    
     $settings_array['TimePeriod'] = [
         'FriendlyName' => $_BLOCKLANG['timePeriod']['title'],
         'Type' => 'dropdown',
@@ -203,6 +207,8 @@ HTML;
         ],
         'Description' => $_BLOCKLANG['timePeriod']['description'],
     ];
+
+
     $settings_array['Margin'] = [
         'FriendlyName' => $_BLOCKLANG['margin']['title'],
         'Type' => 'text',
