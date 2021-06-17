@@ -11,7 +11,7 @@ function blockonomics_config()
     add_hook(
         'AdminAreaFooterOutput',
         1,
-        function () {
+        function ($vars) {
             // Check if the blockonomics module is activated
             try {
                 // Detect module name from filename.
@@ -35,8 +35,8 @@ function blockonomics_config()
             $trans_text_testing = $_BLOCKLANG['testSetup']['testing'];
 
             return <<<HTML
-            <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/modules/gateways/blockonomics/assets/css/admin.css">
 		<script type="text/javascript">
+
 			var secret = document.getElementsByName('field[CallbackSecret]');
 			secret.forEach(function(element) {
 				element.value = '$secret';
@@ -80,26 +80,55 @@ function blockonomics_config()
 			});
 
 			/**
+			 * Generate Settings and Currency Headers
+			 */
+
+             
+
+            /**
+			 * Generate Advanced Settings Button
+			 */
+            //get advanced settings HTML elements 
+            const timePeriod = $('#Payment-Gateway-Config-blockonomics td:contains(Time Period)').parent()[0];
+            const extraMargin = $('#Payment-Gateway-Config-blockonomics td:contains(Extra Currency Rate Margin %)').parent()[0];
+            const underSlack = $('#Payment-Gateway-Config-blockonomics td:contains(Underpayment Slack %)').parent()[0];
+            const confirmations = $('#Payment-Gateway-Config-blockonomics td:contains(Confirmations)').parent()[0];
+
+            timePeriod.style.display = "none";
+            extraMargin.style.display = "none";
+            underSlack.style.display = "none";
+            confirmations.style.display = "none";
+
+            var settingsTable = document.getElementById("Payment-Gateway-Config-blockonomics");
+            var text = $('#Payment-Gateway-Config-blockonomics td:contains(Callback URL)');
+            var advancedSettingsRow = settingsTable.insertRow(text.parent()[0].rowIndex + 1 );
+			var advancedSettingsLabelCell = advancedSettingsRow.insertCell(0);
+			var advancedSettingsFieldArea = advancedSettingsRow.insertCell(1);
+            
+            var advancedLink = document.createElement('a');
+            advancedLink.textContent = 'Advanced Settings ▼';
+            advancedSettingsFieldArea.appendChild(advancedLink);
+
+            let showingAdvancedSettings = false;
+			advancedLink.onclick = function() {
+                advancedLink.textContent = (showingAdvancedSettings) ? 'Advanced Settings ▼' : 'Advanced Settings ▲';
+                if (showingAdvancedSettings) {
+                    timePeriod.style.display = "none";
+                    extraMargin.style.display = "none";
+                    underSlack.style.display = "none";
+                    confirmations.style.display = "none";
+                } else {
+                    timePeriod.style.display = "table-row";
+                    extraMargin.style.display = "table-row";
+                    underSlack.style.display = "table-row";
+                    confirmations.style.display = "table-row";
+                }
+                showingAdvancedSettings = !showingAdvancedSettings;
+			}
+
+			/**
 			 * Generate Test Setup button and setup result field
 			 */
-			var settingsTable = document.getElementById("Payment-Gateway-Config-blockonomics");
-
-            var text = $('#Payment-Gateway-Config-blockonomics td:contains(Callback URL)');
-
-            var advancedSettingsBtnRow = settingsTable.insertRow(text.parent()[0].rowIndex + 1 );
-			var advancedSettingsLabelCell = advancedSettingsBtnRow.insertCell(0);
-			var advancedSettingsBtnCell = advancedSettingsBtnRow.insertCell(1);
-			advancedSettingsBtnCell.className = "fieldarea";
-            
-            var advancedTitle = document.createElement('p');
-			advancedTitle.className = "bnomics-options-bold";
-            var advancedLink = document.createElement('a');
-            console.log(advancedLink);
-            advancedLink.textContent = 'Advanced Settings ▼';
-
-            advancedTitle.appendChild(advancedLink);
-            advancedSettingsLabelCell.appendChild(advancedTitle);
-
 			var testSetupBtnRow = settingsTable.insertRow(settingsTable.rows.length - 1);
 			var testSetupLabelCell = testSetupBtnRow.insertCell(0);
 			var testSetupBtnCell = testSetupBtnRow.insertCell(1);
