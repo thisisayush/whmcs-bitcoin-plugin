@@ -83,10 +83,16 @@ function blockonomics_config()
 			 * Generate Settings and Currency Headers
 			 */
             var settingsTable = document.getElementById("Payment-Gateway-Config-blockonomics");
-            var callbackURLRowIndex = $('#Payment-Gateway-Config-blockonomics td:contains(Callback URL)').parent()[0].rowIndex;
+            const showOnOrderFormRow = settingsTable.rows[0];
+			showOnOrderFormRow.style.display = "none";
+            const displayNameRow = settingsTable.rows[1];
+			displayNameRow.style.display = "none";
+            const versionRow = settingsTable.rows[2];
+			versionRow.style.display = "none";
+
 
             //Settings header
-            var settingsRow = settingsTable.insertRow(callbackURLRowIndex - 2 );
+            var settingsRow = settingsTable.insertRow( 3 );
 			var advancedSettingsLabelCell = settingsRow.insertCell(0);
 			var advancedSettingsFieldArea = settingsRow.insertCell(1);
 
@@ -97,7 +103,7 @@ function blockonomics_config()
             advancedSettingsFieldArea.appendChild(settingsHeader);
 
             //Currency header
-            var currencyRow = settingsTable.insertRow(callbackURLRowIndex + 6 );
+            var currencyRow = settingsTable.insertRow( 11 );
 			var advancedSettingsLabelCell = currencyRow.insertCell(0);
 			var advancedSettingsFieldArea = currencyRow.insertCell(1);
             
@@ -111,10 +117,10 @@ function blockonomics_config()
 			 * Generate Advanced Settings Button
 			 */
             //get advanced settings HTML elements 
-            const timePeriod = $('#Payment-Gateway-Config-blockonomics td:contains(Time Period)').parent()[0];
-            const extraMargin = $('#Payment-Gateway-Config-blockonomics td:contains(Extra Currency Rate Margin %)').parent()[0];
-            const underSlack = $('#Payment-Gateway-Config-blockonomics td:contains(Underpayment Slack %)').parent()[0];
-            const confirmations = $('#Payment-Gateway-Config-blockonomics td:contains(Confirmations)').parent()[0];
+            const timePeriod = settingsTable.rows[7];
+            const extraMargin = settingsTable.rows[8];
+            const underSlack = settingsTable.rows[9];
+            const confirmations = settingsTable.rows[10];
 
             timePeriod.style.display = "none";
             extraMargin.style.display = "none";
@@ -122,8 +128,7 @@ function blockonomics_config()
             confirmations.style.display = "none";
 
             var settingsTable = document.getElementById("Payment-Gateway-Config-blockonomics");
-            var text = $('#Payment-Gateway-Config-blockonomics td:contains(Callback URL)');
-            var advancedSettingsRow = settingsTable.insertRow(callbackURLRowIndex + 2 );
+            var advancedSettingsRow = settingsTable.insertRow(7);
 			var advancedSettingsLabelCell = advancedSettingsRow.insertCell(0);
 			var advancedSettingsFieldArea = advancedSettingsRow.insertCell(1);
             
@@ -151,24 +156,20 @@ function blockonomics_config()
 			/**
 			 * Generate Test Setup button and setup result field
 			 */
-			var testSetupBtnRow = settingsTable.insertRow(settingsTable.rows.length - 1);
-			var testSetupLabelCell = testSetupBtnRow.insertCell(0);
-			var testSetupBtnCell = testSetupBtnRow.insertCell(1);
-			testSetupBtnCell.className = "fieldarea";
-
 			var testSetupResultRow = settingsTable.insertRow(settingsTable.rows.length - 1);
 			testSetupResultRow.style.display = "none";
 			var testSetupResultLabel = testSetupResultRow.insertCell(0);
 			var testSetupResultCell = testSetupResultRow.insertCell(1);
 			testSetupResultCell.className = "fieldarea";
 
+            const saveButtonCell = settingsTable.rows[ settingsTable.rows.length - 1 ].children[1]
+            saveButtonCell.style.backgroundColor = "white";
+
 			var newBtn = document.createElement('BUTTON');
 			newBtn.className = "btn btn-primary";
+            newBtn.textContent = "Test Setup";
 
-			var t = document.createTextNode("Test Setup");
-			newBtn.appendChild(t);
-
-			testSetupBtnCell.appendChild(newBtn);
+			saveButtonCell.appendChild(newBtn);
 
 			function reqListener () {
 				var responseObj = {};
