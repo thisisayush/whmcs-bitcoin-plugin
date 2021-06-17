@@ -97,7 +97,7 @@ function blockonomics_config()
             advancedSettingsFieldArea.appendChild(settingsHeader);
 
             //Currency header
-            var currencyRow = settingsTable.insertRow(callbackURLRowIndex + 2 );
+            var currencyRow = settingsTable.insertRow(callbackURLRowIndex + 6 );
 			var advancedSettingsLabelCell = currencyRow.insertCell(0);
 			var advancedSettingsFieldArea = currencyRow.insertCell(1);
             
