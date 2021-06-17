@@ -82,8 +82,30 @@ function blockonomics_config()
 			/**
 			 * Generate Settings and Currency Headers
 			 */
+            var settingsTable = document.getElementById("Payment-Gateway-Config-blockonomics");
+            var callbackURLRowIndex = $('#Payment-Gateway-Config-blockonomics td:contains(Callback URL)').parent()[0].rowIndex;
 
-             
+            //Settings header
+            var settingsRow = settingsTable.insertRow(callbackURLRowIndex - 2 );
+			var advancedSettingsLabelCell = settingsRow.insertCell(0);
+			var advancedSettingsFieldArea = settingsRow.insertCell(1);
+
+            var settingsHeader = document.createElement('h4');
+            settingsHeader.style.textDecoration = 'underline';
+            settingsHeader.style.marginBottom = '3px';
+            settingsHeader.textContent = 'Settings';
+            advancedSettingsFieldArea.appendChild(settingsHeader);
+
+            //Currency header
+            var currencyRow = settingsTable.insertRow(callbackURLRowIndex + 2 );
+			var advancedSettingsLabelCell = currencyRow.insertCell(0);
+			var advancedSettingsFieldArea = currencyRow.insertCell(1);
+            
+            var currencyHeader = document.createElement('h4');
+            currencyHeader.style.textDecoration = 'underline';
+            currencyHeader.style.marginBottom = '3px';
+            currencyHeader.textContent = 'Currency';
+            advancedSettingsFieldArea.appendChild(currencyHeader);
 
             /**
 			 * Generate Advanced Settings Button
@@ -101,7 +123,7 @@ function blockonomics_config()
 
             var settingsTable = document.getElementById("Payment-Gateway-Config-blockonomics");
             var text = $('#Payment-Gateway-Config-blockonomics td:contains(Callback URL)');
-            var advancedSettingsRow = settingsTable.insertRow(text.parent()[0].rowIndex + 1 );
+            var advancedSettingsRow = settingsTable.insertRow(callbackURLRowIndex + 2 );
 			var advancedSettingsLabelCell = advancedSettingsRow.insertCell(0);
 			var advancedSettingsFieldArea = advancedSettingsRow.insertCell(1);
             
@@ -230,10 +252,6 @@ HTML;
         'Type' => 'text',
     ];
 
-    // $settings_array['AvancedSettings'] = [
-    //     'FriendlyName' => $_BLOCKLANG['AvancedSettings']['title'],
-    //     // 'Type' => 'text',
-    // ];
 
     $settings_array['TimePeriod'] = [
         'FriendlyName' => $_BLOCKLANG['timePeriod']['title'],
@@ -277,13 +295,12 @@ HTML;
 
     $blockonomics_currencies = $blockonomics->getSupportedCurrencies();
     foreach ($blockonomics_currencies as $code => $currency) {
-        if ($code != 'btc') {
-            $settings_array[$code . 'Enabled'] = [
-                'FriendlyName' => strtoupper($code) . ' ' . $_BLOCKLANG['enabled']['title'],
-                'Type' => 'yesno',
-                'Description' => $_BLOCKLANG['enabled']['description'] . ' ' . $currency['name'],
-            ];
-        }
+        $settings_array[$code . 'Enabled'] = [
+            'FriendlyName' => $currency['name'] .' (' . strtoupper($code) . ')',
+            'Type' => 'yesno',
+            'Description' => $_BLOCKLANG['enabled'][$code.'_description'],
+        ];
+
     }
 
     return $settings_array;
