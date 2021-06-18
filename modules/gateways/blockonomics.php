@@ -83,13 +83,6 @@ function blockonomics_config()
 			 * Generate Settings and Currency Headers
 			 */
             var settingsTable = document.getElementById("Payment-Gateway-Config-blockonomics");
-            const showOnOrderFormRow = settingsTable.rows[0];
-			showOnOrderFormRow.style.display = "none";
-            const displayNameRow = settingsTable.rows[1];
-			displayNameRow.style.display = "none";
-            const versionRow = settingsTable.rows[2];
-			versionRow.style.display = "none";
-
 
             //Settings header
             var settingsRow = settingsTable.insertRow( 3 );
@@ -110,7 +103,7 @@ function blockonomics_config()
             var currencyHeader = document.createElement('h4');
             currencyHeader.style.textDecoration = 'underline';
             currencyHeader.style.marginBottom = '3px';
-            currencyHeader.textContent = 'Currency';
+            currencyHeader.textContent = 'Currencies';
             advancedSettingsFieldArea.appendChild(currencyHeader);
 
             /**
