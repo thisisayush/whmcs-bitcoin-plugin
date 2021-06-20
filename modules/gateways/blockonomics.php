@@ -82,10 +82,10 @@ function blockonomics_config()
 			/**
 			 * Generate Settings and Currency Headers
 			 */
-            var settingsTable = document.getElementById("Payment-Gateway-Config-blockonomics");
+            const blockonomicsTable = document.getElementById("Payment-Gateway-Config-blockonomics");
 
             //Settings header
-            var settingsRow = settingsTable.insertRow( 3 );
+            var settingsRow = blockonomicsTable.insertRow( 3 );
 			var advancedSettingsLabelCell = settingsRow.insertCell(0);
 			var advancedSettingsFieldArea = settingsRow.insertCell(1);
 
@@ -96,7 +96,7 @@ function blockonomics_config()
             advancedSettingsFieldArea.appendChild(settingsHeader);
 
             //Currency header
-            var currencyRow = settingsTable.insertRow( 11 );
+            var currencyRow = blockonomicsTable.insertRow( 11 );
 			var advancedSettingsLabelCell = currencyRow.insertCell(0);
 			var advancedSettingsFieldArea = currencyRow.insertCell(1);
             
@@ -110,18 +110,17 @@ function blockonomics_config()
 			 * Generate Advanced Settings Button
 			 */
             //get advanced settings HTML elements 
-            const timePeriod = settingsTable.rows[7];
-            const extraMargin = settingsTable.rows[8];
-            const underSlack = settingsTable.rows[9];
-            const confirmations = settingsTable.rows[10];
+            const timePeriod = blockonomicsTable.rows[7];
+            const extraMargin = blockonomicsTable.rows[8];
+            const underSlack = blockonomicsTable.rows[9];
+            const confirmations = blockonomicsTable.rows[10];
 
             timePeriod.style.display = "none";
             extraMargin.style.display = "none";
             underSlack.style.display = "none";
             confirmations.style.display = "none";
 
-            var settingsTable = document.getElementById("Payment-Gateway-Config-blockonomics");
-            var advancedSettingsRow = settingsTable.insertRow(7);
+            var advancedSettingsRow = blockonomicsTable.insertRow(7);
 			var advancedSettingsLabelCell = advancedSettingsRow.insertCell(0);
 			var advancedSettingsFieldArea = advancedSettingsRow.insertCell(1);
             
@@ -149,13 +148,14 @@ function blockonomics_config()
 			/**
 			 * Generate Test Setup button and setup result field
 			 */
-			var testSetupResultRow = settingsTable.insertRow(settingsTable.rows.length - 1);
+			var testSetupResultRow = blockonomicsTable.insertRow(blockonomicsTable.rows.length - 1);
 			testSetupResultRow.style.display = "none";
 			var testSetupResultLabel = testSetupResultRow.insertCell(0);
 			var testSetupResultCell = testSetupResultRow.insertCell(1);
 			testSetupResultCell.className = "fieldarea";
 
-            const saveButtonCell = settingsTable.rows[ settingsTable.rows.length - 1 ].children[1]
+            const saveButtonCell = blockonomicsTable.rows[ blockonomicsTable.rows.length - 1 ].children[1];
+            const saveButtonClone = saveButtonCell.children[0].cloneNode(true);
             saveButtonCell.style.backgroundColor = "white";
 
 			var newBtn = document.createElement('BUTTON');
@@ -183,6 +183,14 @@ function blockonomics_config()
 			}
 
 			newBtn.onclick = function() {
+                sessionStorage.setItem("runTest", true);
+                const blockonomicsForm = blockonomicsTable.parentElement;
+                blockonomicsForm.submit();
+			}
+
+            if(sessionStorage.getItem("runTest")) {
+                sessionStorage.removeItem("runTest");
+
 				testSetupResultRow.style.display = "table-row";
 				var apiKeyField = document.getElementsByName('field[ApiKey]')[0];
 				var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php"+"?new_api="+apiKeyField.value;
@@ -196,7 +204,6 @@ function blockonomics_config()
 				if (systemUrlProtocol != location.protocol) {
 					testSetupResultCell.innerHTML = "<label style='color:red;'>$trans_text_protocol_error</label> \
 							$trans_text_protocol_fix";
-					return false;
 				}
 
 				var oReq = new XMLHttpRequest();
@@ -206,8 +213,6 @@ function blockonomics_config()
 
 				newBtn.disabled = true;
 				testSetupResultCell.innerHTML = "$trans_text_testing";
-
-				return false;
 			}
 
 		</script>
