@@ -11,7 +11,7 @@ function blockonomics_config()
     add_hook(
         'AdminAreaFooterOutput',
         1,
-        function ($vars) {
+        function () {
             // Check if the blockonomics module is activated
             try {
                 // Detect module name from filename.
@@ -37,7 +37,6 @@ function blockonomics_config()
 
             return <<<HTML
 		<script type="text/javascript">
-
 			var secret = document.getElementsByName('field[CallbackSecret]');
 			secret.forEach(function(element) {
 				element.value = '$secret';
@@ -84,15 +83,14 @@ function blockonomics_config()
 			 * Generate Settings and Currency Headers
 			 */
             const blockonomicsTable = document.getElementById("Payment-Gateway-Config-blockonomics");
-
-            //Settings header
+            const headerStyles = 'text-decoration: underline; margin-bottom: 2px';
+            //Add Settings Row
             var settingsRow = blockonomicsTable.insertRow( 3 );
-			var advancedSettingsLabelCell = settingsRow.insertCell(0);
-			var advancedSettingsFieldArea = settingsRow.insertCell(1);
+            var advancedSettingsLabelCell = settingsRow.insertCell(0);
+            var advancedSettingsFieldArea = settingsRow.insertCell(1);
 
             var settingsHeader = document.createElement('h4');
-            settingsHeader.style.textDecoration = 'underline';
-            settingsHeader.style.marginBottom = '3px';
+            settingsHeader.style.cssText = headerStyles
             settingsHeader.textContent = 'Settings';
             advancedSettingsFieldArea.appendChild(settingsHeader);
 
@@ -102,8 +100,7 @@ function blockonomics_config()
 			var advancedSettingsFieldArea = currencyRow.insertCell(1);
             
             var currencyHeader = document.createElement('h4');
-            currencyHeader.style.textDecoration = 'underline';
-            currencyHeader.style.marginBottom = '3px';
+            currencyHeader.style.cssText = headerStyles
             currencyHeader.textContent = 'Currencies';
             advancedSettingsFieldArea.appendChild(currencyHeader);
 
