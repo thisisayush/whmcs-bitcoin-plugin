@@ -96,8 +96,8 @@ function blockonomics_config()
 
             //Currency header
             const currencyRow = blockonomicsTable.insertRow( 11 );
-			const advancedSettingsLabelCell = currencyRow.insertCell(0);
-			const advancedSettingsFieldArea = currencyRow.insertCell(1);
+            const advancedSettingsLabelCell = currencyRow.insertCell(0);
+            const advancedSettingsFieldArea = currencyRow.insertCell(1);
             
             const currencyHeader = document.createElement('h4');
             currencyHeader.style.cssText = headerStyles
