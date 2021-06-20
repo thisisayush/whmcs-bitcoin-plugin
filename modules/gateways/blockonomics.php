@@ -147,7 +147,6 @@ function blockonomics_config()
 			 * Generate Test Setup button
 			 */
             const saveButtonCell = blockonomicsTable.rows[ blockonomicsTable.rows.length - 1 ].children[1];
-            const saveButtonClone = saveButtonCell.children[0].cloneNode(true);
             saveButtonCell.style.backgroundColor = "white";
 
 			var newBtn = document.createElement('BUTTON');
