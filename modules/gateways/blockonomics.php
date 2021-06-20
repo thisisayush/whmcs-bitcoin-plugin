@@ -85,21 +85,21 @@ function blockonomics_config()
             const blockonomicsTable = document.getElementById("Payment-Gateway-Config-blockonomics");
             const headerStyles = 'text-decoration: underline; margin-bottom: 2px';
             //Add Settings Row
-            var settingsRow = blockonomicsTable.insertRow( 3 );
-            var advancedSettingsLabelCell = settingsRow.insertCell(0);
-            var advancedSettingsFieldArea = settingsRow.insertCell(1);
+            const settingsRow = blockonomicsTable.insertRow( 3 );
+            const advancedSettingsLabelCell = settingsRow.insertCell(0);
+            const advancedSettingsFieldArea = settingsRow.insertCell(1);
 
-            var settingsHeader = document.createElement('h4');
+            const settingsHeader = document.createElement('h4');
             settingsHeader.style.cssText = headerStyles
             settingsHeader.textContent = 'Settings';
             advancedSettingsFieldArea.appendChild(settingsHeader);
 
             //Currency header
-            var currencyRow = blockonomicsTable.insertRow( 11 );
-			var advancedSettingsLabelCell = currencyRow.insertCell(0);
-			var advancedSettingsFieldArea = currencyRow.insertCell(1);
+            const currencyRow = blockonomicsTable.insertRow( 11 );
+			const advancedSettingsLabelCell = currencyRow.insertCell(0);
+			const advancedSettingsFieldArea = currencyRow.insertCell(1);
             
-            var currencyHeader = document.createElement('h4');
+            const currencyHeader = document.createElement('h4');
             currencyHeader.style.cssText = headerStyles
             currencyHeader.textContent = 'Currencies';
             advancedSettingsFieldArea.appendChild(currencyHeader);
@@ -118,11 +118,11 @@ function blockonomics_config()
             underSlack.style.display = "none";
             confirmations.style.display = "none";
 
-            var advancedSettingsRow = blockonomicsTable.insertRow(7);
-			var advancedSettingsLabelCell = advancedSettingsRow.insertCell(0);
-			var advancedSettingsFieldArea = advancedSettingsRow.insertCell(1);
+            const advancedSettingsRow = blockonomicsTable.insertRow(7);
+			const advancedSettingsLabelCell = advancedSettingsRow.insertCell(0);
+			const advancedSettingsFieldArea = advancedSettingsRow.insertCell(1);
             
-            var advancedLink = document.createElement('a');
+            const advancedLink = document.createElement('a');
             advancedLink.textContent = 'Advanced Settings ▼';
             advancedSettingsFieldArea.appendChild(advancedLink);
 
