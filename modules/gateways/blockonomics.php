@@ -105,8 +105,8 @@ function blockonomics_config()
             advancedSettingsFieldArea.appendChild(currencyHeader);
 
             /**
-			 * Generate Advanced Settings Button
-			 */
+             * Generate Advanced Settings Button
+             */
             //get advanced settings HTML elements 
             const timePeriod = blockonomicsTable.rows[7];
             const extraMargin = blockonomicsTable.rows[8];
@@ -119,8 +119,8 @@ function blockonomics_config()
             confirmations.style.display = "none";
 
             const advancedSettingsRow = blockonomicsTable.insertRow(7);
-			const advancedSettingsLabelCell = advancedSettingsRow.insertCell(0);
-			const advancedSettingsFieldArea = advancedSettingsRow.insertCell(1);
+            const advancedSettingsLabelCell = advancedSettingsRow.insertCell(0);
+            const advancedSettingsFieldArea = advancedSettingsRow.insertCell(1);
             
             const advancedLink = document.createElement('a');
             advancedLink.textContent = 'Advanced Settings ▼';
