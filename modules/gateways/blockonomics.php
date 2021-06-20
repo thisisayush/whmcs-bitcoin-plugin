@@ -86,27 +86,27 @@ function blockonomics_config()
             const headerStyles = 'text-decoration: underline; margin-bottom: 2px';
             //Add Settings Row
             const settingsRow = blockonomicsTable.insertRow( 3 );
-            const advancedSettingsLabelCell = settingsRow.insertCell(0);
-            const advancedSettingsFieldArea = settingsRow.insertCell(1);
+            settingsRow.insertCell(0);
+            const settingsFieldArea = settingsRow.insertCell(1);
 
             const settingsHeader = document.createElement('h4');
             settingsHeader.style.cssText = headerStyles
             settingsHeader.textContent = 'Settings';
-            advancedSettingsFieldArea.appendChild(settingsHeader);
+            settingsFieldArea.appendChild(settingsHeader);
 
             //Currency header
             const currencyRow = blockonomicsTable.insertRow( 11 );
-            const advancedSettingsLabelCell = currencyRow.insertCell(0);
-            const advancedSettingsFieldArea = currencyRow.insertCell(1);
+			currencyRow.insertCell(0);
+            const currencyFieldArea = currencyRow.insertCell(1);
             
             const currencyHeader = document.createElement('h4');
             currencyHeader.style.cssText = headerStyles
             currencyHeader.textContent = 'Currencies';
-            advancedSettingsFieldArea.appendChild(currencyHeader);
+            currencyFieldArea.appendChild(currencyHeader);
 
             /**
-             * Generate Advanced Settings Button
-             */
+			 * Generate Advanced Settings Button
+			 */
             //get advanced settings HTML elements 
             const timePeriod = blockonomicsTable.rows[7];
             const extraMargin = blockonomicsTable.rows[8];
@@ -118,11 +118,11 @@ function blockonomics_config()
             underSlack.style.display = "none";
             confirmations.style.display = "none";
 
-            const advancedSettingsRow = blockonomicsTable.insertRow(7);
-            const advancedSettingsLabelCell = advancedSettingsRow.insertCell(0);
-            const advancedSettingsFieldArea = advancedSettingsRow.insertCell(1);
+            var advancedSettingsRow = blockonomicsTable.insertRow(7);
+			var advancedSettingsLabelCell = advancedSettingsRow.insertCell(0);
+			var advancedSettingsFieldArea = advancedSettingsRow.insertCell(1);
             
-            const advancedLink = document.createElement('a');
+            var advancedLink = document.createElement('a');
             advancedLink.textContent = 'Advanced Settings ▼';
             advancedSettingsFieldArea.appendChild(advancedLink);
 
@@ -147,14 +147,14 @@ function blockonomics_config()
 			 * Generate Test Setup button
 			 */
             const saveButtonCell = blockonomicsTable.rows[ blockonomicsTable.rows.length - 1 ].children[1];
-            saveButtonCell.style.backgroundColor = "white";         
-            
+            saveButtonCell.style.backgroundColor = "white";
+
             const newBtn = document.createElement('BUTTON');
             newBtn.className = "btn btn-primary";
-            newBtn.textContent = "Test Setup";          
-            
-            saveButtonCell.appendChild(newBtn);         
-			
+            newBtn.textContent = "Test Setup";
+
+            saveButtonCell.appendChild(newBtn);
+
             function reqListener () {
 				var responseObj = {};
 				try {
