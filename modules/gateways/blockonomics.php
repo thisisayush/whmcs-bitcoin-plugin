@@ -298,7 +298,6 @@ HTML;
             'Type' => 'yesno',
             'Description' => $_BLOCKLANG['enabled'][$code.'_description'],
         ];
-
     }
     return $settings_array;
 }
