@@ -26,6 +26,7 @@ function blockonomics_config()
             include $blockonomics->getLangFilePath();
             $system_url = \App::getSystemURL();
             $secret = $blockonomics->getCallbackSecret();
+            $active_currencies = json_encode($blockonomics->getActiveCurrencies());
             $callback_url = $blockonomics->getCallbackUrl($secret);
             $trans_text_system_url_error = $_BLOCKLANG['testSetup']['systemUrl']['error'];
             $trans_text_system_url_fix = $_BLOCKLANG['testSetup']['systemUrl']['fix'];
@@ -146,14 +147,8 @@ function blockonomics_config()
 			}
 
 			/**
-			 * Generate Test Setup button and setup result field
+			 * Generate Test Setup button
 			 */
-			var testSetupResultRow = blockonomicsTable.insertRow(blockonomicsTable.rows.length - 1);
-			testSetupResultRow.style.display = "none";
-			var testSetupResultLabel = testSetupResultRow.insertCell(0);
-			var testSetupResultCell = testSetupResultRow.insertCell(1);
-			testSetupResultCell.className = "fieldarea";
-
             const saveButtonCell = blockonomicsTable.rows[ blockonomicsTable.rows.length - 1 ].children[1];
             const saveButtonClone = saveButtonCell.children[0].cloneNode(true);
             saveButtonCell.style.backgroundColor = "white";
@@ -188,31 +183,46 @@ function blockonomics_config()
                 blockonomicsForm.submit();
 			}
 
+            const addTestResultRow = (rowsFromBottom) => {
+                const testSetupResultRow = blockonomicsTable.insertRow(blockonomicsTable.rows.length - rowsFromBottom);
+                const testSetupResultLabel = testSetupResultRow.insertCell(0);
+                const testSetupResultCell = testSetupResultRow.insertCell(1);
+                testSetupResultRow.style.display = "none";
+                testSetupResultRow.style.display = "table-row";
+                testSetupResultCell.className = "fieldarea";
+                return testSetupResultCell;
+
+			}
+
             if(sessionStorage.getItem("runTest")) {
                 sessionStorage.removeItem("runTest");
 
-				testSetupResultRow.style.display = "table-row";
-				var apiKeyField = document.getElementsByName('field[ApiKey]')[0];
-				var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php"+"?new_api="+apiKeyField.value;
+                const activeCryptos = JSON.parse('$active_currencies');
+                for (const crypto in activeCryptos) {
+                    rowFromBottom = (crypto === 'btc') ? 2 : 1
+                    testSetupResultCell = addTestResultRow (rowFromBottom);
 
-				try {
-					var systemUrlProtocol = new URL("$system_url").protocol;
-				} catch (err) {
-					var systemUrlProtocol = '';
-				}
+                    var apiKeyField = document.getElementsByName('field[ApiKey]')[0];
+                    var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php"+"?new_api="+apiKeyField.value;
 
-				if (systemUrlProtocol != location.protocol) {
-					testSetupResultCell.innerHTML = "<label style='color:red;'>$trans_text_protocol_error</label> \
-							$trans_text_protocol_fix";
-				}
+                    try {
+                        var systemUrlProtocol = new URL("$system_url").protocol;
+                    } catch (err) {
+                        var systemUrlProtocol = '';
+                    }
 
-				var oReq = new XMLHttpRequest();
-				oReq.addEventListener("load", reqListener);
-				oReq.open("GET", testSetupUrl);
-				oReq.send();
+                    if (systemUrlProtocol != location.protocol) {
+                        testSetupResultCell.innerHTML = "<label style='color:red;'>$trans_text_protocol_error</label> \
+                                $trans_text_protocol_fix";
+                    }
+                    var oReq = new XMLHttpRequest();
+                    oReq.addEventListener("load", reqListener);
+                    oReq.open("GET", testSetupUrl);
+                    oReq.send();
 
-				newBtn.disabled = true;
-				testSetupResultCell.innerHTML = "$trans_text_testing";
+                    newBtn.disabled = true;
+                    testSetupResultCell.innerHTML = "$trans_text_testing";
+                }
 			}
 
 		</script>
