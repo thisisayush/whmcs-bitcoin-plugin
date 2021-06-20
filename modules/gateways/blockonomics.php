@@ -147,15 +147,15 @@ function blockonomics_config()
 			 * Generate Test Setup button
 			 */
             const saveButtonCell = blockonomicsTable.rows[ blockonomicsTable.rows.length - 1 ].children[1];
-            saveButtonCell.style.backgroundColor = "white";
-
-			var newBtn = document.createElement('BUTTON');
-			newBtn.className = "btn btn-primary";
-            newBtn.textContent = "Test Setup";
-
-			saveButtonCell.appendChild(newBtn);
-
-			function reqListener () {
+            saveButtonCell.style.backgroundColor = "white";         
+            
+            const newBtn = document.createElement('BUTTON');
+            newBtn.className = "btn btn-primary";
+            newBtn.textContent = "Test Setup";          
+            
+            saveButtonCell.appendChild(newBtn);         
+			
+            function reqListener () {
 				var responseObj = {};
 				try {
 					responseObj = JSON.parse(this.responseText);
