@@ -177,7 +177,7 @@ function blockonomics_config()
                 sessionStorage.setItem("runTest", true);
                 const blockonomicsForm = blockonomicsTable.parentElement;
                 blockonomicsForm.submit();
-			}
+            }
 
             const addTestResultRow = (rowsFromBottom) => {
                 const testSetupResultRow = blockonomicsTable.insertRow(blockonomicsTable.rows.length - rowsFromBottom);
@@ -187,10 +187,10 @@ function blockonomics_config()
                 testSetupResultRow.style.display = "table-row";
                 testSetupResultCell.className = "fieldarea";
                 return testSetupResultCell;
-
-			}
+            }
 
             if(sessionStorage.getItem("runTest")) {
+
                 sessionStorage.removeItem("runTest");
 
                 const activeCryptos = JSON.parse('$active_currencies');
@@ -250,14 +250,10 @@ HTML;
         'FriendlyName' => $_BLOCKLANG['callbackSecret']['title'],
         'Type' => 'text',
     ];
-
-
     $settings_array['CallbackURL'] = [
         'FriendlyName' => $_BLOCKLANG['callbackUrl']['title'],
         'Type' => 'text',
     ];
-
-
     $settings_array['TimePeriod'] = [
         'FriendlyName' => $_BLOCKLANG['timePeriod']['title'],
         'Type' => 'dropdown',
@@ -270,8 +266,6 @@ HTML;
         ],
         'Description' => $_BLOCKLANG['timePeriod']['description'],
     ];
-
-
     $settings_array['Margin'] = [
         'FriendlyName' => $_BLOCKLANG['margin']['title'],
         'Type' => 'text',
@@ -297,7 +291,6 @@ HTML;
         ],
         'Description' => $_BLOCKLANG['confirmations']['description'],
     ];
-
     $blockonomics_currencies = $blockonomics->getSupportedCurrencies();
     foreach ($blockonomics_currencies as $code => $currency) {
         $settings_array[$code . 'Enabled'] = [
@@ -307,7 +300,6 @@ HTML;
         ];
 
     }
-
     return $settings_array;
 }
 
