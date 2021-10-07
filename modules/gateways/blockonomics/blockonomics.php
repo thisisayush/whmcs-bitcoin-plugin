@@ -642,14 +642,22 @@ class Blockonomics
      * Run the test setup
      *
      * @param string $new_api
+     * @param string $currency
      * @return string error message
      */
-    public function testSetup($new_api)
+    public function testSetup($new_api, $currency='btc')
     {
         include_once $this->getLangFilePath();
 
-        $xpub_fetch_url = 'https://www.blockonomics.co/api/address?&no_balance=true&only_xpub=true&get_callback=true';
-        $set_callback_url = 'https://www.blockonomics.co/api/update_callback';
+        if ($currency == 'btc') {
+            $subdomain = 'www';
+        } else {
+            $subdomain = $currency;
+        }
+        
+        $xpub_fetch_url = 'https://'.$subdomain.'.blockonomics.co/api/address?&no_balance=true&only_xpub=true&get_callback=true';
+        $set_callback_url = 'https://'.$subdomain.'.blockonomics.co/api/update_callback';
+        
         $error_str = '';
 
         $response = $this->doCurlCall($xpub_fetch_url);
@@ -697,7 +705,7 @@ class Blockonomics
 
         if ($error_str == '') {
             // Test new address generation
-            $new_addresss_response = $this->getNewAddress('btc', true);
+            $new_addresss_response = $this->getNewAddress($currency, true);
             if ($new_addresss_response->status != 200) {
                 $error_str = $new_addresss_response->message;
             }

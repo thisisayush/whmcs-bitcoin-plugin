@@ -6,6 +6,7 @@ require_once __DIR__ . '/blockonomics.php';
 use Blockonomics\Blockonomics;
 
 $newApi = filter_var($_GET['new_api'], FILTER_SANITIZE_STRING);
+$currency = filter_var($_GET['currency'], FILTER_SANITIZE_STRING);
 
 if (isset($newApi)) {
     $blockonomics = new Blockonomics();
@@ -14,7 +15,11 @@ if (isset($newApi)) {
     $response->error = false;
     $response->errorStr = '';
 
-    $error = $blockonomics->testSetup($newApi);
+    if(!isset($currency)) {
+        $currency = 'btc'
+    }
+
+    $error = $blockonomics->testSetup($newApi, $currency);
 
     if (isset($error) && $error != '') {
         $response->error = true;
