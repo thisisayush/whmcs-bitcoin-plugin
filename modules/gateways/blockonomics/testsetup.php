@@ -16,7 +16,7 @@ if (isset($newApi)) {
     $response->errorStr = '';
 
     if(!isset($currency)) {
-        $currency = 'btc'
+        $currency = 'btc';
     }
 
     $error = $blockonomics->testSetup($newApi, $currency);
