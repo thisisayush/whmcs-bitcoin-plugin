@@ -155,20 +155,20 @@ function blockonomics_config()
 
             saveButtonCell.appendChild(newBtn);
 
-            function reqListener () {
+            function reqListener (response, cell) {
 				var responseObj = {};
 				try {
-					responseObj = JSON.parse(this.responseText);
+					responseObj = JSON.parse(response);
 				} catch (err) {
 					var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php";
 					responseObj.error = true;
 					responseObj.errorStr = '$trans_text_system_url_error ' + testSetupUrl + '. $trans_text_system_url_fix';
 				}
 				if (responseObj.error) {
-					testSetupResultCell.innerHTML = "<label style='color:red;'>Error:</label> " + responseObj.errorStr +
+					cell.innerHTML = "<label style='color:red;'>Error:</label> " + responseObj.errorStr +
 					"<br>For more information, please consult <a href='https://blockonomics.freshdesk.com/support/solutions/articles/33000215104-troubleshooting-unable-to-generate-new-address' target='_blank'>this troubleshooting article</a>";
 				} else {
-					testSetupResultCell.innerHTML = "<label style='color:green;'>$trans_text_success</label>";
+					cell.innerHTML = "<label style='color:green;'>$trans_text_success</label>";
 				}
 				newBtn.disabled = false;
 			}
@@ -178,7 +178,7 @@ function blockonomics_config()
                 const blockonomicsForm = blockonomicsTable.parentElement;
                 blockonomicsForm.submit();
             }
-
+ 
             const addTestResultRow = (rowsFromBottom) => {
                 const testSetupResultRow = blockonomicsTable.insertRow(blockonomicsTable.rows.length - rowsFromBottom);
                 const testSetupResultLabel = testSetupResultRow.insertCell(0);
@@ -195,11 +195,11 @@ function blockonomics_config()
 
                 const activeCryptos = JSON.parse('$active_currencies');
                 for (const crypto in activeCryptos) {
-                    rowFromBottom = (crypto === 'btc') ? 2 : 1
-                    testSetupResultCell = addTestResultRow (rowFromBottom);
+                    rowFromBottom = (crypto === 'btc') ? 3 : 2
+                    let cell = addTestResultRow (rowFromBottom);
 
                     var apiKeyField = document.getElementsByName('field[ApiKey]')[0];
-                    var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php"+"?new_api="+apiKeyField.value;
+                    var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php"+"?new_api=" + apiKeyField.value + "&currency=" + crypto;
 
                     try {
                         var systemUrlProtocol = new URL("$system_url").protocol;
@@ -208,16 +208,18 @@ function blockonomics_config()
                     }
 
                     if (systemUrlProtocol != location.protocol) {
-                        testSetupResultCell.innerHTML = "<label style='color:red;'>$trans_text_protocol_error</label> \
+                        cell.innerHTML = "<label style='color:red;'>$trans_text_protocol_error</label> \
                                 $trans_text_protocol_fix";
                     }
-                    var oReq = new XMLHttpRequest();
-                    oReq.addEventListener("load", reqListener);
+                    let oReq = new XMLHttpRequest();
+                    oReq.addEventListener("load", function() {
+                        reqListener(this.responseText, cell)
+                    });
                     oReq.open("GET", testSetupUrl);
                     oReq.send();
 
                     newBtn.disabled = true;
-                    testSetupResultCell.innerHTML = "$trans_text_testing";
+                    cell.innerHTML = "$trans_text_testing";
                 }
 			}
 
