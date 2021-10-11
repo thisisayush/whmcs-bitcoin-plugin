@@ -199,7 +199,7 @@ function blockonomics_config()
                     let cell = addTestResultRow (rowFromBottom);
 
                     var apiKeyField = document.getElementsByName('field[ApiKey]')[0];
-                    var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php"+"?new_api=" + apiKeyField.value + "&crypto=" + crypto;
+                    var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php"+"?new_api=" + apiKeyField.value + "&currency=" + crypto;
 
                     try {
                         var systemUrlProtocol = new URL("$system_url").protocol;
