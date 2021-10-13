@@ -645,16 +645,28 @@ class Blockonomics
      * @param string $currency
      * @return string error message
      */
-    public function testSetup($new_api, $currency='btc')
+    public function testSetup($new_api)
     {
-        include_once $this->getLangFilePath();
-
+        $test_results = array();
+        $active_currencies = $this->getActiveCurrencies();
+        
+        foreach ($active_currencies as $code => $currency)  {
+            $test_results[$code] = $this->test_one_currency($new_api, $code);
+        }
+        
+        return $test_results;
+    }
+    
+    public function test_one_currency($new_api, $currency)
+    {
+        include $this->getLangFilePath();
+        
         if ($currency == 'btc') {
             $subdomain = 'www';
         } else {
             $subdomain = $currency;
         }
-        
+
         $xpub_fetch_url = 'https://'.$subdomain.'.blockonomics.co/api/address?&no_balance=true&only_xpub=true&get_callback=true';
         $set_callback_url = 'https://'.$subdomain.'.blockonomics.co/api/update_callback';
         
@@ -704,13 +716,17 @@ class Blockonomics
         }
 
         if ($error_str == '') {
-            // Test new address generation
+            //Everything OK ! Test address generation
             $new_addresss_response = $this->getNewAddress($currency, true);
             if ($new_addresss_response->status != 200) {
                 $error_str = $new_addresss_response->message;
             }
         }
 
-        return $error_str;
+        if($error_str) {
+            return $error_str;
+        }
+        // No Errors
+        return false;
     }
 }

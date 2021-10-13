@@ -155,20 +155,34 @@ function blockonomics_config()
 
             saveButtonCell.appendChild(newBtn);
 
-            function reqListener (response, cell) {
+            function reqListener (response, cells) {
 				var responseObj = {};
+                
 				try {
 					responseObj = JSON.parse(response);
 				} catch (err) {
 					var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php";
 					responseObj.error = true;
-					responseObj.errorStr = '$trans_text_system_url_error ' + testSetupUrl + '. $trans_text_system_url_fix';
+					responseObj.errorStr = {};
+                    Object.keys(cells).forEach(crypto => {
+					    responseObj.errorStr[crypto] = '$trans_text_system_url_error ' + testSetupUrl + '. $trans_text_system_url_fix';
+                    });
 				}
+
 				if (responseObj.error) {
-					cell.innerHTML = "<label style='color:red;'>Error:</label> " + responseObj.errorStr +
+                    Object.keys(cells).forEach(crypto => {
+                        let e = responseObj.errorStr[crypto]
+                        if (e) {
+                            cells[crypto].innerHTML = "<label style='color:red;'>Error:</label> " + e +
 					"<br>For more information, please consult <a href='https://blockonomics.freshdesk.com/support/solutions/articles/33000215104-troubleshooting-unable-to-generate-new-address' target='_blank'>this troubleshooting article</a>";
+                        } else {
+                            cells[crypto].innerHTML = "<label style='color:green;'>$trans_text_success</label>";    
+                        }
+                    })
 				} else {
-					cell.innerHTML = "<label style='color:green;'>$trans_text_success</label>";
+                    Object.keys(cells).forEach(crypto => {
+                        cells[crypto].innerHTML = "<label style='color:green;'>$trans_text_success</label>";
+                    })
 				}
 				newBtn.disabled = false;
 			}
@@ -194,33 +208,42 @@ function blockonomics_config()
                 sessionStorage.removeItem("runTest");
 
                 const activeCryptos = JSON.parse('$active_currencies');
+                let CELLS = {};
+
                 for (const crypto in activeCryptos) {
                     rowFromBottom = (crypto === 'btc') ? 3 : 2
-                    let cell = addTestResultRow (rowFromBottom);
-
-                    var apiKeyField = document.getElementsByName('field[ApiKey]')[0];
-                    var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php"+"?new_api=" + apiKeyField.value + "&currency=" + crypto;
-
-                    try {
-                        var systemUrlProtocol = new URL("$system_url").protocol;
-                    } catch (err) {
-                        var systemUrlProtocol = '';
-                    }
-
-                    if (systemUrlProtocol != location.protocol) {
-                        cell.innerHTML = "<label style='color:red;'>$trans_text_protocol_error</label> \
-                                $trans_text_protocol_fix";
-                    }
-                    let oReq = new XMLHttpRequest();
-                    oReq.addEventListener("load", function() {
-                        reqListener(this.responseText, cell)
-                    });
-                    oReq.open("GET", testSetupUrl);
-                    oReq.send();
-
-                    newBtn.disabled = true;
-                    cell.innerHTML = "$trans_text_testing";
+                    CELLS[crypto] = addTestResultRow (rowFromBottom);
                 }
+
+                var apiKeyField = document.getElementsByName('field[ApiKey]')[0];
+                var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php"+"?new_api=" + apiKeyField.value;
+
+                try {
+                    var systemUrlProtocol = new URL("$system_url").protocol;
+                } catch (err) {
+                    var systemUrlProtocol = '';
+                }
+
+                if (systemUrlProtocol != location.protocol) {
+                    Object.keys(CELLS).forEach(crypto => {
+                        let cell = CELLS[crypto]
+                        cell.innerHTML = "<label style='color:red;'>$trans_text_protocol_error</label> \
+                            $trans_text_protocol_fix";
+                    })
+                }
+
+                let oReq = new XMLHttpRequest();
+                oReq.addEventListener("load", function() {
+                    reqListener(this.responseText, CELLS)
+                });
+                oReq.open("GET", testSetupUrl);
+                newBtn.disabled = true;
+                Object.keys(CELLS).forEach(crypto => {
+                    let cell = CELLS[crypto]
+                    cell.innerHTML = "$trans_text_testing";
+                })
+                oReq.send();
+
 			}
 
 		</script>
