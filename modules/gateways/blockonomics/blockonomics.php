@@ -641,23 +641,21 @@ class Blockonomics
     /**
      * Run the test setup
      *
-     * @param string $new_api
-     * @param string $currency
      * @return string error message
      */
-    public function testSetup($new_api)
+    public function testSetup()
     {
         $test_results = array();
         $active_currencies = $this->getActiveCurrencies();
         
         foreach ($active_currencies as $code => $currency)  {
-            $test_results[$code] = $this->test_one_currency($new_api, $code);
+            $test_results[$code] = $this->test_one_currency($code);
         }
         
         return $test_results;
     }
     
-    public function test_one_currency($new_api, $currency)
+    public function test_one_currency($currency)
     {
         include $this->getLangFilePath();
         
@@ -677,9 +675,7 @@ class Blockonomics
         $secret = $this->getCallbackSecret();
         $callback_url = $this->getCallbackUrl($secret);
         $api_key = $this->getApiKey();
-        if ($api_key != $new_api) {
-            $error_str = $_BLOCKLANG['testSetup']['newApi']; //API key changed
-        } elseif (!isset($response->response_code)) {
+        if (!isset($response->response_code)) {
             $error_str = $_BLOCKLANG['testSetup']['blockedHttps'];
         } elseif ($response->response_code == 401) {
             $error_str = $_BLOCKLANG['testSetup']['incorrectApi'];

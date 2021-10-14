@@ -5,23 +5,18 @@ require_once __DIR__ . '/blockonomics.php';
 
 use Blockonomics\Blockonomics;
 
-$newApi = filter_var($_GET['new_api'], FILTER_SANITIZE_STRING);
+    
+$blockonomics = new Blockonomics();
 
-if (isset($newApi)) {
-    $blockonomics = new Blockonomics();
+$response = array();
+$error = array();
 
-    $response = new stdClass();
-    $response->error = false;
-    $response->errorStr = array();
+$error = $blockonomics->testSetup();
 
-    $error = $blockonomics->testSetup($newApi);
-
-    if (isset($error) && count($error) != 0) {
-        if (count(array_filter($error, function($item) { return $item != false; })) != 0) {
-            $response->error = true;
-            $response->errorStr = $error;
-        }
+if (isset($error) && count($error) != 0) {
+    if (count(array_filter($error, function($item) { return $item != false; })) != 0) {
+        $response = $error;
     }
-
-    echo json_encode($response);
 }
+
+echo json_encode($response);

@@ -53,7 +53,6 @@ $_BLOCKLANG['testSetup']['success'] = 'Congrats! Setup is all done';
 $_BLOCKLANG['testSetup']['protocol']['error'] = 'Error: System URL has a different protocol than current URL.';
 $_BLOCKLANG['testSetup']['protocol']['fix'] = 'Go to Setup > General Settings and verify that WHMCS System URL has correct protocol set (HTTP or HTTPS).';
 $_BLOCKLANG['testSetup']['testing'] = 'Testing setup...';
-$_BLOCKLANG['testSetup']['newApi'] = "New API Key: Save your changes and then click 'Test Setup'";
 $_BLOCKLANG['testSetup']['blockedHttps'] = 'Your server is blocking outgoing HTTPS calls';
 $_BLOCKLANG['testSetup']['incorrectApi'] = 'API Key is incorrect';
 $_BLOCKLANG['testSetup']['noXpub'] = 'You have not entered an xpub';

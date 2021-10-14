@@ -162,16 +162,15 @@ function blockonomics_config()
 					responseObj = JSON.parse(response);
 				} catch (err) {
 					var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php";
-					responseObj.error = true;
-					responseObj.errorStr = {};
+					responseObj = {};
                     Object.keys(cells).forEach(crypto => {
-					    responseObj.errorStr[crypto] = '$trans_text_system_url_error ' + testSetupUrl + '. $trans_text_system_url_fix';
+					    responseObj[crypto] = '$trans_text_system_url_error ' + testSetupUrl + '. $trans_text_system_url_fix';
                     });
 				}
 
-				if (responseObj.error) {
+				if (Object.keys(responseObj).length) {
                     Object.keys(cells).forEach(crypto => {
-                        let e = responseObj.errorStr[crypto]
+                        let e = responseObj[crypto]
                         if (e) {
                             cells[crypto].innerHTML = "<label style='color:red;'>Error:</label> " + e +
 					"<br>For more information, please consult <a href='https://blockonomics.freshdesk.com/support/solutions/articles/33000215104-troubleshooting-unable-to-generate-new-address' target='_blank'>this troubleshooting article</a>";
@@ -215,8 +214,7 @@ function blockonomics_config()
                     CELLS[crypto] = addTestResultRow (rowFromBottom);
                 }
 
-                var apiKeyField = document.getElementsByName('field[ApiKey]')[0];
-                var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php"+"?new_api=" + apiKeyField.value;
+                var testSetupUrl = "$system_url" + "modules/gateways/blockonomics/testsetup.php";
 
                 try {
                     var systemUrlProtocol = new URL("$system_url").protocol;
