@@ -30,6 +30,7 @@ $status = htmlspecialchars($_GET['status']);
 $addr = htmlspecialchars($_GET['addr']);
 $value = htmlspecialchars($_GET['value']);
 $txid = htmlspecialchars($_GET['txid']);
+$original_txid = $txid;
 
 /**
  * Validate callback authenticity.
@@ -51,6 +52,8 @@ $bits = $order['bits'];
 // If this is test transaction, generate new transaction ID
 if ($txid == 'WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction') {
     $txid = 'WarningThisIsATestTransaction_' . $addr;
+} else {
+    $txid = $txid . "_" . $addr;
 }
 
 $confirmations = $blockonomics->getConfirmations();
@@ -67,9 +70,9 @@ $systemUrl = \App::getSystemURL();
 if ($status < $confirmations) {
     $invoiceNote = '<b>' . $_BLOCKLANG['invoiceNote']['waiting'] . ' <img src="' . $systemUrl . 'modules/gateways/blockonomics/assets/img/' . $blockonomics_currency_code . '.png" style="max-width: 20px;"> ' . $blockonomics_currency->name . ' ' . $_BLOCKLANG['invoiceNote']['network'] . "</b>\r\r" .
     $blockonomics_currency->name . " transaction id:\r" .
-        '<a target="_blank" href="https://' . $subdomain . ".blockonomics.co/api/tx?txid=$txid&addr=$addr\">$txid</a>";
+        '<a target="_blank" href="https://' . $subdomain . ".blockonomics.co/api/tx?txid=$original_txid&addr=$addr\">$txid</a>";
 
-    $blockonomics->updateOrderInDb($addr, $txid, $status, $value);
+    $blockonomics->updateOrderInDb($addr, $original_txid, $status, $value);
     $blockonomics->updateInvoiceNote($invoiceId, $invoiceNote);
 
     exit();
@@ -84,7 +87,7 @@ if ($value < $bits - $underpayment_slack || $value > $bits) {
 $percentPaid = $satoshiAmount / $bits * 100;
 $paymentAmount = $blockonomics->convertPercentPaidToInvoiceCurrency($order, $percentPaid);
 $blockonomics->updateInvoiceNote($invoiceId, null);
-$blockonomics->updateOrderInDb($addr, $txid, $status, $value);
+$blockonomics->updateOrderInDb($addr, $original_txid, $status, $value);
 
 /**
  * Validate Callback Invoice ID.
