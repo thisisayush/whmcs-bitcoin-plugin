@@ -123,6 +123,7 @@ function blockonomics_config()
 			var advancedSettingsFieldArea = advancedSettingsRow.insertCell(1);
             
             var advancedLink = document.createElement('a');
+            advancedLink.classList.add('cursor');
             advancedLink.textContent = 'Advanced Settings ▼';
             advancedSettingsFieldArea.appendChild(advancedLink);
 
@@ -142,6 +143,13 @@ function blockonomics_config()
                 }
                 showingAdvancedSettings = !showingAdvancedSettings;
 			}
+
+            // Inject Custom Styles
+
+            let style = document.createElement('style');
+            style.setAttribute('type', 'text/css');
+            style.innerHTML = 'a.cursor {cursor: pointer; text-decoration: none;} a.cursor:hover {text-decoration: none;}';
+            document.head.appendChild(style);
 
 			/**
 			 * Generate Test Setup button
@@ -202,8 +210,7 @@ function blockonomics_config()
                 return testSetupResultCell;
             }
 
-            if(sessionStorage.getItem("runTest")) {
-
+            if(sessionStorage.getItem("runTest") && !document.querySelector('#manage .errorbox')) {
                 sessionStorage.removeItem("runTest");
 
                 const activeCryptos = JSON.parse('$active_currencies');
@@ -321,8 +328,29 @@ HTML;
             'Type' => 'yesno',
             'Description' => $_BLOCKLANG['enabled'][$code.'_description'],
         ];
+        if ($code == 'btc') {
+            $settings_array[$code . 'Enabled']['Default'] = true;
+        }
     }
     return $settings_array;
+}
+
+function blockonomics_config_validate($params) {
+    
+    $blockonomics = new Blockonomics();
+
+    $blockonomics_currencies = $blockonomics->getSupportedCurrencies();
+
+    $valid = false;
+    foreach ($blockonomics_currencies as $code => $currency) {
+        if ($params[$code . 'Enabled'] == true) {
+            $valid = true;
+        }
+    }
+
+    if (!$valid) {
+        throw new \Exception('Please enable atleast one currency!');
+    }
 }
 
 function blockonomics_link($params)
