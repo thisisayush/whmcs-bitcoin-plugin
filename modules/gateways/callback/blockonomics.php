@@ -30,7 +30,6 @@ $status = htmlspecialchars($_GET['status']);
 $addr = htmlspecialchars($_GET['addr']);
 $value = htmlspecialchars($_GET['value']);
 $txid = htmlspecialchars($_GET['txid']);
-$original_txid = $txid;
 
 /**
  * Validate callback authenticity.
@@ -49,13 +48,6 @@ $order = $blockonomics->getOrderByAddress($addr);
 $invoiceId = $order['order_id'];
 $bits = $order['bits'];
 
-// If this is test transaction, generate new transaction ID
-if ($txid == 'WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction') {
-    $txid = 'WarningThisIsATestTransaction_' . $addr;
-} else {
-    $txid = $txid . "_" . $addr;
-}
-
 $confirmations = $blockonomics->getConfirmations();
 
 $blockonomics_currency_code = $order['blockonomics_currency'];
@@ -70,9 +62,9 @@ $systemUrl = \App::getSystemURL();
 if ($status < $confirmations) {
     $invoiceNote = '<b>' . $_BLOCKLANG['invoiceNote']['waiting'] . ' <img src="' . $systemUrl . 'modules/gateways/blockonomics/assets/img/' . $blockonomics_currency_code . '.png" style="max-width: 20px;"> ' . $blockonomics_currency->name . ' ' . $_BLOCKLANG['invoiceNote']['network'] . "</b>\r\r" .
     $blockonomics_currency->name . " transaction id:\r" .
-        '<a target="_blank" href="https://' . $subdomain . ".blockonomics.co/api/tx?txid=$original_txid&addr=$addr\">$txid</a>";
+        '<a target="_blank" href="https://' . $subdomain . ".blockonomics.co/api/tx?txid=$txid&addr=$addr\">$txid</a>";
 
-    $blockonomics->updateOrderInDb($addr, $original_txid, $status, $value);
+    $blockonomics->updateOrderInDb($addr, $txid, $status, $value);
     $blockonomics->updateInvoiceNote($invoiceId, $invoiceNote);
 
     exit();
@@ -87,7 +79,7 @@ if ($value < $bits - $underpayment_slack || $value > $bits) {
 $percentPaid = $satoshiAmount / $bits * 100;
 $paymentAmount = $blockonomics->convertPercentPaidToInvoiceCurrency($order, $percentPaid);
 $blockonomics->updateInvoiceNote($invoiceId, null);
-$blockonomics->updateOrderInDb($addr, $original_txid, $status, $value);
+$blockonomics->updateOrderInDb($addr, $txid, $status, $value);
 
 /**
  * Validate Callback Invoice ID.
@@ -103,6 +95,15 @@ $blockonomics->updateOrderInDb($addr, $original_txid, $status, $value);
  * @param string $gatewayName Gateway Name
  */
 $invoiceId = checkCbInvoiceID($invoiceId, $gatewayParams['name']);
+
+
+if ($txid == 'WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction') {
+    // If this is test transaction, generate new transaction ID
+    $txid = 'WarningThisIsATestTransaction_' . $addr;
+} else {
+    // Just add address to transaction id
+    $txid = $txid . "_" . $addr;
+}
 
 /**
  * Check Callback Transaction ID.
