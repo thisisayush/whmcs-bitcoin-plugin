@@ -235,20 +235,21 @@ function blockonomics_config()
                         cell.innerHTML = "<label style='color:red;'>$trans_text_protocol_error</label> \
                             $trans_text_protocol_fix";
                     })
+                } else {
+
+                    let oReq = new XMLHttpRequest();
+                    oReq.addEventListener("load", function() {
+                        reqListener(this.responseText, CELLS)
+                    });
+                    oReq.open("GET", testSetupUrl);
+                    newBtn.disabled = true;
+                    Object.keys(CELLS).forEach(crypto => {
+                        let cell = CELLS[crypto]
+                        cell.innerHTML = "$trans_text_testing";
+                    })
+                    oReq.send();
+                    
                 }
-
-                let oReq = new XMLHttpRequest();
-                oReq.addEventListener("load", function() {
-                    reqListener(this.responseText, CELLS)
-                });
-                oReq.open("GET", testSetupUrl);
-                newBtn.disabled = true;
-                Object.keys(CELLS).forEach(crypto => {
-                    let cell = CELLS[crypto]
-                    cell.innerHTML = "$trans_text_testing";
-                })
-                oReq.send();
-
 			}
 
 		</script>
