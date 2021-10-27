@@ -221,6 +221,11 @@ class Blockonomics
             $responseObj = new stdClass();
         }
         $responseObj->{'response_code'} = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if (!isset($responseObj->message)) {
+            $responseObj->{'message'} = 'Error: (' . $responseObj->response_code . ') ' . $contents;
+        }
+
         curl_close($ch);
         return $responseObj;
     }
