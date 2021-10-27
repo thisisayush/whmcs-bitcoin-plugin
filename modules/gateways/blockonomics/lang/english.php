@@ -54,6 +54,7 @@ $_BLOCKLANG['testSetup']['protocol']['error'] = 'Error: System URL has a differe
 $_BLOCKLANG['testSetup']['protocol']['fix'] = 'Go to Setup > General Settings and verify that WHMCS System URL has correct protocol set (HTTP or HTTPS).';
 $_BLOCKLANG['testSetup']['testing'] = 'Testing setup...';
 $_BLOCKLANG['testSetup']['blockedHttps'] = 'Your server is blocking outgoing HTTPS calls';
+$_BLOCKLANG['testSetup']['emptyApi'] = 'API Key is not set. Please enter your API Key.';
 $_BLOCKLANG['testSetup']['incorrectApi'] = 'API Key is incorrect';
 $_BLOCKLANG['testSetup']['noXpub'] = 'You have not entered an xpub';
 $_BLOCKLANG['testSetup']['existingCallbackUrl'] = 'Your have an existing callback URL. Refer instructions on integrating multiple websites';

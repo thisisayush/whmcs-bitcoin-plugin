@@ -663,8 +663,18 @@ class Blockonomics
 
     public function test_one_currency($currency)
     {
-        $response = $this->get_callbacks($currency);
-        $error_str = $this->check_callback_urls_or_set_one($currency, $response);
+        include $this->getLangFilePath();
+
+        $api_key = $this->getApiKey();
+        $error_str = '';
+
+        if (!isset($api_key) || empty($api_key)) {
+            $error_str = $_BLOCKLANG['testSetup']['emptyApi'];
+        } else {
+            $response = $this->get_callbacks($currency);
+            $error_str = $this->check_callback_urls_or_set_one($currency, $response);
+        }
+        
 
         if ($error_str == '') {
             //Everything OK ! Test address generation
