@@ -743,7 +743,7 @@ class Blockonomics
         $error_str = '';
 
         if (!isset($response->data) || count($response->data) == 0) {
-            $error_str = $_BLOCKLANG['testSetup']['noXpub'];
+            $error_str = $_BLOCKLANG['testSetup']['addStore'];
         }
         //if merchant has at least one xPub on his Blockonomics account
         elseif (count($response->data) >= 1)
@@ -795,12 +795,8 @@ class Blockonomics
             return '';
         }
 
-        // No match and no empty callback
-        if (count($response->data) == 1) {
-            $error_str = $_BLOCKLANG['testSetup']['existingCallbackUrl'];
-        } else {
-            $error_str = $_BLOCKLANG['testSetup']['multipleXpubs'];
-        }
+        // No match and no empty callbac        
+        $error_str = $_BLOCKLANG['testSetup']['addStore'];
 
         return $error_str;
     }

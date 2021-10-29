@@ -56,6 +56,4 @@ $_BLOCKLANG['testSetup']['testing'] = 'Testing setup...';
 $_BLOCKLANG['testSetup']['blockedHttps'] = 'Your server is blocking outgoing HTTPS calls';
 $_BLOCKLANG['testSetup']['emptyApi'] = 'API Key is not set. Please enter your API Key.';
 $_BLOCKLANG['testSetup']['incorrectApi'] = 'API Key is incorrect';
-$_BLOCKLANG['testSetup']['noXpub'] = 'You have not entered an xpub';
-$_BLOCKLANG['testSetup']['existingCallbackUrl'] = 'Your have an existing callback URL. Refer instructions on integrating multiple websites';
-$_BLOCKLANG['testSetup']['multipleXpubs'] = 'Your have an existing callback URL or multiple xPubs. Refer instructions on integrating multiple websites';
+$_BLOCKLANG['testSetup']['addStore'] = 'Please add a new store on blockonomics website';
