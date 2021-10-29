@@ -760,7 +760,7 @@ class Blockonomics
 
         $callback_secret = $this->getCallbackSecret();
         $callback_url = $this->getCallbackUrl($callback_secret);
-        $base_url = preg_replace('/https?:\/\//', '', substr($callback_url, 0, -48));
+        $base_url = preg_replace('/https?:\/\//', '', substr($callback_url, 0, -1 * (strlen($callback_secret) + 8)));
         $error_str = '';
 
         $available_xpub = '';
