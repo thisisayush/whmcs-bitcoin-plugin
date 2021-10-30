@@ -101,7 +101,18 @@ if ($txid == 'WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction') 
     // If this is test transaction, generate new transaction ID
     $txid = 'WarningThisIsATestTransaction_' . $addr;
 } else {
-    // Just add address to transaction id
+    /**
+     * Add address to txid, this is because multiple addresses may have 
+     * same transaction ids (due to how bitcoin operates, see ref), which 
+     * causes invoices with such cases to be skipped due to which they are 
+     * not marked as paid in WHMCS.
+     * Ref: https://bitcoin.stackexchange.com/a/43136
+     * Ref: https://github.com/blockonomics/whmcs-bitcoin-plugin/issues/79
+     * 
+     * Adding address to the txid makes the transaction id unique in 
+     * WHMCS which solves the above issue.
+     * 
+     */ 
     $txid = $txid . "_" . $addr;
 }
 
