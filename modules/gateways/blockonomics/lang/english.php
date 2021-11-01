@@ -7,7 +7,7 @@ $_BLOCKLANG['orderId'] = 'Order #';
 $_BLOCKLANG['error']['btc']['title'] = 'Could not generate new Bitcoin address.';
 $_BLOCKLANG['error']['btc']['message'] = 'Note to webmaster: Please login to admin and go to Setup > Payments > Payment Gateways > Manage Existing Gateways and use the Test Setup button to diagnose the error.';
 $_BLOCKLANG['error']['bch']['title'] = 'Could not generate new Bitcoin Cash address.';
-$_BLOCKLANG['error']['bch']['message'] = 'Note to webmaster: Please follow the instructions <a href="https://help.blockonomics.co/support/solutions/articles/33000251576-bch-setup-on-whmcs" target="_blank">here</a> to configure BCH payments.';
+$_BLOCKLANG['error']['bch']['message'] = 'Note to webmaster: Please login to admin and go to Setup > Payments > Payment Gateways > Manage Existing Gateways and use the Test Setup button to diagnose the error.';
 $_BLOCKLANG['error']['pending']['title'] = 'Payment is pending';
 $_BLOCKLANG['error']['pending']['message'] = 'Additional payments to invoice are only allowed after current pending transaction is confirmed.';
 $_BLOCKLANG['payWith'] = 'Pay With';
