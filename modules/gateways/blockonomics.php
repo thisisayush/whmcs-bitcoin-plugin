@@ -239,7 +239,25 @@ function blockonomics_config()
 
                     let oReq = new XMLHttpRequest();
                     oReq.addEventListener("load", function() {
-                        reqListener(this.responseText, CELLS)
+                        if(this.status != 200) {
+                            let status_code = this.status
+                            let status_msg = this.statusText
+
+                            let response = {}
+                            Object.keys(CELLS).forEach(crypto => {
+                                response[crypto] = "An Error Occurred. Status Code: " + status_code + " (" + status_msg + ")"
+                            })
+                            reqListener(JSON.stringify(response), CELLS)
+                        } else {
+                            reqListener(this.responseText, CELLS)
+                        }
+                    });
+                    oReq.addEventListener("error", function(error) {
+                        let response = {}
+                        Object.keys(CELLS).forEach(crypto => {
+                            response[crypto] = "Network Error Occurred."
+                        })
+                        reqListener(JSON.stringify(response), CELLS)
                     });
                     oReq.open("GET", testSetupUrl);
                     newBtn.disabled = true;
@@ -250,6 +268,7 @@ function blockonomics_config()
                     oReq.send();
                     
                 }
+
 			}
 
 		</script>
