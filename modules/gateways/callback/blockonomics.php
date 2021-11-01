@@ -48,11 +48,6 @@ $order = $blockonomics->getOrderByAddress($addr);
 $invoiceId = $order['order_id'];
 $bits = $order['bits'];
 
-// If this is test transaction, generate new transaction ID
-if ($txid == 'WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction') {
-    $txid = 'WarningThisIsATestTransaction_' . $addr;
-}
-
 $confirmations = $blockonomics->getConfirmations();
 
 $blockonomics_currency_code = $order['blockonomics_currency'];
@@ -100,6 +95,26 @@ $blockonomics->updateOrderInDb($addr, $txid, $status, $value);
  * @param string $gatewayName Gateway Name
  */
 $invoiceId = checkCbInvoiceID($invoiceId, $gatewayParams['name']);
+
+
+if ($txid == 'WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction') {
+    // If this is test transaction, generate new transaction ID
+    $txid = 'WarningThisIsATestTransaction - ' . $addr;
+} else {
+    /**
+     * Add address to txid, this is because multiple addresses may have 
+     * same transaction ids (due to how bitcoin operates, see ref), which 
+     * causes invoices with such cases to be skipped due to which they are 
+     * not marked as paid in WHMCS.
+     * Ref: https://bitcoin.stackexchange.com/a/43136
+     * Ref: https://github.com/blockonomics/whmcs-bitcoin-plugin/issues/79
+     * 
+     * Adding address to the txid makes the transaction id unique in 
+     * WHMCS which solves the above issue.
+     * 
+     */ 
+    $txid = $txid . " - " . $addr;
+}
 
 /**
  * Check Callback Transaction ID.
