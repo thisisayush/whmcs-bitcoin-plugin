@@ -99,7 +99,7 @@ $invoiceId = checkCbInvoiceID($invoiceId, $gatewayParams['name']);
 
 if ($txid == 'WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction') {
     // If this is test transaction, generate new transaction ID
-    $txid = 'WarningThisIsATestTransaction_' . $addr;
+    $txid = 'WarningThisIsATestTransaction - ' . $addr;
 } else {
     /**
      * Add address to txid, this is because multiple addresses may have 
@@ -113,7 +113,7 @@ if ($txid == 'WarningThisIsAGeneratedTestPaymentAndNotARealBitcoinTransaction') 
      * WHMCS which solves the above issue.
      * 
      */ 
-    $txid = $txid . "_" . $addr;
+    $txid = $txid . " - " . $addr;
 }
 
 /**
