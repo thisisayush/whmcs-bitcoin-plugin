@@ -521,6 +521,12 @@ class Blockonomics
         }
         // Process a new order for the id and blockonomics currency
         $new_order = $this->createNewCryptoOrder($order_info, $blockonomics_currency);
+        $log_data = array(
+            'order_id' => $new_order->id_order,
+            'address' => $new_order->addr,
+            'amount' => $new_order->value
+        );
+        logTransaction('blockonomics', $log_data, 'New Order Created');
         if ($new_order) {
             return $new_order;
         }
