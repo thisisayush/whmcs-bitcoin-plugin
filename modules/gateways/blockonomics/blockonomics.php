@@ -524,7 +524,8 @@ class Blockonomics
         $log_data = array(
             'order_id' => $new_order->id_order,
             'address' => $new_order->addr,
-            'amount' => $new_order->value
+            'amount' => $new_order->value,
+            'crypto' => $new_order->blockonomics_currency
         );
         logTransaction('blockonomics', $log_data, 'New Order Created');
         if ($new_order) {
