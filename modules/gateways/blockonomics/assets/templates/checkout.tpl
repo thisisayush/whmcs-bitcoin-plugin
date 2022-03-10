@@ -4,7 +4,8 @@
 <div id="time_period" data-time_period="{$time_period}"></div>
 <div id="active_currencies" data-active_currencies='{$active_currencies}'></div>
 <div id="order_uuid" data-order_uuid="{$order_uuid}"></div>
-<div id="order_id" data-order_id="{$order_id}"></div>
+<div id="selected_crypto" data-selected_crypto="{$selected_crypto}"></div>
+{* <div id="order_id" data-order_id="{$order_id}"></div> *}
 
 <div ng-app="shopping-cart-demo">
     <div ng-controller="CheckoutController">
@@ -35,21 +36,6 @@
             <div id="pending-error" ng-show="pending_error" ng-cloak>
                 <h2>{$_BLOCKLANG.error.pending.title}</h2>
                 <i>{$_BLOCKLANG.error.pending.message}</i>
-            </div>
-            <!-- Blockonomics Currency Selecter -->
-            <div class="bnomics-select-container" ng-show="currency_selecter" ng-cloak>
-                <h2>{$_BLOCKLANG.payWith}</h2>
-                <table width="100%">
-                    <tr class="bnomics-select-options" ng-repeat="(active_code, active_currency) in active_currencies"
-                        ng-click="select_blockonomics_currency(active_code)">
-                        <td align="left"><img src="{$WEB_ROOT}/modules/gateways/blockonomics/assets/img/[[active_code]].png"
-                                class="rotateimg[[active_code]]" alt="[[active_currency.name]] Logo">
-                            <h3>[[active_currency.name]]</h3> <span class="bnomics-select-currency-button"><button
-                                    type="button"
-                                    class="btn btn-lg bnomics-select-currency-code">[[active_code]]</button></span>
-                        </td>
-                    </tr>
-                </table>
             </div>
             <!-- Payment Expired -->
             <div class="bnomics-order-expired-wrapper" ng-show="order.status == -3" ng-cloak>

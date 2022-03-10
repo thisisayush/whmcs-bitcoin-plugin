@@ -26,13 +26,14 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
     
     var order_uuid_div = document.getElementById("order_uuid");
     $scope.order_uuid = order_uuid_div.dataset.order_uuid;
-
-    var order_id_div = document.getElementById("order_id");
-    $scope.order_id = order_id_div.dataset.order_id;
     
     var active_currencies_div = document.getElementById("active_currencies");
     var active_currencies = JSON.parse(active_currencies_div.dataset.active_currencies);
     $scope.active_currencies = active_currencies;
+
+    var selected_crypto_div = document.getElementById("selected_crypto");
+    var selected_crypto = selected_crypto_div.dataset.selected_crypto;
+    $scope.selected_crypto = selected_crypto;
 
     $scope.copyshow = false;
     $scope.display_problems = true;
@@ -110,9 +111,11 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
             //Fetch the order using uuid
             Order.get({
                 "get_order": $scope.order_uuid,
-                "blockonomics_currency": $scope.currency.code
+                "crypto": $scope.currency.code
             }, function(data) {
                 $scope.spinner = false;
+                $scope.order_id = data.id_order;
+                
                 if(data.txid !== undefined && data.txid !== ""){
                     $scope.txid = data.txid;
                     $scope.pending_error = true;
@@ -129,17 +132,10 @@ app.controller('CheckoutController', function($scope, $interval, Order, $httpPar
     }
     
     $scope.spinner = true;
-    if(Object.keys($scope.active_currencies).length === 1){
-        // Auto select btc if 1 activated currency
-        let $active_currency = Object.keys($scope.active_currencies)[0];
-        $scope.currency = $scope.active_currencies[$active_currency];
-        $scope.currency.code = $active_currency;
-        check_blockonomics_uuid();
-    }else if(Object.keys($scope.active_currencies).length >= 1){
-        //Show user currency selector if > 1 activated currency
-        $scope.currency_selecter  = true;
-        $scope.spinner = false;
-    }
+    
+    $scope.currency = $scope.active_currencies[$scope.selected_crypto];
+    $scope.currency.code = $scope.selected_crypto;
+    check_blockonomics_uuid();
 
     function select_text(divid)
     {
