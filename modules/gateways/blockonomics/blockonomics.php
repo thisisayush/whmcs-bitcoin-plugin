@@ -526,7 +526,8 @@ class Blockonomics
             'address' => $new_order->addr,
             'crypto' => $new_order->blockonomics_currency
         );
-        logTransaction('blockonomics', $log_data, 'New Order Created');
+        $gatewayParams = getGatewayVariables('blockonomics');
+        logTransaction($gatewayParams['name'], $log_data, 'New Order Created');
         if ($new_order) {
             return $new_order;
         }
