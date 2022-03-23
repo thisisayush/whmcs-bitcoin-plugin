@@ -31,26 +31,16 @@ $finish_order = isset($_GET["finish_order"]) ? htmlspecialchars($_GET['finish_or
 $get_order = isset($_GET['get_order']) ? htmlspecialchars($_GET['get_order']) : "";
 
 if($crypto === "empty"){
-    $ca->setTemplate('/modules/gateways/blockonomics/assets/templates/no_crypto_selected.tpl');
+    $blockonomics->load_blockonomics_template($ca, 'no_crypto_selected');
 }else if ($show_order && $crypto) {
-    $time_period_from_db = $blockonomics->getTimePeriod();
-    $time_period = isset($time_period_from_db) ? $time_period_from_db : '10';
-    $ca->assign('time_period', $time_period);
-    $active_currencies = $blockonomics->getActiveCurrencies();
-    $ca->assign('active_currencies', json_encode($active_currencies));
-    $ca->assign('selected_crypto', $crypto);
-    $ca->assign('order_uuid', $show_order);
-    
-    $ca->setTemplate('/modules/gateways/blockonomics/assets/templates/checkout.tpl');
+    $blockonomics->load_checkout_template($ca, $show_order, $crypto);
 }else if ($select_crypto) {
-    $active_currencies = $blockonomics->getActiveCurrencies();
-    $ca->assign('active_currencies', $active_currencies);
-    $ca->assign('order_hash', $select_crypto);
-    $ca->setTemplate('/modules/gateways/blockonomics/assets/templates/crypto_options.tpl');
+    $blockonomics->load_blockonomics_template($ca, 'crypto_options', array(
+        "active_currencies" => $blockonomics->getActiveCurrencies(),
+        "order_hash" => $select_crypto
+    ));
 }else if ($finish_order) {
-    $finish_url = App::getSystemURL() . 'viewinvoice.php?id=' . $finish_order . '&paymentsuccess=true';
-    header("Location: $finish_url");
-    exit();
+    $blockonomics->redirect_finish_order($finish_order);
 }else if ($get_order && $crypto) {
     $existing_order = $blockonomics->processOrderHash($get_order, $crypto);
 

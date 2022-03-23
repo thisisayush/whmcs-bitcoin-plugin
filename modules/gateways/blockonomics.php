@@ -380,23 +380,7 @@ function blockonomics_link($params)
     }
 
     $blockonomics = new Blockonomics();
-    $order_hash = $blockonomics->getOrderHash($params['invoiceid'], $params['amount'], $params['currency'], $params['basecurrencyamount']);
-
-    $order_params = [];
-    $active_cryptos = $blockonomics->getActiveCurrencies();
-    // Check how many crypto currencies are activated
-    if (count($active_cryptos) > 1) {
-        $order_params = ['select_crypto' => $order_hash];
-    } elseif (count($active_cryptos) === 1) {
-        $order_params = [
-            'show_order' => $order_hash,
-            'crypto' => array_keys($active_cryptos)[0]
-        ];
-    } elseif (count($active_cryptos) === 0) {
-        $order_params = [
-            'crypto' => 'empty'
-        ];
-    }
+    $order_params = $blockonomics->get_order_checkout_params($params);
     
     $form_url = \App::getSystemURL() . 'modules/gateways/blockonomics/payment.php';
 

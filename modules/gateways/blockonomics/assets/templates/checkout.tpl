@@ -5,7 +5,6 @@
 <div id="active_currencies" data-active_currencies='{$active_currencies}'></div>
 <div id="order_uuid" data-order_uuid="{$order_uuid}"></div>
 <div id="selected_crypto" data-selected_crypto="{$selected_crypto}"></div>
-{* <div id="order_id" data-order_id="{$order_id}"></div> *}
 
 <div ng-app="shopping-cart-demo">
     <div ng-controller="CheckoutController">
