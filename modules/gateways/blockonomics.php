@@ -355,24 +355,6 @@ HTML;
     return $settings_array;
 }
 
-function blockonomics_config_validate($params) {
-    
-    $blockonomics = new Blockonomics();
-
-    $blockonomics_currencies = $blockonomics->getSupportedCurrencies();
-
-    $valid = false;
-    foreach ($blockonomics_currencies as $code => $currency) {
-        if ($params[$code . 'Enabled'] == true) {
-            $valid = true;
-        }
-    }
-
-    if (!$valid) {
-        throw new \Exception('Please enable atleast one currency!');
-    }
-}
-
 function blockonomics_link($params)
 {
     if (false === isset($params) || true === empty($params)) {
