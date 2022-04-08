@@ -98,10 +98,12 @@ class Blockonomics
     {
         return [
             'btc' => [
+                'code' => 'btc',
                 'name' => 'Bitcoin',
                 'uri' => 'bitcoin',
             ],
             'bch' => [
+                'code' => 'bch',
                 'name' => 'Bitcoin Cash',
                 'uri' => 'bitcoincash',
             ],
@@ -849,7 +851,7 @@ class Blockonomics
 
         $context = array(
             "time_period" => $time_period,
-            "active_currencies" => json_encode($this->getActiveCurrencies()),
+            "cryptos" => json_encode($this->getActiveCurrencies()),
             "selected_crypto" => $crypto,
             "order_uuid" => $show_order
         );
