@@ -21,6 +21,8 @@ $_BLOCKLANG['payAddress'] = 'To this [[currency.name | lowercase]] address';
 $_BLOCKLANG['copyClipboard'] = 'Copied to clipboard';
 $_BLOCKLANG['howToPay'] = 'How do I pay?';
 $_BLOCKLANG['poweredBy'] = 'Powered by Blockonomics';
+$_BLOCKLANG['noCrypto']['title'] = 'No crypto currencies are enabled for checkout';
+$_BLOCKLANG['noCrypto']['message'] = 'Note to webmaster: Can be enabled via Setup > Payments > Payment Gateways > Blockonomics > Currencies';
 
 // Callback
 $_BLOCKLANG['error']['secret'] = 'Secret verification failure';

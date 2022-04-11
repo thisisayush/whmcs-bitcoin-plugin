@@ -2,9 +2,9 @@
 
 <div class="bnomics-order-container">
     <h3>
-        No crypto currencies are enabled for checkout
+        {$_BLOCKLANG.noCrypto.title}
     </h3>
     <p>
-        Note to webmaster: Can be enabled via Setup > Payments > Payment Gateways > Blockonomics > Currencies
+        {$_BLOCKLANG.noCrypto.message}
     </p>
 </div>
