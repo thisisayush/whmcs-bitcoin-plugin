@@ -28,6 +28,11 @@
                 <h2>{$_BLOCKLANG.error.bch.title}</h2>
                 <p>{$_BLOCKLANG.error.bch.message}</p>
             </div>
+            <!-- Pending payment -->
+            <div id="pending-error" ng-show="pending_error" ng-cloak>
+                <h2>{$_BLOCKLANG.error.pending.title}</h2>
+                <i>{$_BLOCKLANG.error.pending.message}</i>
+            </div>
             <!-- Gap limit + Duplicate Address Error -->
             <div id="address-error-message" ng-show="customer_facing_error" ng-cloak>
                 <h2>{$_BLOCKLANG.error.addressGeneration.title}</h2>
@@ -36,7 +41,7 @@
             <!-- Payment Expired -->
             <div class="bnomics-order-expired-wrapper" ng-show="order.status == -3" ng-cloak>
                 <h3 class="warning bnomics-status-warning">{$_BLOCKLANG.paymentExpired}</h3><br>
-                <p><a ng-click="try_again_click()">{$_BLOCKLANG.tryAgain}</a></p>
+                <p><a href="#" ng-click="try_again_click()">{$_BLOCKLANG.tryAgain}</a></p>
             </div>
             <!-- Payment Error -->
             <div class="bnomics-order-error-wrapper" ng-show="order.status == -2" ng-cloak>
