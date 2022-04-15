@@ -98,10 +98,12 @@ class Blockonomics
     {
         return [
             'btc' => [
+                'code' => 'btc',
                 'name' => 'Bitcoin',
                 'uri' => 'bitcoin',
             ],
             'bch' => [
+                'code' => 'bch',
                 'name' => 'Bitcoin Cash',
                 'uri' => 'bitcoincash',
             ],
@@ -832,5 +834,59 @@ class Blockonomics
             $error_str = $response->message;
         }
         return $error_str;
+    }
+
+    public function redirect_finish_order($order_id)
+    {
+        $finish_url = \App::getSystemURL() . 'viewinvoice.php?id=' . $order_id . '&paymentsuccess=true';
+        header("Location: $finish_url");
+        exit();
+    }
+
+    public function load_blockonomics_template($ca, $template, $context=array())
+    {
+        foreach ($context as $key => $value) {
+            $ca->assign($key, $value);
+        }
+        $ca->setTemplate("/modules/gateways/blockonomics/assets/templates/$template.tpl");
+    }
+
+    public function load_checkout_template($ca, $show_order, $crypto)
+    {
+        $time_period_from_db = $this->getTimePeriod();
+        $time_period = isset($time_period_from_db) ? $time_period_from_db : '10';
+
+        $context = array(
+            "time_period" => $time_period,
+            "cryptos" => json_encode($this->getActiveCurrencies()),
+            "selected_crypto" => $crypto,
+            "order_uuid" => $show_order
+        );
+
+        $this->load_blockonomics_template($ca, 'checkout', $context);
+    }
+
+    public function get_order_checkout_params($params)
+    {
+        $order_hash = $this->getOrderHash($params['invoiceid'], $params['amount'], $params['currency'], $params['basecurrencyamount']);
+
+        $order_params = [];
+        $active_cryptos = $this->getActiveCurrencies();
+
+        // Check how many crypto currencies are activated
+        if (count($active_cryptos) > 1) {
+            $order_params = ['select_crypto' => $order_hash];
+        } elseif (count($active_cryptos) === 1) {
+            $order_params = [
+                'show_order' => $order_hash,
+                'crypto' => array_keys($active_cryptos)[0]
+            ];
+        } elseif (count($active_cryptos) === 0) {
+            $order_params = [
+                'crypto' => 'empty'
+            ];
+        }
+
+        return $order_params;
     }
 }

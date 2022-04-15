@@ -355,24 +355,6 @@ HTML;
     return $settings_array;
 }
 
-function blockonomics_config_validate($params) {
-    
-    $blockonomics = new Blockonomics();
-
-    $blockonomics_currencies = $blockonomics->getSupportedCurrencies();
-
-    $valid = false;
-    foreach ($blockonomics_currencies as $code => $currency) {
-        if ($params[$code . 'Enabled'] == true) {
-            $valid = true;
-        }
-    }
-
-    if (!$valid) {
-        throw new \Exception('Please enable atleast one currency!');
-    }
-}
-
 function blockonomics_link($params)
 {
     if (false === isset($params) || true === empty($params)) {
@@ -380,14 +362,15 @@ function blockonomics_link($params)
     }
 
     $blockonomics = new Blockonomics();
-    $order_hash = $blockonomics->getOrderHash($params['invoiceid'], $params['amount'], $params['currency'], $params['basecurrencyamount']);
-
-    $system_url = \App::getSystemURL();
-    $form_url = $system_url . 'modules/gateways/blockonomics/payment.php';
+    $order_params = $blockonomics->get_order_checkout_params($params);
+    
+    $form_url = \App::getSystemURL() . 'modules/gateways/blockonomics/payment.php';
 
     //pass only the uuid to the payment page
     $form = '<form action="' . $form_url . '" method="GET">';
-    $form .= '<input type="hidden" name="order" value="' . $order_hash . '"/>';
+    foreach ($order_params as $name => $param) {
+        $form .= '<input type="hidden" name="' . $name . '" value="' . $param . '"/>';
+    }
     $form .= '<input type="submit" value="' . $params['langpaynow'] . '"/>';
     $form .= '</form>';
 

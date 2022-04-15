@@ -10,16 +10,19 @@ $_BLOCKLANG['error']['bch']['title'] = 'Could not generate new Bitcoin Cash addr
 $_BLOCKLANG['error']['bch']['message'] = 'Note to webmaster: Please login to admin and go to Setup > Payments > Payment Gateways > Manage Existing Gateways and use the Test Setup button to diagnose the error.';
 $_BLOCKLANG['error']['pending']['title'] = 'Payment is pending';
 $_BLOCKLANG['error']['pending']['message'] = 'Additional payments to invoice are only allowed after current pending transaction is confirmed.';
+$_BLOCKLANG['error']['addressGeneration']['title'] = 'Could not generate new address';
 $_BLOCKLANG['payWith'] = 'Pay With';
 $_BLOCKLANG['paymentExpired'] = 'Payment Expired';
 $_BLOCKLANG['tryAgain'] = 'Click here to try again';
 $_BLOCKLANG['paymentError'] = 'Payment Error';
 $_BLOCKLANG['openWallet'] = 'Open in wallet';
-$_BLOCKLANG['payAmount'] = 'To pay, send exactly this [[currency.code | uppercase]] amount';
-$_BLOCKLANG['payAddress'] = 'To this [[currency.name | lowercase]] address';
+$_BLOCKLANG['payAmount'] = 'To pay, send exactly this [[crypto.code | uppercase]] amount';
+$_BLOCKLANG['payAddress'] = 'To this [[crypto.name | lowercase]] address';
 $_BLOCKLANG['copyClipboard'] = 'Copied to clipboard';
 $_BLOCKLANG['howToPay'] = 'How do I pay?';
 $_BLOCKLANG['poweredBy'] = 'Powered by Blockonomics';
+$_BLOCKLANG['noCrypto']['title'] = 'No crypto currencies are enabled for checkout';
+$_BLOCKLANG['noCrypto']['message'] = 'Note to webmaster: Can be enabled via Setup > Payments > Payment Gateways > Blockonomics > Currencies';
 
 // Callback
 $_BLOCKLANG['error']['secret'] = 'Secret verification failure';

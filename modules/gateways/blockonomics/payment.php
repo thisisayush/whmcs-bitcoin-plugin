@@ -10,7 +10,7 @@ define('CLIENTAREA', true);
 
 // Init Blockonomics class
 $blockonomics = new Blockonomics();
-require $blockonomics->getLangFilePath(isset($_REQUEST['language']) ? $_REQUEST['language'] : '');
+require $blockonomics->getLangFilePath(isset($_REQUEST['language']) ? htmlspecialchars($_REQUEST['language']) : '');
 
 $ca = new ClientArea();
 
@@ -24,16 +24,26 @@ $ca->initPage();
 /*
  * SET POST PARAMETERS TO VARIABLES AND CHECK IF THEY EXIST
  */
-$get_order = htmlspecialchars(isset($_REQUEST['get_order']) ? $_REQUEST['get_order'] : '');
-$finish_order = htmlspecialchars(isset($_REQUEST['finish_order']) ? $_REQUEST['finish_order'] : '');
+$show_order = isset($_GET["show_order"]) ? htmlspecialchars($_GET['show_order']) : "";
+$crypto = isset($_GET["crypto"]) ? htmlspecialchars($_GET['crypto']) : "";
+$select_crypto = isset($_GET["select_crypto"]) ? htmlspecialchars($_GET['select_crypto']) : "";
+$finish_order = isset($_GET["finish_order"]) ? htmlspecialchars($_GET['finish_order']) : "";
+$get_order = isset($_GET['get_order']) ? htmlspecialchars($_GET['get_order']) : "";
 
-$order_hash = htmlspecialchars(isset($_REQUEST['order']) ? $_REQUEST['order'] : '');
+if($crypto === "empty"){
+    $blockonomics->load_blockonomics_template($ca, 'no_crypto_selected');
+}else if ($show_order && $crypto) {
+    $blockonomics->load_checkout_template($ca, $show_order, $crypto);
+}else if ($select_crypto) {
+    $blockonomics->load_blockonomics_template($ca, 'crypto_options', array(
+        "cryptos" => $blockonomics->getActiveCurrencies(),
+        "order_hash" => $select_crypto
+    ));
+}else if ($finish_order) {
+    $blockonomics->redirect_finish_order($finish_order);
+}else if ($get_order && $crypto) {
+    $existing_order = $blockonomics->processOrderHash($get_order, $crypto);
 
-$system_url = App::getSystemURL();
-
-if ($get_order) {
-    $blockonomics_currency = htmlspecialchars(isset($_REQUEST['blockonomics_currency']) ? $_REQUEST['blockonomics_currency'] : '');
-    $existing_order = $blockonomics->processOrderHash($get_order, $blockonomics_currency);
     // No order exists, exit
     if (is_null($existing_order->id_order)) {
         exit();
@@ -41,37 +51,10 @@ if ($get_order) {
         header('Content-Type: application/json');
         exit(json_encode($existing_order));
     }
-} elseif ($finish_order) {
-    $finish_url = $system_url . 'viewinvoice.php?id=' . $finish_order . '&paymentsuccess=true';
-    header("Location: $finish_url");
-    exit();
-} elseif (!$order_hash) {
-    echo '<b>Error: Failed to fetch order data.</b> <br>
-				Note to admin: Please check that your System URL is configured correctly.
-				If you are using SSL, verify that System URL is set to use HTTPS and not HTTP. <br>
-				To configure System URL, please go to WHMCS admin > Setup > General Settings > General';
-    exit();
 }
 
-$ca->assign('order_uuid', $order_hash);
-
-$time_period_from_db = $blockonomics->getTimePeriod();
-$time_period = isset($time_period_from_db) ? $time_period_from_db : '10';
-$ca->assign('time_period', $time_period);
-
-$active_currencies = $blockonomics->getActiveCurrencies();
-if ($active_currencies) {
-    $ca->assign('active_currencies', json_encode($active_currencies));
-} else {
-    echo '<b>Error: No active blockonomics currencies.</b> <br>
-				Note to admin: Check your API keys are configured.';
-    exit();
-}
-
-$order_id = $blockonomics->getOrderIdByHash($order_hash);
-$ca->assign('order_id', $order_id);
 $ca->assign('_BLOCKLANG', $_BLOCKLANG);
 
-$ca->setTemplate('/modules/gateways/blockonomics/payment.tpl');
-
 $ca->output();
+
+exit();

@@ -1,12 +1,9 @@
 <link rel="stylesheet" type="text/css" href="{$WEB_ROOT}/modules/gateways/blockonomics/assets/css/order.css">
 
-<div id="system-url" data-url="{$systemurl}"></div>
+<div id="active_cryptos" data-active_cryptos='{$cryptos}'></div>
 <div id="time_period" data-time_period="{$time_period}"></div>
-<div id="active_currencies" data-active_currencies='{$active_currencies}'></div>
-<div id="order_uuid" data-order_uuid="{$order_uuid}"></div>
-<div id="order_id" data-order_id="{$order_id}"></div>
 
-<div ng-app="shopping-cart-demo">
+<div ng-app="BlockonomicsApp">
     <div ng-controller="CheckoutController">
         <div class="bnomics-order-container">
             <!-- Heading row -->
@@ -21,13 +18,13 @@
             <div class="bnomics-spinner-wrapper" ng-show="spinner" ng-cloak>
                 <div class="bnomics-spinner"></div>
             </div>
-            <!-- Address Error -->
-            <div id="address-error-btc" ng-show="address_error_btc" ng-cloak>
+            <!-- BTC Address Error -->
+            <div id="address-error-btc" ng-show="address_error['btc']" ng-cloak>
                 <h2>{$_BLOCKLANG.error.btc.title}</h2>
                 <p>{$_BLOCKLANG.error.btc.message}</p>
             </div>
             <!-- BCH Address Error -->
-            <div id="address-error-bch" ng-show="address_error_bch" ng-cloak>
+            <div id="address-error-bch" ng-show="address_error['bch']" ng-cloak>
                 <h2>{$_BLOCKLANG.error.bch.title}</h2>
                 <p>{$_BLOCKLANG.error.bch.message}</p>
             </div>
@@ -36,20 +33,10 @@
                 <h2>{$_BLOCKLANG.error.pending.title}</h2>
                 <i>{$_BLOCKLANG.error.pending.message}</i>
             </div>
-            <!-- Blockonomics Currency Selecter -->
-            <div class="bnomics-select-container" ng-show="currency_selecter" ng-cloak>
-                <h2>{$_BLOCKLANG.payWith}</h2>
-                <table width="100%">
-                    <tr class="bnomics-select-options" ng-repeat="(active_code, active_currency) in active_currencies"
-                        ng-click="select_blockonomics_currency(active_code)">
-                        <td align="left"><img src="{$WEB_ROOT}/modules/gateways/blockonomics/assets/img/[[active_code]].png"
-                                class="rotateimg[[active_code]]" alt="[[active_currency.name]] Logo">
-                            <h3>[[active_currency.name]]</h3> <span class="bnomics-select-currency-button"><button
-                                    type="button"
-                                    class="btn btn-lg bnomics-select-currency-code">[[active_code]]</button></span>
-                        </td>
-                    </tr>
-                </table>
+            <!-- Gap limit + Duplicate Address Error -->
+            <div id="address-error-message" ng-show="customer_facing_error" ng-cloak>
+                <h2>{$_BLOCKLANG.error.addressGeneration.title}</h2>
+                <p>[[customer_facing_error]]</p>
             </div>
             <!-- Payment Expired -->
             <div class="bnomics-order-expired-wrapper" ng-show="order.status == -3" ng-cloak>
@@ -69,17 +56,15 @@
                             <!-- QR and Open in wallet -->
                             <div class="bnomics-qr-code">
                                 <div class="bnomics-qr">
-                                    <a href="[[currency.uri]]:[[order.addr]]?amount=[[order.bits/1.0e8]]"
-                                        target="_blank">
-                                        <qrcode data="[[currency.uri]]:[[order.addr]]?amount=[[order.bits/1.0e8]]"
-                                            size="160" version="6">
+                                    <a href="[[crypto.uri]]:[[order.addr]]?amount=[[order.bits/1.0e8]]" target="_blank">
+                                        <qrcode data="[[crypto.uri]]:[[order.addr]]?amount=[[order.bits/1.0e8]]" size="160" version="6">
                                             <canvas class="qrcode"></canvas>
                                         </qrcode>
                                     </a>
                                 </div>
-                                <div class="bnomics-qr-code-hint"><a
-                                        href="[[currency.uri]]:[[order.addr]]?amount=[[order.bits/1.0e8]]"
-                                        target="_blank">{$_BLOCKLANG.openWallet}</a></div>
+                                <div class="bnomics-qr-code-hint">
+                                    <a href="[[crypto.uri]]:[[order.addr]]?amount=[[order.bits/1.0e8]]" target="_blank">{$_BLOCKLANG.openWallet}</a>
+                                </div>
                             </div>
                             <!-- Right Side -->
                             <div class="bnomics-amount">
@@ -87,27 +72,27 @@
                                     <!-- Order Amounts -->
                                     <div class="bnomics-amount">
                                         <div class="bnomics-amount-text" ng-hide="amount_copyshow" ng-cloak>
-                                            {$_BLOCKLANG.payAmount}</div>
+                                            {$_BLOCKLANG.payAmount}
+                                        </div>
                                         <div class="bnomics-copy-amount-text" ng-show="amount_copyshow" ng-cloak>
                                             {$_BLOCKLANG.copyClipboard}</div>
                                         <ul ng-click="blockonomics_amount_click()" id="bnomics-amount-input"
                                             class="bnomics-amount-input">
                                             <li id="bnomics-amount-copy">[[order.bits/1.0e8]]</li>
-                                            <li>[[order.blockonomics_currency | uppercase]]</li>
+                                            <li>[[crypto.code | uppercase]]</li>
                                             <li class="bnomics-grey"> ≈ </li>
                                             <li class="bnomics-grey">[[order.value]]</li>
                                             <li class="bnomics-grey">[[order.currency]]</li>
                                         </ul>
-                                        <!-- <input ng-click="blockonomics_amount_click()" id="bnomics-amount-input" class="bnomics-amount-input" type="text" ng-value="amount_string" readonly="readonly" style="cursor: pointer;"> -->
                                     </div>
                                     <!-- Order Address -->
                                     <div class="bnomics-address">
                                         <div class="bnomics-address-text" ng-hide="address_copyshow" ng-cloak>
-                                            {$_BLOCKLANG.payAddress}</div>
+                                            {$_BLOCKLANG.payAddress}
+                                        </div>
                                         <div class="bnomics-copy-address-text" ng-show="address_copyshow" ng-cloak>
                                             {$_BLOCKLANG.copyClipboard}</div>
-                                        <ul ng-click="blockonomics_address_click()" id="bnomics-address-input"
-                                            class="bnomics-address-input">
+                                        <ul ng-click="blockonomics_address_click()" id="bnomics-address-input" class="bnomics-address-input">
                                             <li id="bnomics-address-copy">[[order.addr]]</li>
                                         </ul>
                                     </div>
@@ -117,8 +102,7 @@
                                             <div class="bnomics-progress-bar" style="width: [[progress]]%;"></div>
                                         </div>
                                     </div>
-                                    <span class="ng-cloak bnomics-time-left">[[clock*1000 | date:'mm:ss' : 'UTC']]
-                                        min</span>
+                                    <span class="ng-cloak bnomics-time-left">[[clock*1000 | date:'mm:ss' : 'UTC']]min</span>
                                 </div>
                             </div>
                         </div>
@@ -127,9 +111,7 @@
             </div>
             <!-- Blockonomics How to pay + Credit -->
             <div class="bnomics-powered-by">
-                <a href="https://blog.blockonomics.co/how-to-pay-a-bitcoin-invoice-abf4a04d041c"
-                    target="_blank">{$_BLOCKLANG.howToPay}</a><br>
-                <div class="bnomics-powered-by-text bnomics-grey">{$_BLOCKLANG.poweredBy}</div>
+                <a href="https://blog.blockonomics.co/how-to-pay-a-bitcoin-invoice-abf4a04d041c" target="_blank">{$_BLOCKLANG.howToPay}</a><br>
             </div>
         </div>
     </div>
