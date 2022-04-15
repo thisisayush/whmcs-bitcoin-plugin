@@ -521,6 +521,13 @@ class Blockonomics
         }
         // Process a new order for the id and blockonomics currency
         $new_order = $this->createNewCryptoOrder($order_info, $blockonomics_currency);
+        $log_data = array(
+            'invoice_id' => $new_order->id_order,
+            'address' => $new_order->addr,
+            'crypto' => $new_order->blockonomics_currency
+        );
+        $gatewayParams = getGatewayVariables('blockonomics');
+        logTransaction($gatewayParams['name'], $log_data, 'New Order Created');
         if ($new_order) {
             return $new_order;
         }
