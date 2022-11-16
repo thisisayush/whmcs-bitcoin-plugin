@@ -149,6 +149,20 @@ class Blockonomics
         return 2;
     }
 
+    /**
+     * Check if Admin or Exit
+     * Ref: https://whmcs.community/topic/300798-how-to-understand-if-an-admin-is-logged-in-as-user/?do=findComment&comment=1334307
+     */
+    public function checkAdmin()
+    {
+        if (!is_null($_SESSION['adminid'])) {
+            return TRUE;
+        } else {
+            http_response_code(403);
+            exit("Permission Denied. You should be an admin to perform this action!");
+        }
+    }
+
     /*
      * Update invoice note
      */

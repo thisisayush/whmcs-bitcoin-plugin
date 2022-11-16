@@ -12,6 +12,8 @@ require_once __DIR__ . '/blockonomics.php';
 use Blockonomics\Blockonomics;
 
 $blockonomics = new Blockonomics();
+$blockonomics->checkAdmin();
+
 if (doubleval($blockonomics->getVersion()) < 1.9) {
     exit('Version 1.9 or higher must be installed before executing this upgrader.');
 }
