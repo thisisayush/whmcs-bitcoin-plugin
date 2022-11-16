@@ -151,7 +151,7 @@ class Blockonomics
 
     /**
      * Check if Admin or Exit
-     * Ref: https://whmcs.community/topic/300798-how-to-understand-if-an-admin-is-logged-in-as-user/?do=findComment&comment=1334307
+     * Ref: https://developers.whmcs.com/advanced/authentication/
      */
     public function checkAdmin()
     {
