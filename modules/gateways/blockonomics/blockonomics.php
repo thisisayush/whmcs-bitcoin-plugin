@@ -155,7 +155,9 @@ class Blockonomics
      */
     public function checkAdmin()
     {
-        if (!is_null($_SESSION['adminid'])) {
+        $currentUser = new \WHMCS\Authentication\CurrentUser;
+
+        if ($currentUser->isAuthenticatedAdmin()) {
             return TRUE;
         } else {
             http_response_code(403);
