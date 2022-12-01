@@ -149,6 +149,31 @@ class Blockonomics
         return 2;
     }
 
+    /**
+     * Check if Admin or Exit
+     * Ref: https://developers.whmcs.com/advanced/authentication/
+     */
+    public function checkAdmin()
+    {
+        global $CONFIG;
+
+        $isAdmin = FALSE;
+
+        if (version_compare($CONFIG['Version']) >= 0) {
+            $currentUser = new \WHMCS\Authentication\CurrentUser;
+            $isAdmin = $currentUser->isAuthenticatedAdmin();
+        } else {
+            $isAdmin = !is_null($_SESSION['adminid']);
+        }
+
+        if ($isAdmin) {
+            return TRUE;
+        } else {
+            http_response_code(403);
+            exit("Permission Denied. You should be an admin to perform this action!");
+        }
+    }
+
     /*
      * Update invoice note
      */
