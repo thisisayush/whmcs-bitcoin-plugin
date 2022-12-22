@@ -217,7 +217,11 @@ function blockonomics_config()
                     jQuery(document).on('ajaxComplete', handle_ajax_save)
                 }
                 sessionStorage.setItem("runTest", true);
-                saveButtonCell.querySelector('button[type=submit]').click();
+                if(saveButtonCell.querySelector('button[type=submit]')){
+                    saveButtonCell.querySelector('button[type=submit]').click();
+                } else {
+                    saveButtonCell.querySelector('input[type=submit]').click();
+                }
             }
  
             const addTestResultRow = (rowsFromBottom) => {
