@@ -1,7 +1,7 @@
 {
     "schema": "1.0",
     "type": "whmcs-gateways",
-    "name": "Blockonomics",
+    "name": "blockonomics",
     "license": "MIT",
     "category": "payments",
     "description": {
